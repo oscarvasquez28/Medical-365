@@ -6,7 +6,7 @@ Contributions are always welcome!
 
 Contact me if you want to contribute
 
-oscar.vasquezot@uanl.edu.mx
+oscar.vasquezot@outlook.com
 
 
 
