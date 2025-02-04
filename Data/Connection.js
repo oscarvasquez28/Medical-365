@@ -20,7 +20,7 @@ export default class Context {
 
         //It is necessary before to connect to the database set the environment variables and have a valid .pem file
 
-        this.connection = await mongoose.connect(uri, {
+        this.Connection = await mongoose.connect(uri, {
             tls: true,
             tlsCertificateKeyFile: path // Update this path to your .pem file
         })
