@@ -1,5 +1,6 @@
 import { Routes, Route } from "react-router-dom";
 import MainLayout from "./common/layouts/MainLayout";
+import GuestLayout from "./common/layouts/GuestLayout";
 import Home from "./common/pages/Home";
 import NotFound from "./common/pages/NotFound";
 import PrivateRoute from "./common/components/PrivateRoute";
@@ -7,7 +8,7 @@ import PrivateRoute from "./common/components/PrivateRoute";
 function App() {
   return (
     <Routes>
-      <Route path='/' element={<MainLayout />}>
+      <Route path='/' element={<GuestLayout />}>
         <Route index element={<Home />} />
       </Route>
 
