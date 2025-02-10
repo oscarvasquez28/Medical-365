@@ -6,9 +6,15 @@ export default function Home() {
   const word1 = "Medical";
   const word2 = "365";
 
-  // Dividir las palabras en arreglos de letras
+  // Split the words into arrays of letters
   const letters1 = word1.split('');
   const letters2 = word2.split('');
+
+  // Variants for the animation
+  const letterAnimation = {
+    initial: { opacity: 0, y: 20 },
+    animate: { opacity: 1, y: 0 },
+  };
 
   return (
     <>
@@ -31,37 +37,45 @@ export default function Home() {
               >
                 La excelencia en salud comienza con{' '}
                 <Box component="span" sx={{ display: 'inline-block' }}>
-                  {/* Animación para "Medical" */}
+                  {/* Animation for "Medicall" */}
                   {letters1.map((letter, index) => (
                     <motion.span
                       key={index}
                       style={{ color: '#1868DB', display: 'inline-block' }}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
+                      variants={letterAnimation}
+                      initial="initial"
+                      animate="animate"
                       transition={{
                         delay: index * 0.1,
                         type: 'spring',
                         stiffness: 200,
                         damping: 20,
+                        repeat: Infinity,
+                        repeatType: "reverse",
+                        repeatDelay: 2, //  Pause time between repetitions
                       }}
                     >
                       {letter}
                     </motion.span>
                   ))}
-                  {/* Espacio entre "Medical" y "365" */}
+                  {/* Space between "Medical" and "365" */}
                   &nbsp;
-                  {/* Animación para "365" */}
+                  {/* Animation for "365" */}
                   {letters2.map((letter, index) => (
                     <motion.span
                       key={index}
                       style={{ color: '#1868DB', display: 'inline-block' }}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
+                      variants={letterAnimation}
+                      initial="initial"
+                      animate="animate"
                       transition={{
-                        delay: index * 0.1 + letters1.length * 0.1, // Ajustar para que empiece después de "Medical"
+                        delay: index * 0.1 + letters1.length * 0.1,
                         type: 'spring',
                         stiffness: 200,
                         damping: 20,
+                        repeat: Infinity,
+                        repeatType: "reverse",
+                        repeatDelay: 2,
                       }}
                     >
                       {letter}
@@ -77,16 +91,12 @@ export default function Home() {
                   label="Email"
                   variant="outlined"
                   color="info"
-                  id="fullWidth"
                   sx={{
                     '& .MuiOutlinedInput-root': {
                       borderRadius: '15px',
                       backgroundColor: 'white',
                     },
-                    width: {
-                      xs: '100%',
-                      sm: '70%',
-                    },
+                    width: { xs: '100%', sm: '70%' },
                   }}
                 />
               </Box>
@@ -96,16 +106,12 @@ export default function Home() {
                   label="Password"
                   variant="outlined"
                   color="info"
-                  id="fullWidth"
                   sx={{
                     '& .MuiOutlinedInput-root': {
                       borderRadius: '15px',
                       backgroundColor: 'white',
                     },
-                    width: {
-                      xs: '100%',
-                      sm: '70%',
-                    },
+                    width: { xs: '100%', sm: '70%' },
                   }}
                 />
               </Box>
@@ -115,10 +121,7 @@ export default function Home() {
                   color="primary"
                   sx={{
                     borderRadius: '15px',
-                    width: {
-                      xs: '100%',
-                      sm: '70%',
-                    },
+                    width: { xs: '100%', sm: '70%' },
                     backgroundColor: '#1868DB',
                     padding: '12px 24px',
                     fontSize: '1rem',
