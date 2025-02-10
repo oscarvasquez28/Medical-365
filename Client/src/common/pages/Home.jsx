@@ -1,6 +1,7 @@
 import React from 'react';
 import { Container, Button, Box, Typography, TextField, Stack } from '@mui/material';
 import { motion } from 'framer-motion';
+import StaticCard from '../components/StaticCard';
 
 export default function Home() {
   const word1 = "Medical";
@@ -24,8 +25,8 @@ export default function Home() {
         transition={{ duration: 1 }}
       >
         <Container maxWidth={false} sx={{ marginTop: '2rem' }}>
-          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ marginTop: '1rem' }}>
-            <Box width={{ xs: '100%', sm: '50%' }}>
+          <Stack direction={{ xs: 'column', md: 'row' }} spacing={2} sx={{ marginTop: '1rem' }}>
+            <Box width={{ xs: '100%', md: '50%' }}>
               <Typography
                 variant="h2"
                 component="div"
@@ -84,7 +85,7 @@ export default function Home() {
                 </Box>
               </Typography>
             </Box>
-            <Box width={{ xs: '100%', sm: '50%' }}>
+            <Box width={{ xs: '100%', md: '50%' }}>
               <Box sx={{ display: 'flex', justifyContent: 'center', margin: '1rem' }}>
                 <TextField
                   fullWidth
@@ -132,10 +133,16 @@ export default function Home() {
               </Box>
             </Box>
           </Stack>
-          <Box width={{ xs: '100%', sm: '50%' }} marginTop={2}>
+          <Box width={{ xs: '100%', md: '50%' }} marginTop={2}>
             <Typography variant="h7" component="div" sx={{ flexGrow: 1, fontSize: '1.5rem' }}>
               La única herramienta de gestión que necesitas para planificar y monitorizar las incidencias de salud en todos los equipos.
             </Typography>
+          </Box>
+          <Box width={{ xs: '100%' }} marginTop={2} sx={{ display: 'flex', justifyContent: 'center', flexWrap: 'wrap' }}>
+            <StaticCard texto="Monitoreo de incidencias de salud" />
+            <StaticCard texto="Gestión del estado de los colaboradores" />
+            <StaticCard texto="Optimización de procesos de atención médica" />
+            <StaticCard texto="Informes y análisis de datos de salud" />
           </Box>
         </Container>
       </motion.div>
