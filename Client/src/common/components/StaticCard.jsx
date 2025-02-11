@@ -2,7 +2,7 @@ import React from 'react'
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 
-const StaticCard = ({texto}) => {
+const StaticCard = ({text}) => {
   return (
     <Box sx={{
       width:'250px',
@@ -16,7 +16,7 @@ const StaticCard = ({texto}) => {
        backgroundColor: '#fff',
        boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)',}}>
       <Typography sx={{ padding: '1rem' }}>
-        {texto}
+        {text}
       </Typography>
     </Box>
   )
