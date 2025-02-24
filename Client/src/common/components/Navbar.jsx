@@ -14,7 +14,7 @@ export default function Navbar() {
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="static">
         <Toolbar sx = {{backgroundColor: "#fff"}}>
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1, color: "#1868DB", fontWeight: "700", fontSize: "1.5rem" }}>
+          <Typography component={Link} to="/" variant="h6" sx={{ flexGrow: 1, color: "#1868DB", fontWeight: "700", fontSize: "1.5rem",  textDecoration: 'none' }}>
             Medical 365
           </Typography>
             <div>
