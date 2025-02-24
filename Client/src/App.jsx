@@ -5,6 +5,7 @@ import Login from "./common/pages/Login";
 import Home from "./common/pages/Home";
 import NotFound from "./common/pages/NotFound";
 import PrivateRoute from "./common/components/PrivateRoute";
+import Tickets from "./tickets/pages/Tickets";
 
 const isLoggedIn = true;
 
@@ -21,7 +22,7 @@ function App() {
       </Route>
 
       <Route path='/tickets' element={<PrivateRoute requiredRoles={["admin", "basic"]} layout={MainLayout}/>}> {/* modify the layout depending on the module */}
-          <Route index element={<Login />} />
+          <Route index element={<Tickets />} />
           <Route path = 'example' element={<Login />} /> {/* add more routes, modify the path and the element */}
       </Route>
 
