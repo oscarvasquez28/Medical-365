@@ -1,25 +1,23 @@
 import mongoose from "mongoose";
 import DummyData from './DummyData.js'; //
 
-
 // Define the schema
-const symptomSchema = new mongoose.Schema({
+const riskSchema = new mongoose.Schema({
+    id: {
+        type: Number,
+        required: [true, 'ID is required'],
+        unique: true // Ensure the ID is unique
+    },
     description: {
         type: String,
         required: [true, 'Description is required']
-    },
-    risk: {
-        type: Number,
-        required: [true, 'Risk is required'],
-        min: [0, 'Risk cannot be less than 0'],
-        max: [10, 'Risk cannot be greater than 10']
     }
 });
 
-// Define the Symptom class
-export default class Symptom {
-    collection = 'Symptoms'; // Collection name
-    schema = symptomSchema; // Defined schema
+// Define the Risk class
+export default class Risk {
+    collection = 'Risks'; // Collection name
+    schema = riskSchema; // Defined schema
     data = DummyData; // Dummy data
     model = mongoose.model(this.collection, this.schema); // Mongoose model
 
@@ -37,24 +35,24 @@ export default class Symptom {
         }
     }
 
-    // Method to find symptoms by risk level
-    async findByRisk(risk) {
+    // Method to find a risk by ID
+    async findById(id) {
         try {
-            const symptoms = await this.model.find({ risk });
-            return symptoms;
+            const risk = await this.model.findOne({ id });
+            return risk;
         } catch (error) {
-            console.error('Error finding symptoms by risk:', error);
+            console.error('Error finding risk by ID:', error);
             throw error;
         }
     }
 
-    // Method to update the description of a symptom
+    // Method to update a risk description
     async updateDescription(id, newDescription) {
         try {
-            await this.model.findByIdAndUpdate(id, { description: newDescription });
-            console.log('Description updated successfully.');
+            await this.model.findOneAndUpdate({ id }, { description: newDescription });
+            console.log('Risk description updated successfully.');
         } catch (error) {
-            console.error('Error updating description:', error);
+            console.error('Error updating risk description:', error);
         }
     }
 }
