@@ -1,10 +1,12 @@
+import mongoose from "mongoose";
+import Connection from './Connection.js'
 
-const mongoose = require('mongoose');
-const Connection = require('./Connection.js');
+import dotenv from 'dotenv';
+dotenv.config();
 
-class Context {
 
-    mongoose = null;
+export default class Context {
+    mongoose = null;    
     connection = null;
 
     constructor() {
@@ -13,69 +15,78 @@ class Context {
     }
 
     async create(model, data) {
-        const Model = this.mongoose.model(model);
-        const newModel = new Model(data);
+        try {
+            const Model = this.mongoose.model(model);
+            const newModel = new Model(data);
+            await newModel.save();
+            console.log(`${model} saved successfully`);
+        } catch (err) {
+            console.error(`Error saving ${model}:`, err);
+        }
+    }
 
-        await newModel.save()
-            .then(() => console.log(`${model} saved successfully`))
-            .catch(err => console.error(`Error saving ${model}:`, err));
+    async createMany(model, data) {
+        try {
+            console.log('Saving', model);
+            const Model = this.mongoose.model(model);
+            await Model.insertMany(data);
+            console.log(`${model}s saved successfully`);
+        } catch (err) {
+            console.error(`Error saving ${model}s:`, err);
+        }
     }
 
     async select(model) {
-        const Model = this.mongoose.model(model);
-
-        await Model.find()
-            .then(models => console.log(`${model}s:`, models))
-            .catch(err => console.error(`Error querying ${model}s:`, err));
+        try {
+            const Model = this.mongoose.model(model);
+            const models = await Model.find();
+            console.log(`${model}s:`, models);
+        } catch (err) {
+            console.error(`Error querying ${model}s:`, err);
+        }
     }
 
     async update(model, filter, data) {
-        const Model = this.mongoose.model(model);
-
-        await Model.updateOne(filter, data)
-            .then(() => console.log(`${model} updated`))
-            .catch(err => console.error(`Error updating ${model}:`, err));
+        try {
+            const Model = this.mongoose.model(model);
+            await Model.updateOne(filter, data);
+            console.log(`${model} updated`);
+        } catch (err) {
+            console.error(`Error updating ${model}:`, err);
+        }
     }
 
     async delete(model, filter) {
-        const Model = this.mongoose.model(model);
-
-        await Model.deleteOne(filter)
-        .then(() => console.log(`${model} deleted`))
-        .catch(err => console.error(`Error deleting ${model}:`, err));
+        try {
+            const Model = this.mongoose.model(model);
+            await Model.deleteOne(filter);
+            console.log(`${model} deleted`);
+        } catch (err) {
+            console.error(`Error deleting ${model}:`, err);
+        }
     }
 
     async setUpSchema(model, schema) {
-        console.log('Setting up schema for', model);
-    
         try {
-
-            // Create a new Mongoose schema using the provided schema definition
+            console.log('Setting up schema for', model);
+            if (this.mongoose.modelNames().includes(model)) {
+                console.log(`Model ${model} already exists. Skipping schema setup.`);
+                return;
+            }
             const ModelSchema = new this.mongoose.Schema(schema);
-            // Create a Mongoose model using the schema
             this.mongoose.model(model, ModelSchema);
-            
         } catch (error) {
             console.error('Error setting up schema for', model, ':', error);
         }
     }
 
-    async preSave (model, callback) {
-        const Model = this.mongoose.model(model);
-        Model.pre('save', callback);
-    }
-
     async closeConnection() {
-        await context.Disconnect();
-        this.mongoose = null;
+        try {
+            await this.connection.disconnect();
+            this.mongoose = null;
+            console.log('Connection closed');
+        } catch (error) {
+            console.error('Error closing connection:', error);
+        }
     }
-
-
 }
-
-module.exports = Context;
-
-
-
-
-

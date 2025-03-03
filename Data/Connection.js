@@ -1,52 +1,72 @@
-class Connection {
+
+export default class Connection {
     #uri;
     #path;
 
+    static instance = null; // Static property to store the singleton instance
     mongooseContext = null; 
     connection = null;
 
-
     constructor(mongoose) {
-        if(this.Connection == null) {
-            this.mongooseContext = mongoose
-            this.#Initialize();
-            this.#Connect();
+        if (Connection.instance) {
+            return Connection.instance; // Return the existing instance if it exists
         }
-        else 
-            return this.mongooseContext;
+
+        this.mongooseContext = mongoose;
+        this.#Initialize();
+        this.#Connect();
+        Connection.instance = this; // Set the instance to the current object
     }
 
-    #Initialize(){
-        this.#uri = process.env.CONNEC TION_STRING_TO_DB;
+    #Initialize() {
+        console.log('Initializing Connection');
+
+        this.#uri = process.env.CONNECTION_STRING_TO_DB;
         this.#path = process.env.PATH_TO_CERTIFICATE;
+
+        console.log(this.#uri);
+        console.log(this.#path);
+
+
+        if (!this.#uri || !this.#path) {
+            throw new Error('Missing environment variables for database connection.');
+        }
     }
 
-    async #Connect(){
-
-        //It is necessary before to connect to the database set the environment variables and have a valid .pem file
-        
+    async #Connect() {
         console.log('Connecting to MongoDB Atlas with X.509 authentication');
-
         console.log('URI:', this.#uri);
         console.log('Path:', this.#path);
 
-        this.Connection = await this.mongooseContext.connect(this.#uri, {
-            tls: true,
-            tlsCertificateKeyFile: this.#path // Update this path to your .pem file
-        })
-        .
-        then(() => {
+        try {
+            this.connection = await this.mongooseContext.connect(this.#uri, {
+                tls: true,
+                tlsCertificateKeyFile: this.#path // Update this path to your .pem file
+            });
             console.log('Connected to MongoDB Atlas');
-        })
-        .catch((err) => {
+        } catch (err) {
             console.error('Error connecting to MongoDB Atlas:', err);
-        });
-        
+            throw err; // Rethrow the error to handle it in the caller
+        }
     }
 
-    async #Disconnect(){
-        await mongoose.disconnect();
+    async connect() {
+        if (!this.connection) {
+            await this.#Connect();
+        }
+        return this.connection;
     }
-} 
 
-module.exports = Connection;
+    async #Disconnect() {
+        if (this.connection) {  
+            await this.mongooseContext.disconnect();
+            console.log('Disconnected from MongoDB Atlas');
+            this.connection = null;
+        }
+    }
+
+    async disconnect() {
+        await this.#Disconnect();
+    }
+}
+
