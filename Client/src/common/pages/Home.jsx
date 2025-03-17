@@ -15,7 +15,7 @@ const Home = () => {
       animate={{ opacity: 1 }}
       transition={{ duration: 1 }}>
         <Dashboard />
-        <Container sx={{ marginTop: '4rem' }}>
+        <Container sx={{ marginTop: '4rem'}}>
           <Typography variant="h6">Mis módulos</Typography>
         </Container>
         <Box width={{ xs: '100%' }} marginTop={1} sx={{ display: 'flex', justifyContent: 'center', flexWrap: 'wrap' }}>
@@ -24,9 +24,21 @@ const Home = () => {
             text="Crea, asigna y da seguimiento a tareas e incidencias."
             route="/tickets" />
           <ModuleCard
-            title="Reportes"
+            title="Citas"
             text="Visualiza y genera informes detallados sobre el progreso y desempeño del proyecto."
+            route="/appointments" />
+          <ModuleCard
+            title="Reportes"
+            text="Gestiona y coordina a los miembros de la organización "
             route="/reports" />
+          <ModuleCard
+            title="Calendario"
+            text="Coordina y gestiona eventos y actividades importantes "
+            route="/calendar" />
+          <ModuleCard
+            title="Recursos"
+            text="Administra los recursos disponibles para tu equipo "
+            route="/resources" />
           <ModuleCard
             title="Colaboradores"
             text="Gestiona y coordina a los miembros de la organización "
