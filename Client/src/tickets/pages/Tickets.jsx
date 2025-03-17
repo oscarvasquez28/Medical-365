@@ -4,8 +4,10 @@ import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
 import DataTable from '../../common/components/DataTable'
 import TextField from '@mui/material/TextField'
+import Autocomplete from '@mui/material/Autocomplete';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import Grid2 from '@mui/material/Grid2'
-
+import CustomBreadcrumb from '../../common/components/CustomBreadcrumb'
 
 const columns = [
   { field: 'id', headerName: 'ID', width: 90 },
@@ -52,73 +54,78 @@ const rows = [
   { id: 11, lastName: 'Roxie', firstName: 'Harvey', age: 65 },
 ];
 
+const breadcrumbs = [
+  { label: 'Inicio', href: '/' },
+  { label: 'Tickets'}
+]
+
 const Tickets = () => {
   return (
     <>
     <Container>
     <Box sx={{ flexGrow: 1, mt: '2rem' }}>
-          <Grid2 container spacing={2}>
-            <Grid2 size={12}>
-              <TextField
-                id="outlined-basic"
-                label="Outlined"
-                variant="outlined"
-                fullWidth
-              />
-            </Grid2>
-            <Grid2 size={{xs: 6, sm: 6, md:6, lg: 3, xl: 3}}>
-              <TextField
-                id="outlined-basic"
-                label="Outlined"
-                variant="outlined"
-                fullWidth
-              />
-            </Grid2>
-            <Grid2 size={{xs: 6, sm: 6, md:6, lg: 3, xl: 3}}>
-              <TextField
-                id="outlined-basic"
-                label="Outlined"
-                variant="outlined"
-                fullWidth
-              />
-            </Grid2>
-            <Grid2 size={{xs: 6, sm: 6, md:6, lg: 3, xl: 3}}>
-              <TextField
-                id="outlined-basic"
-                label="Outlined"
-                variant="outlined"
-                fullWidth
-              />
-            </Grid2>
-            <Grid2 size={{xs: 6, sm: 6, md:6, lg: 3, xl: 3}}>
-              <TextField
-                id="outlined-basic"
-                label="Outlined"
-                variant="outlined"
-                fullWidth
-              />
-            </Grid2>
-          </Grid2>
-        </Box>
-      <DataTable
-        rows={rows}
-        columns={columns}
-      />
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', marginTop: '2rem' }}>
-        <NavigationButton
-          variant = {'outlined'}
-          Text='Regresar'
-          color={'info'}
-          Route={'/'}/>
-        <NavigationButton
-          variant = {'outlined'}
-          Text='Agregar Ticket'
-          color={'info'}
-          Route={'/'}/>
-      </Box>
-
+      <CustomBreadcrumb breadcrumbs={breadcrumbs}/>
+      <Grid2 container spacing={2} sx ={{ paddingTop: '1rem', borderRadius: '1rem'}}>
+        <Grid2 size={12}>
+          <TextField
+            id="outlined-basic"
+            label="Nombre del Ticket"
+            variant="outlined"
+            fullWidth
+          />
+        </Grid2>
+        <Grid2 size={{xs: 6, sm: 6, md:6, lg: 3, xl: 3}}>
+          <Autocomplete
+            disablePortal
+            // options={top100Films}
+            renderInput={(params) => <TextField {...params}
+            label="Colaborador" />}
+            fullWidth
+          />
+        </Grid2>
+        <Grid2 size={{xs: 6, sm: 6, md:6, lg: 3, xl: 3}}>
+        <Autocomplete
+            disablePortal
+            // options={top100Films}
+            renderInput={(params) => <TextField {...params} label="Tipo de Incidencia" />}
+            fullWidth
+          />
+        </Grid2>
+        <Grid2 size={{xs: 6, sm: 6, md:6, lg: 3, xl: 3}}>
+          <Autocomplete
+            disablePortal
+            // options={top100Films}
+            renderInput={(params) => <TextField {...params} label="Prioridad" />}
+            fullWidth
+          />
+        </Grid2>
+        <Grid2 size={{xs: 6, sm: 6, md:6, lg: 3, xl: 3}}>
+        <DatePicker
+          label="Fecha"
+          // value={value}
+          // onChange={(newValue) => setValue(newValue)}
+          sx={{ width: '100%' }}
+        />
+        </Grid2>
+      </Grid2>
+    </Box>
+    <DataTable
+      rows={rows}
+      columns={columns}
+    />
+    <Box sx={{ display: 'flex', justifyContent: 'space-between', marginTop: '2rem' }}>
+      <NavigationButton
+        variant = {'outlined'}
+        Text='Regresar'
+        color={'info'}
+        Route={'/'}/>
+      <NavigationButton
+        variant = {'outlined'}
+        Text='Agregar Ticket'
+        color={'info'}
+        Route={'addTicket'}/>
+    </Box>
     </Container>
-
     </>
   )
 }
