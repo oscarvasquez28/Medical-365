@@ -1,4 +1,5 @@
 import { Routes, Route } from "react-router-dom";
+import {useUser} from './Context/UserContext.jsx';
 import MainLayout from "./common/layouts/MainLayout";
 import GuestLayout from "./common/layouts/GuestLayout";
 import Login from "./common/pages/Login";
@@ -16,13 +17,13 @@ import AddAppointment from "./appointments/pages/AddAppointment";
 import AddResources from "./resources/pages/AddResources";
 import AddCollaborator from "./collaborators/pages/AddCollaborator";
 
-const isLoggedIn = true;
 
 function App() {
+  const { user } = useUser();
   return (
     <Routes>
-      <Route path="/" element={isLoggedIn ? <MainLayout /> : <GuestLayout />}>
-        <Route index element={isLoggedIn ? <Home /> : <Login />} />
+      <Route path="/" element={user.logged ? <MainLayout /> : <GuestLayout />}>
+        <Route index element={user.logged ? <Home /> : <Login />} />
       </Route>
 
       <Route path='/tickets' element={<PrivateRoute requiredRoles={["admin", "basic"]} layout={MainLayout}/>}> {/* modify the layout depending on the module */}
