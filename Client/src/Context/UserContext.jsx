@@ -16,6 +16,7 @@ export function UserProvider({ children }) {
       name: "",
       email: "",
       id: 0,
+      logged: false,
     };
   });
 

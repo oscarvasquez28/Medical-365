@@ -1,0 +1,127 @@
+// routes/collaboratorRoutes.js
+const express = require('express');
+const Collaborator = require('../models/Collaborator'); // Importa el modelo Collaborator
+const router = express.Router();
+const jwt = require('jsonwebtoken');
+
+router.post('/login', async (req, res) => {
+  const { email, password } = req.body;
+  try {
+    // Buscar al colaborador por email
+    const collaborator = await Collaborator.findOne({ email });
+    if (!collaborator) {
+      return res.status(400).json({ message: 'Credenciales incorrectas' });
+    }
+
+    // Verificar si la contraseña ingresada coincide con la encriptada en la base de datos
+    const isMatch = await collaborator.matchPassword(password);
+    if (!isMatch) {
+      return res.status(400).json({ message: 'contraseña incorrectas' });
+    }
+
+    // Si las credenciales son correctas, generar un token JWT
+    const token = jwt.sign(
+      { id: collaborator._id, email: collaborator.email },
+      'your_jwt_secret', // Cambia por una clave secreta segura
+      { expiresIn: '1h' } // El token expirará en 1 hora
+    );
+
+    res.status(200).json({
+      message: 'Login exitoso',
+      token,
+      collaborator: {
+        id: collaborator._id,
+        name: collaborator.name,
+        email: collaborator.email,
+        rol: collaborator.rol,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Error en el servidor', error });
+  }
+});
+
+// Ruta para crear un nuevo colaborador
+router.post('/', async (req, res) => {
+  try {
+    console.log(req.body);
+    const { name, lastname, rol, email, password, status, age, active } = req.body;
+
+    // Crea un nuevo colaborador
+    const newCollaborator = new Collaborator({
+      name,
+      lastname,
+      rol,
+      email,
+      password,
+      status,
+      age,
+      active,
+    });
+
+    // Guarda el colaborador en la base de datos
+    await newCollaborator.save();
+    res.status(201).json({ message: 'Colaborador creado con éxito', collaborator: newCollaborator });
+  } catch (err) {
+    res.status(400).json({ message: 'Error al crear el colaborador', error: err });
+  }
+});
+
+// routes/collaboratorRoutes.js
+router.get('/', async (req, res) => {
+  try {
+    const collaborators = await Collaborator.find(); // Obtiene todos los colaboradores
+    res.status(200).json(collaborators);
+  } catch (err) {
+    res.status(400).json({ message: 'Error al obtener los colaboradores', error: err });
+  }
+});
+
+// routes/collaboratorRoutes.js
+router.get('/collaborator/:id', async (req, res) => {
+  try {
+    const collaborator = await Collaborator.findById(req.params.id); // Busca un colaborador por ID
+    if (!collaborator) {
+      return res.status(404).json({ message: 'Colaborador no encontrado' });
+    }
+    res.status(200).json(collaborator);
+  } catch (err) {
+    res.status(400).json({ message: 'Error al obtener el colaborador', error: err });
+  }
+});
+
+// routes/collaboratorRoutes.js
+router.put('/collaborator/:id', async (req, res) => {
+  try {
+    const updatedCollaborator = await Collaborator.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true } // Devuelve el documento actualizado
+    );
+    if (!updatedCollaborator) {
+      return res.status(404).json({ message: 'Colaborador no encontrado' });
+    }
+    res.status(200).json({ message: 'Colaborador actualizado', collaborator: updatedCollaborator });
+  } catch (err) {
+    res.status(400).json({ message: 'Error al actualizar el colaborador', error: err });
+  }
+});
+
+// routes/collaboratorRoutes.js
+router.delete('/collaborator/:id', async (req, res) => {
+  try {
+    const deletedCollaborator = await Collaborator.findByIdAndDelete(req.params.id);
+    if (!deletedCollaborator) {
+      return res.status(404).json({ message: 'Colaborador no encontrado' });
+    }
+    res.status(200).json({ message: 'Colaborador eliminado', collaborator: deletedCollaborator });
+  } catch (err) {
+    res.status(400).json({ message: 'Error al eliminar el colaborador', error: err });
+  }
+});
+
+
+
+
+
+module.exports = router;

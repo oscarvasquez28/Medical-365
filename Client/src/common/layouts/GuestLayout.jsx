@@ -1,16 +1,16 @@
 import React from 'react'
 import { Outlet } from 'react-router-dom';
-import Navbar from '../components/Navbar'
+import GuestNavbar from '../components/GuestNavbar'
 import Footer from '../components/Footer';
 
-const MainLayout = () => {
+const GuestLayout = () => {
   return (
     <>
-      <Navbar />
+      <GuestNavbar />
       <Outlet /> {/* Aquí es donde se renderizarán las rutas hijas, como Home */}
       <Footer />
     </>
   )
 }
 
-export default MainLayout
+export default GuestLayout
