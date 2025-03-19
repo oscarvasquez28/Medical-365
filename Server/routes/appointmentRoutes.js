@@ -1,6 +1,6 @@
 // routes/appointmentRoutes.js
 import express from 'express';
-import Appointments from '../../Data/Appointments/Schema.js'; // Importa el modelo Appointment
+import Appointments from '../../Data/Citas/Esquema.js'; // Importa el modelo Citas
 
 const router = express.Router();
 const Appointment = new Appointments();
@@ -20,17 +20,17 @@ router.get('/', async (req, res) => {
 // Ruta para crear una cita
 router.post('/', async (req, res) => {
   try {
-    const { patient, doctor, risk, description, appointmentDate, lastColaboratorWhoModify, status } = req.body;
+    const { paciente, doctor, riesgo, descripcion, fechaCita, ultimoUsuarioEnModificar, estatus } = req.body;
 
     // Crear una nueva cita con los datos recibidos
-    const newAppointment = new Appointment({
-      patient,
+    const newAppointment = new Appointment.model({
+      paciente,
       doctor,
-      risk,
-      description,
-      appointmentDate,
-      lastColaboratorWhoModify,
-      status,
+      riesgo,
+      descripcion,
+      fechaCita,
+      ultimoUsuarioEnModificar,
+      estatus,
     });
 
     // Guardar la nueva cita en la base de datos

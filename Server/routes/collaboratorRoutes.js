@@ -1,6 +1,6 @@
 // routes/collaboratorRoutes.js
 import express from 'express';
-import Collaborators from '../../Data/Collaborators/Schema.js'; // Importa el modelo Collaborator
+import Collaborators from '../../Data/Colaboradores/Esquema.js'; // Importa el modelo Collaborator
 import jwt from 'jsonwebtoken';
 
 const router = express.Router();

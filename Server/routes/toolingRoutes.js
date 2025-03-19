@@ -1,0 +1,80 @@
+// routes/toolingRoutes.js
+import express from 'express';
+import Recursos from '../../Data/Recursos/Esquema.js';
+
+const router = express.Router();
+const Tooling = new Recursos();
+
+// Ruta para obtener todos los toolings
+router.get('/', async (req, res) => {
+    try {
+        const toolings = await Tooling.model.find();
+        res.status(200).json(toolings);
+    } catch (err) {
+        res.status(400).json({ message: 'Error al obtener los toolings', error: err });
+    }
+});
+
+// Ruta para obtener un tooling por ID
+router.get('/:id', async (req, res) => {
+    try {
+        const tooling = await Tooling.model.findById(req.params.id);
+        if (!tooling) {
+            return res.status(404).json({ message: 'Tooling no encontrado' });
+        }
+        res.status(200).json(tooling);
+    } catch (err) {
+        res.status(400).json({ message: 'Error al obtener el tooling', error: err });
+    }
+});
+
+// Ruta para crear un nuevo tooling
+router.post('/', async (req, res) => {
+    try {
+        const { nombre, version, descripcion, lastColaboratorWhoModified } = req.body;
+
+        const newTooling = new Tooling.model({
+            nombre,
+            version,
+            descripcion,
+            lastColaboratorWhoModified,
+        });
+
+        await newTooling.save();
+        res.status(201).json({ message: 'Tooling creado con éxito', tooling: newTooling });
+    } catch (err) {
+        res.status(400).json({ message: 'Error al crear el tooling', error: err });
+    }
+});
+
+// Ruta para actualizar un tooling por ID
+router.put('/:id', async (req, res) => {
+    try {
+        const updatedTooling = await Tooling.model.findByIdAndUpdate(
+            req.params.id,
+            { ...req.body, fechaActualizacion: Date.now() },
+            { new: true }
+        );
+        if (!updatedTooling) {
+            return res.status(404).json({ message: 'Tooling no encontrado' });
+        }
+        res.status(200).json({ message: 'Tooling actualizado', tooling: updatedTooling });
+    } catch (err) {
+        res.status(400).json({ message: 'Error al actualizar el tooling', error: err });
+    }
+});
+
+// Ruta para eliminar un tooling por ID
+router.delete('/:id', async (req, res) => {
+    try {
+        const deletedTooling = await Tooling.model.findByIdAndDelete(req.params.id);
+        if (!deletedTooling) {
+            return res.status(404).json({ message: 'Tooling no encontrado' });
+        }
+        res.status(200).json({ message: 'Tooling eliminado', tooling: deletedTooling });
+    } catch (err) {
+        res.status(400).json({ message: 'Error al eliminar el tooling', error: err });
+    }
+});
+
+export default router;
