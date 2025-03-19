@@ -3,7 +3,6 @@ import DatosDummy from './DatosDummy.js'; //
 
 export default class Citas {
     collection = 'Citas';
-    model = '';
     data = {};
 
     schema = new mongoose.Schema({
