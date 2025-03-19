@@ -1,9 +1,6 @@
 import mongoose from "mongoose";
 import Connection from './Connection.js'
 
-import dotenv from 'dotenv';
-dotenv.config();
-
 
 export default class Context {
     mongoose = null;    
