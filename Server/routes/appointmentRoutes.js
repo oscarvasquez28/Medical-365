@@ -1,12 +1,14 @@
 // routes/appointmentRoutes.js
-const express = require('express');
-const Appointment = require('../models/Appointment');
+import express from 'express';
+import Appointments from '../../Data/Appointments/Schema.js'; // Importa el modelo Appointment
+
 const router = express.Router();
+const Appointment = new Appointments();
 
 router.get('/', async (req, res) => {
   try {
     // Obtener todas las citas
-    const appointments = await Appointment.find();
+    const appointments = await Appointment.model.find();
 
     // Responder con las citas encontradas
     res.status(200).json(appointments);
@@ -47,7 +49,7 @@ router.get('/appointment/:folio', async (req, res) => {
     const { folio } = req.params; // Obtiene el folio desde los parámetros de la URL
 
     // Buscar la cita por folio
-    const appointment = await Appointment.findOne({ folio });
+    const appointment = await Appointment.model.findOne({ folio });
 
     if (!appointment) {
       return res.status(404).json({ message: 'Cita no encontrada' });
@@ -60,4 +62,4 @@ router.get('/appointment/:folio', async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

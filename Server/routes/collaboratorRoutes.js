@@ -1,14 +1,16 @@
 // routes/collaboratorRoutes.js
-const express = require('express');
-const Collaborator = require('../models/Collaborator'); // Importa el modelo Collaborator
+import express from 'express';
+import Collaborators from '../../Data/Collaborators/Schema.js'; // Importa el modelo Collaborator
+import jwt from 'jsonwebtoken';
+
 const router = express.Router();
-const jwt = require('jsonwebtoken');
+const Collaborator = new Collaborators();
 
 router.post('/login', async (req, res) => {
   const { email, password } = req.body;
   try {
     // Buscar al colaborador por email
-    const collaborator = await Collaborator.findOne({ email });
+    const collaborator = await Collaborator.model.findOne({ email });
     if (!collaborator) {
       return res.status(400).json({ message: 'Credenciales incorrectas' });
     }
@@ -48,7 +50,7 @@ router.post('/', async (req, res) => {
     const { name, lastname, rol, email, password, status, age, active } = req.body;
 
     // Crea un nuevo colaborador
-    const newCollaborator = new Collaborator({
+    const newCollaborator = new Collaborator.model({
       name,
       lastname,
       rol,
@@ -70,7 +72,7 @@ router.post('/', async (req, res) => {
 // routes/collaboratorRoutes.js
 router.get('/', async (req, res) => {
   try {
-    const collaborators = await Collaborator.find(); // Obtiene todos los colaboradores
+    const collaborators = await Collaborator.model.find(); // Obtiene todos los colaboradores
     res.status(200).json(collaborators);
   } catch (err) {
     res.status(400).json({ message: 'Error al obtener los colaboradores', error: err });
@@ -80,7 +82,7 @@ router.get('/', async (req, res) => {
 // routes/collaboratorRoutes.js
 router.get('/collaborator/:id', async (req, res) => {
   try {
-    const collaborator = await Collaborator.findById(req.params.id); // Busca un colaborador por ID
+    const collaborator = await Collaborator.model.findById(req.params.id); // Busca un colaborador por ID
     if (!collaborator) {
       return res.status(404).json({ message: 'Colaborador no encontrado' });
     }
@@ -93,7 +95,7 @@ router.get('/collaborator/:id', async (req, res) => {
 // routes/collaboratorRoutes.js
 router.put('/collaborator/:id', async (req, res) => {
   try {
-    const updatedCollaborator = await Collaborator.findByIdAndUpdate(
+    const updatedCollaborator = await Collaborator.model.findByIdAndUpdate(
       req.params.id,
       req.body,
       { new: true } // Devuelve el documento actualizado
@@ -110,7 +112,7 @@ router.put('/collaborator/:id', async (req, res) => {
 // routes/collaboratorRoutes.js
 router.delete('/collaborator/:id', async (req, res) => {
   try {
-    const deletedCollaborator = await Collaborator.findByIdAndDelete(req.params.id);
+    const deletedCollaborator = await Collaborator.model.findByIdAndDelete(req.params.id);
     if (!deletedCollaborator) {
       return res.status(404).json({ message: 'Colaborador no encontrado' });
     }
@@ -120,8 +122,4 @@ router.delete('/collaborator/:id', async (req, res) => {
   }
 });
 
-
-
-
-
-module.exports = router;
+export default router;
