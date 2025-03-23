@@ -31,13 +31,13 @@ router.get('/:id', async (req, res) => {
 // Ruta para crear un nuevo tooling
 router.post('/', async (req, res) => {
     try {
-        const { nombre, version, descripcion, lastColaboratorWhoModified } = req.body;
+        const { name, version, description, lastColaboratorWhoModified } = req.body;
 
         const newTooling = new Tooling.model({
-            nombre,
-            version,
-            descripcion,
-            lastColaboratorWhoModified,
+            nombre: name,
+            version: version,
+            descripcion: description,
+            lastColaboratorWhoModified: lastColaboratorWhoModified,
         });
 
         await newTooling.save();

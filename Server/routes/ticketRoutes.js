@@ -30,7 +30,17 @@ router.get('/:id', async (req, res) => {
 // Ruta para crear un nuevo ticket
 router.post('/', async (req, res) => {
     try {
-        const newTicket = new ticket.model(req.body);
+        const { patient, description, symptoms, incidence, risk, result, comments } = req.body;
+
+        const newTicket = new ticket.model({
+            paciente: patient,
+            descripcion: description,
+            sintomas: symptoms,
+            incidencia: incidence,
+            riesgo: risk,
+            resultado: result,
+            comentarios: comments
+        });
         await newTicket.save();
         res.status(201).json({ message: 'Ticket creado con éxito', ticket: newTicket });
     } catch (err) {
