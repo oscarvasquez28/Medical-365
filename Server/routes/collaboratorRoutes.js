@@ -10,7 +10,7 @@ router.post('/login', async (req, res) => {
   const { email, password } = req.body;
   try {
     // Buscar al colaborador por email
-    const collaborator = await Collaborator.model.findOne({ email });
+    const collaborator = await Collaborator.model.findOne({ correo: email });
     if (!collaborator) {
       return res.status(400).json({ message: 'Credenciales incorrectas' });
     }
@@ -18,7 +18,7 @@ router.post('/login', async (req, res) => {
     // Verificar si la contraseña ingresada coincide con la encriptada en la base de datos
     const isMatch = await collaborator.matchPassword(password);
     if (!isMatch) {
-      return res.status(400).json({ message: 'contraseña incorrectas' });
+      return res.status(400).json({ message: 'Credenciales incorrectas' });
     }
 
     // Si las credenciales son correctas, generar un token JWT
@@ -33,8 +33,8 @@ router.post('/login', async (req, res) => {
       token,
       collaborator: {
         id: collaborator._id,
-        name: collaborator.name,
-        email: collaborator.email,
+        name: collaborator.nombre,
+        email: collaborator.correo,
         rol: collaborator.rol,
       },
     });
@@ -47,18 +47,19 @@ router.post('/login', async (req, res) => {
 router.post('/', async (req, res) => {
   try {
     console.log(req.body);
-    const { name, lastname, rol, email, password, status, age, active } = req.body;
+    const { name, lastname, rol, password, email, status, gender, age, active } = req.body;
 
     // Crea un nuevo colaborador
     const newCollaborator = new Collaborator.model({
-      name,
-      lastname,
+      nombre: name,
+      apellido: lastname,
       rol,
-      email,
-      password,
-      status,
-      age,
-      active,
+      contrasena: password,
+      correo: email,
+      estatus: status,
+      genero: gender,
+      edad: age,
+      activo: active,
     });
 
     // Guarda el colaborador en la base de datos

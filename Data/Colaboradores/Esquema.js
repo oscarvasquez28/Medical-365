@@ -1,8 +1,9 @@
 import mongoose from "mongoose";
+import bcrypt from 'bcryptjs';
 import DatosDummy from './DatosDummy.js'; //
 
 // Define the schema
-const colaboratorSchema = new mongoose.Schema({
+const collaboratorSchema = new mongoose.Schema({
     nombre: {
         type: String,
         required: [true, 'Name is required']
@@ -10,6 +11,11 @@ const colaboratorSchema = new mongoose.Schema({
     apellido: {
         type: String,
         required: [true, 'Lastname is required']
+    },
+    contrasena: {
+        type: String,
+        required: [true, 'Password is required'],
+        // match: [/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,20}$/, 'Password must contain at least one digit, one lowercase and one uppercase letter and must be between 6 and 20 characters']
     },
     rol: {
         type: String,
@@ -56,10 +62,29 @@ const colaboratorSchema = new mongoose.Schema({
     }
 });
 
+// Middleware para encriptar la contraseña antes de guardar
+collaboratorSchema.pre('save', async function (next) {
+    if (!this.isModified('contrasena')) return next(); // Solo encriptar si la contraseña ha sido modificada
+  
+    try {
+      const salt = await bcrypt.genSalt(10);
+      this.contrasena = await bcrypt.hash(this.contrasena, salt);
+      console.log('Contraseña encriptada:', this.contrasena); // Imprimir la contraseña encriptada
+      next();
+    } catch (error) {
+      next(error);
+    }
+});
+
+// Método para comparar las contraseñas (compara la contraseña ingresada con la encriptada)
+collaboratorSchema.methods.matchPassword = async function (enteredPassword) {
+  return await bcrypt.compare(enteredPassword, this.contrasena);  // Compara las contraseñas
+};
+
 // Define the Colaborator class
 export default class Colaborator {
     collection = 'Colaboradores'; // Collection name
-    schema = colaboratorSchema; // Defined schema
+    schema = collaboratorSchema; // Defined schema
     model = mongoose.model(this.collection, this.schema);
     data = DatosDummy; // Mongoose model
 
