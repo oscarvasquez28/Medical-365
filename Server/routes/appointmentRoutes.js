@@ -1,12 +1,14 @@
 // routes/appointmentRoutes.js
-const express = require('express');
-const Appointment = require('../models/Appointment');
+import express from 'express';
+import Appointments from '../../Data/Citas/Esquema.js'; // Importa el modelo Citas
+
 const router = express.Router();
+const Appointment = new Appointments();
 
 router.get('/', async (req, res) => {
   try {
     // Obtener todas las citas
-    const appointments = await Appointment.find();
+    const appointments = await Appointment.model.find();
 
     // Responder con las citas encontradas
     res.status(200).json(appointments);
@@ -18,17 +20,17 @@ router.get('/', async (req, res) => {
 // Ruta para crear una cita
 router.post('/', async (req, res) => {
   try {
-    const { patient, doctor, risk, description, appointmentDate, lastColaboratorWhoModify, status } = req.body;
+    const { patient, doctor, risk, description, appointmentDate, lastModifiedBy, status } = req.body;
 
     // Crear una nueva cita con los datos recibidos
-    const newAppointment = new Appointment({
-      patient,
-      doctor,
-      risk,
-      description,
-      appointmentDate,
-      lastColaboratorWhoModify,
-      status,
+    const newAppointment = new Appointment.model({
+      paciente: patient,
+      doctor: doctor,
+      riesgo: risk,
+      descripcion: description,
+      fechaCita: appointmentDate,
+      ultimoUsuarioEnModificar: lastModifiedBy,
+      estatus: status,
     });
 
     // Guardar la nueva cita en la base de datos
@@ -47,7 +49,7 @@ router.get('/appointment/:folio', async (req, res) => {
     const { folio } = req.params; // Obtiene el folio desde los parámetros de la URL
 
     // Buscar la cita por folio
-    const appointment = await Appointment.findOne({ folio });
+    const appointment = await Appointment.model.findOne({ folio });
 
     if (!appointment) {
       return res.status(404).json({ message: 'Cita no encontrada' });
@@ -60,4 +62,4 @@ router.get('/appointment/:folio', async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;
