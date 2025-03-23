@@ -1,26 +1,26 @@
 const DatosDummy = [
     {
-        descripcion: 'Fever above 38°C',
+        descripcion: 'Fiebre por encima de 38°C',
         riesgo: 8
     },
     {
-        descripcion: 'Persistent cough',
+        descripcion: 'Tos persistente',
         riesgo: 7
     },
     {
-        descripcion: 'Shortness of breath',
+        descripcion: 'Dificultad para respirar',
         riesgo: 9
     },
     {
-        descripcion: 'Loss of taste or smell',
+        descripcion: 'Pérdida del gusto o del olfato',
         riesgo: 6
     },
     {
-        descripcion: 'Fatigue',
+        descripcion: 'Fatiga',
         riesgo: 5
     },
     {
-        descripcion: 'Headache',
+        descripcion: 'Dolor de cabeza',
         riesgo: 4
     }
 ];

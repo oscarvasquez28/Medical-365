@@ -1,24 +1,23 @@
 const DatosDummy = [
     {
         id: 1,
-        descripcion: 'Hardware failure',
-        riesgo: 1
+        descripcion: 'Reacción alérgica severa',
+        riesgo: 3
     },
     {
         id: 2,
-        descripcion: 'Software bug',
-        riesgo: 1
-        
+        descripcion: 'Error en la medicación',
+        riesgo: 2
     },
     {
         id: 3,
-        descripcion: 'Network issue',
-        riesgo: 1
+        descripcion: 'Infección postoperatoria',
+        riesgo: 3
     },
     {
         id: 4,
-        descripcion: 'Security breach',
-        riesgo: 1
+        descripcion: 'Caída del paciente',
+        riesgo: 2
     }
 ];
 
