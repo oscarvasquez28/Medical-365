@@ -21,7 +21,7 @@ const ticketSchema = new mongoose.Schema({
     },
     riesgo: {
         type: String,
-        enum: ['Low', 'Medium', 'High'],
+        enum: ['bajo', 'medio', 'alto'],
         required: [true, 'riesgo level is required']
     },
     fechaCreacion: {
