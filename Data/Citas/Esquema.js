@@ -8,7 +8,7 @@ export default class Citas {
     schema = new mongoose.Schema({
         folio: {
             type: String, // Changed to String to accommodate the generated value
-            required: true,
+            required: false, // Not required since it will be generated
             unique: true // Ensure caseFolio is unique
         },
         paciente: {
@@ -62,9 +62,9 @@ export default class Citas {
     #Init() {
         // Define pre-save middleware to generate caseFolio
         this.schema.pre('save', function (next) {
-            if (!this.caseFolio) {
+            if (!this.folio) {
                 // Generate caseFolio using fechaCreacion, patient, and doctor
-                this.caseFolio = `${this.fechaCreacion.getTime()}${this.patient}${this.doctor}`;
+                this.folio = `${this.fechaCreacion.getTime()}${this.paciente}${this.doctor}`;
             }
             next();
         });
