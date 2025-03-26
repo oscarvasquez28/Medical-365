@@ -24,47 +24,77 @@ import EditResource from "./resources/pages/EditResource.jsx";
 
 function App() {
   const { user } = useUser();
+
   return (
     <Routes>
-      <Route path="/" element={user.logged ? <MainLayout /> : <GuestLayout />}>
-        <Route index element={user.logged ? <Home /> : <Login />} />
-      </Route>
+      {/* Si el usuario no está autenticado */}
+      {!user.logged ? (
+        <>
+          <Route path="/" element={<GuestLayout />}>
+            <Route index element={<Login />} />
+          </Route>
+          <Route path="*" element={<NotFound />} /> {/* Redirige si la ruta no existe */}
+        </>
+      ) : (
+        <>
+          {/* Si el usuario está autenticado */}
+          <Route path="/" element={<MainLayout />}>
+            <Route index element={<Home />} />
+          </Route>
 
-      <Route path='/tickets' element={<PrivateRoute requiredRoles={["admin", "basic"]} layout={MainLayout}/>}> {/* modify the layout depending on the module */}
-          <Route index element={<Tickets />} />
-          <Route path = 'addTicket' element={<AddTicket />} /> {/* add more routes, modify the path and the element */}
-          <Route path = 'editTicket/:id' element={<EditTicket />} /> {/* add more routes, modify the path and the element */}
-      </Route>
+          <Route
+            path="/tickets"
+            element={<PrivateRoute requiredRoles={["admin", "basic"]} layout={MainLayout} />}
+          >
+            <Route index element={<Tickets />} />
+            <Route path="addTicket" element={<AddTicket />} />
+            <Route path="editTicket/:id" element={<EditTicket />} />
+          </Route>
 
-      <Route path='/appointments' element={<PrivateRoute requiredRoles={["admin", "basic"]} layout={MainLayout}/>}> {/* modify the layout depending on the module */}
-          <Route index element={<Appointments />} />
-          <Route path = 'addAppointment' element={<AddAppointment />} /> {/* add more routes, modify the path and the element */}
-          <Route path = 'editAppointment/:id' element={<EditAppointment />} /> {/* add more routes, modify the path and the element */}
-      </Route>
+          <Route
+            path="/appointments"
+            element={<PrivateRoute requiredRoles={["admin", "basic"]} layout={MainLayout} />}
+          >
+            <Route index element={<Appointments />} />
+            <Route path="addAppointment" element={<AddAppointment />} />
+            <Route path="editAppointment/:id" element={<EditAppointment />} />
+          </Route>
 
-      <Route path='/reports' element={<PrivateRoute requiredRoles={["admin", "basic"]} layout={MainLayout}/>}> {/* modify the layout depending on the module */}
-          <Route index element={<Reports />} />
-          <Route path = 'example' element={<Login />} /> {/* add more routes, modify the path and the element */}
-      </Route>
+          <Route
+            path="/reports"
+            element={<PrivateRoute requiredRoles={["admin", "basic"]} layout={MainLayout} />}
+          >
+            <Route index element={<Reports />} />
+          </Route>
 
-      <Route path='/calendar' element={<PrivateRoute requiredRoles={["admin", "basic"]} layout={MainLayout}/>}> {/* modify the layout depending on the module */}
-          <Route index element={<Calendar />} />
-          <Route path = 'example' element={<Login />} /> {/* add more routes, modify the path and the element */}
-      </Route>
+          <Route
+            path="/calendar"
+            element={<PrivateRoute requiredRoles={["admin", "basic"]} layout={MainLayout} />}
+          >
+            <Route index element={<Calendar />} />
+          </Route>
 
-      <Route path='/resources' element={<PrivateRoute requiredRoles={["admin", "basic"]} layout={MainLayout}/>}> {/* modify the layout depending on the module */}
-          <Route index element={<Resources />} />
-          <Route path = 'addResource' element={<AddResource />} /> {/* add more routes, modify the path and the element */}
-          <Route path = 'editResource/:id' element={<EditResource />} /> {/* add more routes, modify the path and the element */}
-      </Route>
+          <Route
+            path="/resources"
+            element={<PrivateRoute requiredRoles={["admin", "basic"]} layout={MainLayout} />}
+          >
+            <Route index element={<Resources />} />
+            <Route path="addResource" element={<AddResource />} />
+            <Route path="editResource/:id" element={<EditResource />} />
+          </Route>
 
-      <Route path='/collaborators' element={<PrivateRoute requiredRoles={["admin", "basic"]} layout={MainLayout}/>}> {/* modify the layout depending on the module */}
-          <Route index element={<Collaborators />} />
-          <Route path = 'addCollaborator' element={<AddCollaborator />} /> {/* add more routes, modify the path and the element */}
-          <Route path = 'editCollaborator/:id' element={<EditCollaborator />} /> {/* add more routes, modify the path and the element */}
-      </Route>
+          <Route
+            path="/collaborators"
+            element={<PrivateRoute requiredRoles={["admin", "basic"]} layout={MainLayout} />}
+          >
+            <Route index element={<Collaborators />} />
+            <Route path="addCollaborator" element={<AddCollaborator />} />
+            <Route path="editCollaborator/:id" element={<EditCollaborator />} />
+          </Route>
 
-      <Route path="*" element={<NotFound />} /> {/* redirect when route not found */}
+          <Route path="*" element={<NotFound />} /> {/* Redirige si la ruta no existe */}
+        </>
+      )}
     </Routes>
   );
 }
