@@ -22,6 +22,12 @@ const colaboratorSchema = new mongoose.Schema({
         unique: true,
         match: [/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/, 'Please enter a valid email']
     },
+    contraseña: {   
+        type: String,
+        required: [true, 'Password is required'],
+        match: [/^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/, 
+                'Password must be at least 8 characters long and include at least one letter, one number, and one special character']
+    },    
     genero: {
         type: String,
         enum: ['Hombre', 'Mujer'],
@@ -45,10 +51,13 @@ const colaboratorSchema = new mongoose.Schema({
         type: Date,
         default: null // Use null instead of a default date
     },
-    edad: {
+    fechaNaciemiento: {
+        type: Date,
+        default: null // Use null instead of a default date
+    },
+    departamento: {
         type: Number,
-        min: [0, 'Age cannot be less than 0'],
-        default: null // If not provided, it will be null
+        default: null // Use null instead of a default date
     },
     activo: {
         type: Number,

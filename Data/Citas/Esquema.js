@@ -12,7 +12,7 @@ export default class Citas {
             required: true,
             unique: true // Ensure caseFolio is unique
         },
-        paciente: {
+        ticket: {
             type: Number,
             required: true
         },
@@ -25,7 +25,7 @@ export default class Citas {
             enum: ['bajo', 'medio', 'alto'],
             required: true,
         },
-        descripcion: {
+        diagnostico: {
             type: String,
             required: true
         },

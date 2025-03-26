@@ -3,6 +3,10 @@ import DatosDummy from './DatosDummy.js'; //
 
 // Define the schema
 const ticketSchema = new mongoose.Schema({
+    nombre: {
+        type: String,
+        required: [true, 'Name is required']
+    },
     paciente: {
         type: Number,
         required: [true, 'Patient ID is required']
@@ -19,11 +23,11 @@ const ticketSchema = new mongoose.Schema({
         type: String,
         required: [true, 'incidencia is required']
     },
-    riesgo: {
-        type: String,
-        enum: ['Low', 'Medium', 'High'],
-        required: [true, 'riesgo level is required']
-    },
+    // riesgo: { //Se agrega dentro de cita
+    //     type: String,
+    //     enum: ['Low', 'Medium', 'High'],
+    //     required: [true, 'riesgo level is required']
+    // },
     fechaCreacion: {
         type: Date,
         default: Date.now,
@@ -33,13 +37,19 @@ const ticketSchema = new mongoose.Schema({
         type: Date,
         default: null // No default value, optional field
     },
-    resultado: {
-        type: String,
-        default: null // No default value, optional field
-    },
+    // resultado: { //Se agrega dentro de cita
+    //     type: String,
+    //     default: null // No default value, optional field
+    // },
     comentarios: {
         type: String,
         required: [true, 'comentarios are required']
+    },
+    estatus: {
+        type: String,
+        enum: ['pendiente', 'cerrado', 'cancelado'],
+        required: true,
+        default: 'pendiente'
     }
 });
 
