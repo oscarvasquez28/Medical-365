@@ -23,11 +23,11 @@ const ticketSchema = new mongoose.Schema({
         type: String,
         required: [true, 'incidencia is required']
     },
-    // riesgo: { //Se agrega dentro de cita
-    //     type: String,
-    //     enum: ['Low', 'Medium', 'High'],
-    //     required: [true, 'riesgo level is required']
-    // },
+    riesgo: {
+        type: String,
+        enum: ['bajo', 'medio', 'alto'],
+        required: [true, 'riesgo level is required']
+    },
     fechaCreacion: {
         type: Date,
         default: Date.now,

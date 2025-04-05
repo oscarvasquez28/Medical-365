@@ -1,6 +1,6 @@
 import dotenv from 'dotenv';
 // Load the .env file
-dotenv.config({ path: '../.env' });
+var result = dotenv.config({ path: 'Server/.env' });
 
 import Colaborator from './Esquema.js';
 import Contexto from '../Contexto.js';
