@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { Link } from 'react-router-dom';
+import { useUser } from '../../Context/UserContext'; // Importa el contexto
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
@@ -11,6 +12,7 @@ import MenuItem from '@mui/material/MenuItem';
 
 export default function Navbar() {
   const [anchorEl, setAnchorEl] = React.useState(null);
+  const { setUser } = useUser();
 
   const handleMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
@@ -22,6 +24,18 @@ export default function Navbar() {
 
   const handleLogout = () => {
     console.log('Cerrando sesión...');
+    // Elimina los datos del localStorage
+    localStorage.removeItem('user');
+
+    // Actualiza el contexto para restablecer el estado del usuario
+    setUser({
+      role: "basic",
+      name: "",
+      email: "",
+      id: 0,
+      logged: false,
+      token: "",
+    });
     handleMenuClose();
   };
 
