@@ -8,7 +8,19 @@ const ticket = new Ticket();
 router.get('/', async (req, res) => {
     try {
         const tickets = await ticket.model.find();
-        res.status(200).json(tickets);
+        const response = tickets.map(ticket => ({
+            id: ticket._id,
+            Nombre: ticket.nombre,
+            Paciente: ticket.paciente,
+            Descripcion: ticket.descripcion,
+            Sintomas: ticket.sintomas,
+            Incidencia: ticket.incidencia,
+            Riesgo: ticket.riesgo,
+            Comentarios: ticket.comentarios,
+            FechaDeCierre: ticket.fechaCierre,
+            Estatus: ticket.estatus
+        }));
+        res.status(200).json(response);
     } catch (err) {
         res.status(400).json({ message: 'Error al obtener los tickets', error: err });
     }
@@ -40,7 +52,6 @@ router.get('/:id', async (req, res) => {
         res.status(400).json({ message: 'Error al obtener el ticket', error: err });
     }
 });
-
 
 router.get('/status/list', async (_, res) => {
     try {

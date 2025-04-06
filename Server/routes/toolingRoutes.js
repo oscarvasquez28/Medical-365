@@ -9,7 +9,16 @@ const Tooling = new Recursos();
 router.get('/', async (req, res) => {
     try {
         const toolings = await Tooling.model.find();
-        res.status(200).json(toolings);
+        const response = toolings.map(tooling => ({
+            id: tooling._id,
+            Nombre: tooling.nombre,
+            Version: tooling.version,
+            Descripcion: tooling.descripcion,
+            FechaDeRegistro: tooling.fechaCreacion,
+            UltimoUsuarioEnModificar: tooling.ultimoUsuarioEnModificar,
+            Estado: tooling.estatus
+        }));
+        res.status(200).json(response);
     } catch (err) {
         res.status(400).json({ message: 'Error al obtener los toolings', error: err });
     }
