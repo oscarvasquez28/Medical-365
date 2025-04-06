@@ -17,6 +17,7 @@ router.get('/', async (req, res) => {
             Incidencia: ticket.incidencia,
             Riesgo: ticket.riesgo,
             Comentarios: ticket.comentarios,
+            FechaDeRegistro: ticket.fechaCreacion,
             FechaDeCierre: ticket.fechaCierre,
             Estatus: ticket.estatus
         }));

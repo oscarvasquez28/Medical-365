@@ -99,6 +99,18 @@ router.get('/roles/list', async (_, res) => {
   }
 });
 
+router.get('/genders/list', async (_, res) => {
+  try {
+    const response = Collaborator.model.schema.path('genero').enumValues.map(value => ({
+      value: value.toLowerCase(),
+      label: value
+    }));
+    res.status(200).json(response);
+  } catch (err) {
+    res.status(400).json({ message: 'Error al obtener los colaboradores', error: err });
+  }
+});
+
 router.get('/', async (req, res) => {
   try {
     const collaborators = await Collaborator.model.find(); // Obtiene todos los colaboradores
