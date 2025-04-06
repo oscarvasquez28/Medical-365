@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import {useUser} from './Context/UserContext.jsx';
 import MainLayout from "./common/layouts/MainLayout";
 import GuestLayout from "./common/layouts/GuestLayout";
@@ -33,7 +33,7 @@ function App() {
           <Route path="/" element={<GuestLayout />}>
             <Route index element={<Login />} />
           </Route>
-          <Route path="*" element={<NotFound />} /> {/* Redirige si la ruta no existe */}
+          <Route path="*" element={<Navigate to="/" replace />} /> {/* Redirige si la ruta no existe */}
         </>
       ) : (
         <>
@@ -44,7 +44,7 @@ function App() {
 
           <Route
             path="/tickets"
-            element={<PrivateRoute requiredRoles={["admin", "basic"]} layout={MainLayout} />}
+            element={<PrivateRoute requiredRoles={["admin", "user"]} layout={MainLayout} />}
           >
             <Route index element={<Tickets />} />
             <Route path="addTicket" element={<AddTicket />} />
@@ -53,7 +53,7 @@ function App() {
 
           <Route
             path="/appointments"
-            element={<PrivateRoute requiredRoles={["admin", "basic"]} layout={MainLayout} />}
+            element={<PrivateRoute requiredRoles={["admin", "user"]} layout={MainLayout} />}
           >
             <Route index element={<Appointments />} />
             <Route path="addAppointment" element={<AddAppointment />} />
@@ -62,21 +62,21 @@ function App() {
 
           <Route
             path="/reports"
-            element={<PrivateRoute requiredRoles={["admin", "basic"]} layout={MainLayout} />}
+            element={<PrivateRoute requiredRoles={["admin", "user"]} layout={MainLayout} />}
           >
             <Route index element={<Reports />} />
           </Route>
 
           <Route
             path="/calendar"
-            element={<PrivateRoute requiredRoles={["admin", "basic"]} layout={MainLayout} />}
+            element={<PrivateRoute requiredRoles={["admin", "user"]} layout={MainLayout} />}
           >
             <Route index element={<Calendar />} />
           </Route>
 
           <Route
             path="/resources"
-            element={<PrivateRoute requiredRoles={["admin", "basic"]} layout={MainLayout} />}
+            element={<PrivateRoute requiredRoles={["admin", "user"]} layout={MainLayout} />}
           >
             <Route index element={<Resources />} />
             <Route path="addResource" element={<AddResource />} />
@@ -85,7 +85,7 @@ function App() {
 
           <Route
             path="/collaborators"
-            element={<PrivateRoute requiredRoles={["admin", "basic"]} layout={MainLayout} />}
+            element={<PrivateRoute requiredRoles={["admin", "user"]} layout={MainLayout} />}
           >
             <Route index element={<Collaborators />} />
             <Route path="addCollaborator" element={<AddCollaborator />} />
