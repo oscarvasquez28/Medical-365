@@ -12,7 +12,7 @@ const collaboratorSchema = new mongoose.Schema({
         type: String,
         required: [true, 'Lastname is required']
     },
-    contrasena: {
+    contraseña: {
         type: String,
         required: [true, 'Password is required'],
         // match: [/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,20}$/, 'Password must contain at least one digit, one lowercase and one uppercase letter and must be between 6 and 20 characters']
@@ -56,10 +56,13 @@ const collaboratorSchema = new mongoose.Schema({
         type: Date,
         default: null // Use null instead of a default date
     },
-    edad: {
+    fechaNaciemiento: {
+        type: Date,
+        default: null // Use null instead of a default date
+    },
+    departamento: {
         type: Number,
-        min: [0, 'Age cannot be less than 0'],
-        default: null // If not provided, it will be null
+        default: null // Use null instead of a default date
     },
     activo: {
         type: Number,
