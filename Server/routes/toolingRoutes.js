@@ -14,6 +14,18 @@ router.get('/', async (req, res) => {
         res.status(400).json({ message: 'Error al obtener los toolings', error: err });
     }
 });
+router.get('/list', async (req, res) => {
+    try {
+        const toolings = await Tooling.model.find();
+        const response = toolings.map(tooling => ({
+            value: tooling._id,
+            label: tooling.nombre,
+        }));
+        res.status(200).json(response);
+    } catch (err) {
+        res.status(400).json({ message: 'Error al obtener los toolings', error: err });
+    }
+});
 
 // Ruta para obtener un tooling por ID
 router.get('/:id', async (req, res) => {
