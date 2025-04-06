@@ -14,6 +14,7 @@ router.get('/', async (req, res) => {
         res.status(400).json({ message: 'Error al obtener los riesgos', error: err });
     }
 });
+
 router.get('/list', async (req, res) => {
     try {
         const riesgos = await riesgo.model.find(); // Obtiene todos los riesgos

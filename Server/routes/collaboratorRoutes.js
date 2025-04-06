@@ -6,8 +6,11 @@ import jwt from 'jsonwebtoken';
 const router = express.Router();
 const Collaborator = new Collaborators();
 
+// routes/collaboratorRoutes.js
+
 router.post('/login', async (req, res) => {
   const { email, password } = req.body;
+
   try {
     // Buscar al colaborador por email
     const collaborator = await Collaborator.model.findOne({ correo: email });
@@ -38,6 +41,7 @@ router.post('/login', async (req, res) => {
         rol: collaborator.rol,
       },
     });
+
   } catch (error) {
     res.status(500).json({ message: 'Error en el servidor', error });
   }
@@ -71,7 +75,30 @@ router.post('/', async (req, res) => {
   }
 });
 
-// routes/collaboratorRoutes.js
+router.get('/status/list', async (_, res) => {
+  try {
+    const response = Collaborator.model.schema.path('estatus').enumValues.map(value => ({
+      value: value.toLowerCase(),
+      label: value
+    }));
+    res.status(200).json(response);
+  } catch (err) {
+    res.status(400).json({ message: 'Error al obtener los colaboradores', error: err });
+  }
+});
+
+router.get('/roles/list', async (_, res) => {
+  try {
+    const response = Collaborator.model.schema.path('rol').enumValues.map(value => ({
+      value: value.toLowerCase(),
+      label: value
+    }));
+    res.status(200).json(response);
+  } catch (err) {
+    res.status(400).json({ message: 'Error al obtener los colaboradores', error: err });
+  }
+});
+
 router.get('/', async (req, res) => {
   try {
     const collaborators = await Collaborator.model.find(); // Obtiene todos los colaboradores
@@ -89,6 +116,7 @@ router.get('/', async (req, res) => {
     res.status(400).json({ message: 'Error al obtener los colaboradores', error: err });
   }
 });
+
 router.get('/admin', async (req, res) => {
   try {
     const collaborators = await Collaborator.model.find(
@@ -109,7 +137,7 @@ router.get('/admin', async (req, res) => {
   }
 });
 
-// routes/collaboratorRoutes.js en formato value-label
+// Formato value-label
 router.get('/admin/list', async (req, res) => {
   try {
     const collaborators = await Collaborator.model.find(
@@ -125,7 +153,6 @@ router.get('/admin/list', async (req, res) => {
   }
 });
 
-// routes/collaboratorRoutes.js
 router.get('/collaborator/:id', async (req, res) => {
   try {
     const collaborator = await Collaborator.model.findById(req.params.id); // Busca un colaborador por ID
@@ -138,7 +165,6 @@ router.get('/collaborator/:id', async (req, res) => {
   }
 });
 
-// routes/collaboratorRoutes.js
 router.put('/collaborator/:id', async (req, res) => {
   try {
     const updatedCollaborator = await Collaborator.model.findByIdAndUpdate(
@@ -155,7 +181,6 @@ router.put('/collaborator/:id', async (req, res) => {
   }
 });
 
-// routes/collaboratorRoutes.js
 router.delete('/collaborator/:id', async (req, res) => {
   try {
     const deletedCollaborator = await Collaborator.model.findByIdAndDelete(req.params.id);
