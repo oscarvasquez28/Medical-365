@@ -14,6 +14,20 @@ router.get('/', async (req, res) => {
     }
 });
 
+// Ruta para obtener todos los tickets en formato value-label
+router.get('/list', async (req, res) => {
+    try {
+        const tickets = await ticket.model.find();
+        const response = tickets.map(ticket => ({
+            value: ticket._id,
+            label: `${ticket.paciente} - ${new Date(ticket.fechaCreacion).toLocaleDateString()}`,
+        }));
+        res.status(200).json(response);
+    } catch (err) {
+        res.status(400).json({ message: 'Error al obtener los tickets', error: err });
+    }
+});
+
 // Ruta para obtener un ticket por ID
 router.get('/:id', async (req, res) => {
     try {
