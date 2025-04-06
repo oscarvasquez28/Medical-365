@@ -72,12 +72,12 @@ const collaboratorSchema = new mongoose.Schema({
 
 // Middleware para encriptar la contraseña antes de guardar
 collaboratorSchema.pre('save', async function (next) {
-    if (!this.isModified('contrasena')) return next(); // Solo encriptar si la contraseña ha sido modificada
+    if (!this.isModified('contraseña')) return next(); // Solo encriptar si la contraseña ha sido modificada
   
     try {
       const salt = await bcrypt.genSalt(10);
-      this.contrasena = await bcrypt.hash(this.contrasena, salt);
-      console.log('Contraseña encriptada:', this.contrasena); // Imprimir la contraseña encriptada
+      this.contraseña = await bcrypt.hash(this.contraseña, salt);
+      console.log('Contraseña encriptada:', this.contraseña); // Imprimir la contraseña encriptada
       next();
     } catch (error) {
       next(error);
@@ -86,7 +86,7 @@ collaboratorSchema.pre('save', async function (next) {
 
 // Método para comparar las contraseñas (compara la contraseña ingresada con la encriptada)
 collaboratorSchema.methods.matchPassword = async function (enteredPassword) {
-  return await bcrypt.compare(enteredPassword, this.contrasena);  // Compara las contraseñas
+  return await bcrypt.compare(enteredPassword, this.contraseña);  // Compara las contraseñas
 };
 
 // Define the Colaborator class

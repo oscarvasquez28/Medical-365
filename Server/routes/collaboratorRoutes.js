@@ -47,19 +47,20 @@ router.post('/login', async (req, res) => {
 router.post('/', async (req, res) => {
   try {
     console.log(req.body);
-    const { name, lastname, rol, password, email, status, gender, age, active } = req.body;
+    const { name, lastName, password, role, email, gender, status, birthDate, department, active } = req.body;
 
     // Crea un nuevo colaborador
     const newCollaborator = new Collaborator.model({
       nombre: name,
-      apellido: lastname,
-      rol,
-      contrasena: password,
+      apellido: lastName,
+      contraseña: password,
+      rol: role,
       correo: email,
-      estatus: status,
       genero: gender,
-      edad: age,
-      activo: active,
+      estatus: status,
+      fechaNacimiento: birthDate,
+      departamento: department,
+      activo: active
     });
 
     // Guarda el colaborador en la base de datos
