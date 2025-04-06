@@ -44,6 +44,7 @@ export default function Home() {
         email: response.data.collaborator.email, // Email del usuario
         id: response.data.collaborator.id, // ID del usuario
         logged: true, // Cambia a true porque el usuario ha iniciado sesión
+        token: response.data.token, // Token de autenticación
       });
     } catch (error) {
       console.error(error);
