@@ -41,6 +41,19 @@ router.get('/:id', async (req, res) => {
     }
 });
 
+
+router.get('/status/list', async (_, res) => {
+    try {
+      const response = ticket.model.schema.path('estatus').enumValues.map(value => ({
+        value: value.toLowerCase(),
+        label: value
+      }));
+      res.status(200).json(response);
+    } catch (err) {
+      res.status(400).json({ message: 'Error al obtener los colaboradores', error: err });
+    }
+});
+
 // Ruta para crear un nuevo ticket
 router.post('/', async (req, res) => {
     try {
