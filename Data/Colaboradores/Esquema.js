@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import bcrypt from 'bcryptjs';
-import DatosDummy from './DatosDummy.js'; //
+import DatosDummy from './DatosDummy.js';
 
 // Define the schema
 const collaboratorSchema = new mongoose.Schema({
@@ -28,6 +28,11 @@ const collaboratorSchema = new mongoose.Schema({
         unique: true,
         match: [/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/, 'Please enter a valid email']
     },
+    // departamento: {
+    //     type: mongoose.Schema.Types.ObjectId,
+    //     ref: Departamento.collection, // Reference to the Department collection
+    //     required: [true, 'Department is required']
+    // },
     genero: {
         type: String,
         enum: ['Hombre', 'Mujer'],
