@@ -20,7 +20,7 @@ router.get('/list', async (req, res) => {
         const tickets = await ticket.model.find();
         const response = tickets.map(ticket => ({
             value: ticket._id,
-            label: `${ticket.paciente} - ${new Date(ticket.fechaCreacion).toLocaleDateString()}`,
+            label: ticket.nombre,
         }));
         res.status(200).json(response);
     } catch (err) {
@@ -44,16 +44,18 @@ router.get('/:id', async (req, res) => {
 // Ruta para crear un nuevo ticket
 router.post('/', async (req, res) => {
     try {
-        const { patient, description, symptoms, incidence, risk, result, comments } = req.body;
+        const { name, patient, description, symptoms, incidence, risk, comments, closeDate, estatus } = req.body;
 
         const newTicket = new ticket.model({
+            nombre: name,
             paciente: patient,
             descripcion: description,
             sintomas: symptoms,
             incidencia: incidence,
             riesgo: risk,
-            resultado: result,
-            comentarios: comments
+            comentarios: comments,
+            fechaCierre: closeDate || null,
+            estatus: estatus || 'pendiente'
         });
         await newTicket.save();
         res.status(201).json({ message: 'Ticket creado con éxito', ticket: newTicket });
