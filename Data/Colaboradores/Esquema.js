@@ -35,12 +35,14 @@ const collaboratorSchema = new mongoose.Schema({
     // },
     genero: {
         type: String,
-        enum: ['Hombre', 'Mujer'],
+        enum: ['Hombre', 'Mujer', 'Otro'],
+        default: 'Otro',
         required: [true, 'Gender is required']
     },
     estatus: {
-        type: Number,
-        min: [0, 'estatus cannot be less than 0'],
+        type: String,
+        enum: ["Inactivo", "Activo", "Suspendido"],
+        default: "Activo",
         required: [true, 'estatus is required']
     },
     fechaCreacion: {
