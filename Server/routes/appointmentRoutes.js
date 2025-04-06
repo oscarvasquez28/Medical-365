@@ -9,9 +9,18 @@ router.get('/', async (req, res) => {
   try {
     // Obtener todas las citas
     const appointments = await Appointment.model.find();
-
+    const response = appointments.map(appointment => ({
+      id: appointment._id,
+      Ticket: appointment.ticket,
+      Doctor: appointment.doctor,
+      Riesgo: appointment.riesgo,
+      Diagnostico: appointment.diagnostico,
+      FechaCita: appointment.fechaCita,
+      UltimoUsuarioEnModificar: appointment.ultimoUsuarioEnModificar,
+      Estatus: appointment.estatus,
+    }));
     // Responder con las citas encontradas
-    res.status(200).json(appointments);
+    res.status(200).json(response);
   } catch (err) {
     res.status(400).json({ message: 'Error al obtener las citas', error: err });
   }
