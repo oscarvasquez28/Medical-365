@@ -47,19 +47,20 @@ router.post('/login', async (req, res) => {
 router.post('/', async (req, res) => {
   try {
     console.log(req.body);
-    const { name, lastname, rol, password, email, status, gender, age, active } = req.body;
+    const { name, lastName, password, role, email, gender, status, birthDate, department, active } = req.body;
 
     // Crea un nuevo colaborador
     const newCollaborator = new Collaborator.model({
       nombre: name,
-      apellido: lastname,
-      rol,
-      contrasena: password,
+      apellido: lastName,
+      contraseña: password,
+      rol: role,
       correo: email,
-      estatus: status,
       genero: gender,
-      edad: age,
-      activo: active,
+      estatus: status,
+      fechaNacimiento: birthDate,
+      departamento: department,
+      activo: active
     });
 
     // Guarda el colaborador en la base de datos
@@ -74,7 +75,51 @@ router.post('/', async (req, res) => {
 router.get('/', async (req, res) => {
   try {
     const collaborators = await Collaborator.model.find(); // Obtiene todos los colaboradores
-    res.status(200).json(collaborators);
+    const response = collaborators.map(collaborator => ({
+      id: collaborator._id,
+      Nombre: collaborator.nombre,
+      Apellido: collaborator.apellido,
+      Correo: collaborator.correo,
+      FechaDeRegistro: collaborator.fechaCreacion,
+      FechaDeBaja: collaborator.fechaEliminacion,
+      Estado: collaborator.estatus
+    }));
+    res.status(200).json(response);
+  } catch (err) {
+    res.status(400).json({ message: 'Error al obtener los colaboradores', error: err });
+  }
+});
+router.get('/admin', async (req, res) => {
+  try {
+    const collaborators = await Collaborator.model.find(
+      { rol: 'admin' } // Filtra por rol de administrador
+    );
+    const response = collaborators.map(collaborator => ({
+      id: collaborator._id,
+      Nombre: collaborator.nombre,
+      Apellido: collaborator.apellido,
+      Correo: collaborator.correo,
+      FechaDeRegistro: collaborator.fechaCreacion,
+      FechaDeBaja: collaborator.fechaEliminacion,
+      Estado: collaborator.estatus
+    }));
+    res.status(200).json(response);
+  } catch (err) {
+    res.status(400).json({ message: 'Error al obtener los colaboradores', error: err });
+  }
+});
+
+// routes/collaboratorRoutes.js en formato value-label
+router.get('/admin/list', async (req, res) => {
+  try {
+    const collaborators = await Collaborator.model.find(
+      { rol: 'admin' } // Filtra por rol de administrador
+    );
+    const response = collaborators.map(collaborator => ({
+      value: collaborator._id,
+      label: `${collaborator.nombre} ${collaborator.apellido}`
+    }));
+    res.status(200).json(response);
   } catch (err) {
     res.status(400).json({ message: 'Error al obtener los colaboradores', error: err });
   }

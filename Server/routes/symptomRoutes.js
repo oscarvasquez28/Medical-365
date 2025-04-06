@@ -14,6 +14,19 @@ router.get('/', async (req, res) => {
         res.status(400).json({ message: 'Error al obtener los síntomas', error: err });
     }
 });
+router.get('/list', async (req, res) => {
+    try {
+        const sintomas = await sintoma.model.find();
+        const response = sintomas.map(sintoma => ({
+            value: sintoma._id,
+            label: sintoma.descripcion,
+            riesgo: sintoma.riesgo,
+        }));
+        res.status(200).json(response);
+    } catch (err) {
+        res.status(400).json({ message: 'Error al obtener los síntomas', error: err });
+    }
+});
 
 // Ruta para obtener un síntoma por ID
 router.get('/:id', async (req, res) => {

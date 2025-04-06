@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import bcrypt from 'bcryptjs';
-import DatosDummy from './DatosDummy.js'; //
+import DatosDummy from './DatosDummy.js';
 
 // Define the schema
 const collaboratorSchema = new mongoose.Schema({
@@ -12,7 +12,7 @@ const collaboratorSchema = new mongoose.Schema({
         type: String,
         required: [true, 'Lastname is required']
     },
-    contrasena: {
+    contraseña: {
         type: String,
         required: [true, 'Password is required'],
         // match: [/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,20}$/, 'Password must contain at least one digit, one lowercase and one uppercase letter and must be between 6 and 20 characters']
@@ -28,6 +28,11 @@ const collaboratorSchema = new mongoose.Schema({
         unique: true,
         match: [/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/, 'Please enter a valid email']
     },
+    // departamento: {
+    //     type: mongoose.Schema.Types.ObjectId,
+    //     ref: Departamento.collection, // Reference to the Department collection
+    //     required: [true, 'Department is required']
+    // },
     genero: {
         type: String,
         enum: ['Hombre', 'Mujer'],
@@ -51,10 +56,13 @@ const collaboratorSchema = new mongoose.Schema({
         type: Date,
         default: null // Use null instead of a default date
     },
-    edad: {
+    fechaNaciemiento: {
+        type: Date,
+        default: null // Use null instead of a default date
+    },
+    departamento: {
         type: Number,
-        min: [0, 'Age cannot be less than 0'],
-        default: null // If not provided, it will be null
+        default: null // Use null instead of a default date
     },
     activo: {
         type: Number,
@@ -64,12 +72,12 @@ const collaboratorSchema = new mongoose.Schema({
 
 // Middleware para encriptar la contraseña antes de guardar
 collaboratorSchema.pre('save', async function (next) {
-    if (!this.isModified('contrasena')) return next(); // Solo encriptar si la contraseña ha sido modificada
+    if (!this.isModified('contraseña')) return next(); // Solo encriptar si la contraseña ha sido modificada
   
     try {
       const salt = await bcrypt.genSalt(10);
-      this.contrasena = await bcrypt.hash(this.contrasena, salt);
-      console.log('Contraseña encriptada:', this.contrasena); // Imprimir la contraseña encriptada
+      this.contraseña = await bcrypt.hash(this.contraseña, salt);
+      console.log('Contraseña encriptada:', this.contraseña); // Imprimir la contraseña encriptada
       next();
     } catch (error) {
       next(error);
@@ -78,7 +86,7 @@ collaboratorSchema.pre('save', async function (next) {
 
 // Método para comparar las contraseñas (compara la contraseña ingresada con la encriptada)
 collaboratorSchema.methods.matchPassword = async function (enteredPassword) {
-  return await bcrypt.compare(enteredPassword, this.contrasena);  // Compara las contraseñas
+  return await bcrypt.compare(enteredPassword, this.contraseña);  // Compara las contraseñas
 };
 
 // Define the Colaborator class

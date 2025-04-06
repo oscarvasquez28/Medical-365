@@ -13,7 +13,11 @@ const toolingSchema = new mongoose.Schema({
     },
     descripcion: {
         type: String,
-        default: '' // Optional field, default is an empty string
+    },
+    estatus: {
+        type: String,
+        enum: ['active', 'inactive', 'pending'],
+        required: [true, 'estatus is required']
     },
     fechaCreacion: {
         type: Date,

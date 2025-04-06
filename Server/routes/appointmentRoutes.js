@@ -20,14 +20,14 @@ router.get('/', async (req, res) => {
 // Ruta para crear una cita
 router.post('/', async (req, res) => {
   try {
-    const { patient, doctor, risk, description, appointmentDate, lastModifiedBy, status } = req.body;
+    const { ticket, doctor, risk, diagnosis, appointmentDate, lastModifiedBy, status } = req.body;
 
     // Crear una nueva cita con los datos recibidos
     const newAppointment = new Appointment.model({
-      paciente: patient,
+      ticket: ticket,
       doctor: doctor,
       riesgo: risk,
-      descripcion: description,
+      diagnostico: diagnosis,
       fechaCita: appointmentDate,
       ultimoUsuarioEnModificar: lastModifiedBy,
       estatus: status,

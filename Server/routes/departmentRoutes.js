@@ -36,6 +36,18 @@ router.get('/', async (req, res) => {
     res.status(400).json({ message: 'Error al obtener los departamentos', error: err });
   }
 });
+router.get('/list', async (req, res) => {
+  try {
+    const departments = await Department.model.find(); // Obtiene todos los departamentos
+    const response = departments.map(department => ({
+      value: department._id,
+      label: department.descripcion
+    }));
+    res.status(200).json(response);
+  } catch (err) {
+    res.status(400).json({ message: 'Error al obtener los departamentos', error: err });
+  }
+});
 
 // Ruta para obtener un departamento por ID
 router.get('/department/:id', async (req, res) => {
