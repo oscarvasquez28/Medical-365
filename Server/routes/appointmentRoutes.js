@@ -1,9 +1,11 @@
 // routes/appointmentRoutes.js
 import express from 'express';
 import Appointments from '../../Data/Citas/Esquema.js'; // Importa el modelo Citas
+import Ticket from '../../Data/Tickets/Esquema.js'; // Importa el modelo Tickets
 
 const router = express.Router();
 const Appointment = new Appointments();
+const Tickets = new Ticket();
 
 router.get('/', async (req, res) => {
   try {
@@ -18,6 +20,56 @@ router.get('/', async (req, res) => {
       FechaCita: appointment.fechaCita,
       UltimoUsuarioEnModificar: appointment.ultimoUsuarioEnModificar,
       Estatus: appointment.estatus,
+    }));
+    // Responder con las citas encontradas
+    res.status(200).json(response);
+  } catch (err) {
+    res.status(400).json({ message: 'Error al obtener las citas', error: err });
+  }
+});
+
+router.get('/calendar/:id', async (req, res) => {
+  try {
+    const { id } = req.params; // Obtener el ID del paciente desde los parámetros de la URL
+
+    // Obtener todas las citas
+    const appointments = await Appointment.model.find();
+    const response = await Promise.all(
+      appointments.map(async (appointment) => {
+        const ticket = await Tickets.model.findById(appointment.ticket);
+        if (ticket && ticket.paciente === id) { // Filtrar por ID del paciente
+          return {
+            id: appointment._id,
+            title: ticket.name,
+            start: appointment.fechaCita,
+            end: appointment.fechaCita,
+            allDay: true,
+          };
+        }
+        return null;
+      })
+    );
+
+    // Filtrar las citas no nulas
+    const filteredResponse = response.filter(appointment => appointment !== null);
+
+    // Responder con las citas encontradas
+    res.status(200).json(filteredResponse);
+  } catch (err) {
+    res.status(400).json({ message: 'Error al obtener las citas', error: err });
+  }
+});
+
+router.get('/calendar', async (req, res) => {
+  try {
+    // Obtener todas las citas
+    const appointments = await Appointment.model.find();
+    const response = appointments.map(appointment => ({
+      id: appointment._id,
+      title: appointment.ticket,
+      start: appointment.fechaCita,
+      end: appointment.fechaCita,
+      allDay: true,
     }));
     // Responder con las citas encontradas
     res.status(200).json(response);
