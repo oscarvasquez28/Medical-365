@@ -1,7 +1,8 @@
 
 export default class Conexion {
     #uri;
-    #path;
+    #connectionStringCertificate;
+    #pathToCertificate;
 
     static instance = null; // Static property to store the singleton instance
     mongooseContexto = null; 
@@ -14,34 +15,51 @@ export default class Conexion {
 
         this.mongooseContexto = mongoose;
         this.#Initialize();
-        this.#Connect();
+        this.#ConnectByPassword();
         Conexion.instance = this; // Set the instance to the current object
     }
 
     #Initialize() {
         console.log('Initializing Conexion');
 
-        this.#uri = process.env.CONNECTION_STRING_TO_DB;
-        this.#path = process.env.PATH_TO_CERTIFICATE;
+        this.#uri = process.env.URI;
+        this.#connectionStringCertificate = process.env.CONNECTION_STRING_TO_CERTIFICATE;
+        this.#pathToCertificate = process.env.PATH_TO_CERTIFICATE;
 
         console.log(this.#uri);
-        console.log(this.#path);
+        console.log(this.#pathToCertificate);
 
 
-        if (!this.#uri || !this.#path) {
+        if (!this.#uri || !this.#pathToCertificate) {
             throw new Error('Missing environment variables for database Conexion.');
         }
     }
 
-    async #Connect() {
-        console.log('Connecting to MongoDB Atlas with X.509 authentication');
+    async #ConnectByPassword() {
+        console.log('Connecting to MongoDB Atlas with password authentication');
         console.log('URI:', this.#uri);
-        console.log('Path:', this.#path);
 
         try {
             this.Conexion = await this.mongooseContexto.connect(this.#uri, {
+                user: process.env.DB_USER,
+                pass: process.env.DB_PASSWORD
+            });
+            console.log('Connected to MongoDB Atlas');
+        } catch (err) {
+            console.error('Error connecting to MongoDB Atlas:', err);
+            throw err; // Rethrow the error to handle it in the caller
+        }
+    }
+
+    async #ConnectByCertifiacte() {
+        console.log('Connecting to MongoDB Atlas with X.509 authentication');
+        console.log('URI:', this.#connectionStringCertificate);
+        console.log('pathToCertificate:', this.#pathToCertificate);
+
+        try {
+            this.Conexion = await this.mongooseContexto.connect(this.#connectionStringCertificate, {
                 tls: true,
-                tlsCertificateKeyFile: this.#path // Update this path to your .pem file
+                tlsCertificateKeyFile: this.#pathToCertificate // Update this pathToCertificate to your .pem file
             });
             console.log('Connected to MongoDB Atlas');
         } catch (err) {
@@ -52,7 +70,7 @@ export default class Conexion {
 
     async connect() {
         if (!this.Conexion) {
-            await this.#Connect();
+            await this.#ConnectByPassword();
         }
         return this.Conexion;
     }
