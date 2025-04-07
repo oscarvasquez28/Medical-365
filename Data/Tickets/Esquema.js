@@ -11,10 +11,6 @@ const ticketSchema = new mongoose.Schema({
         type: String,
         required: [true, 'Patient ID is required']
     },
-    descripcion: {
-        type: String,
-        required: [true, 'descripcion is required']
-    },
     sintomas: {
         type: [String], // Array of strings
         required: [true, 'Sintomas are required']
