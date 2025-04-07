@@ -1,57 +1,75 @@
-import React from 'react'
+import { React, useState, useEffect } from 'react'
+import AppointmentsAPI from '../../services/AppointmentsAPI'
 import NavigationButton from '../../common/components/NavigationButton'
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
 import DataTable from '../../common/components/DataTable'
 import TextField from '@mui/material/TextField'
-import Autocomplete from '@mui/material/Autocomplete'
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import Grid2 from '@mui/material/Grid2'
+import Stack from '@mui/material/Stack'
+import MenuItem from '@mui/material/MenuItem'
 import CustomBreadcrumb from '../../common/components/CustomBreadcrumb'
 
 const columns = [
   { field: 'id', headerName: 'ID', width: 90 },
   {
-    field: 'firstName',
-    headerName: 'First name',
+    field: 'Ticket',
+    headerName: 'Ticket',
     width: 150,
-    editable: true,
   },
   {
-    field: 'lastName',
-    headerName: 'Last name',
+    field: 'Paciente',
+    headerName: 'Paciente',
+    width: 200,
+  },
+  {
+    field: 'Doctor',
+    headerName: 'Doctor',
     width: 150,
-    editable: true,
   },
   {
-    field: 'age',
-    headerName: 'Age',
-    type: 'number',
-    width: 110,
-    editable: true,
+    field: 'Riesgo',
+    headerName: 'Riesgo',
+    width: 120,
   },
   {
-    field: 'fullName',
-    headerName: 'Full name',
-    description: 'This column has a value getter and is not sortable.',
-    sortable: false,
+    field: 'Recurso',
+    headerName: 'Recurso',
+    width: 200,
+  },
+  {
+    field: 'UltimoUsuarioEnModificar',
+    headerName: 'Usuario Modificó',
+    width: 200,
+  },
+  {
+    field: 'Diagnostico',
+    headerName: 'Diagnóstico',
+    width: 200,
+  },
+  {
+    field: 'FechaCita',
+    headerName: 'Fecha de Cita',
+    width: 180,
+  },
+  {
+    field: 'Estatus',
+    headerName: 'Estatus',
+    width: 120,
+  },
+  {
+    field: 'actions',
+    headerName: 'Acciones',
     width: 160,
-    valueGetter: (value, row) => `${row.firstName || ''} ${row.lastName || ''}`,
+    renderCell: (params) => (
+      <NavigationButton
+        variant={'contained'}
+        Text='Editar'
+        color={'info'}
+        Route={`editAppointment/${params.id}`}
+      />
+    ),
   },
-];
-
-const rows = [
-  { id: 1, lastName: 'Snow', firstName: 'Jon', age: 14 },
-  { id: 2, lastName: 'Lannister', firstName: 'Cersei', age: 31 },
-  { id: 3, lastName: 'Lannister', firstName: 'Jaime', age: 31 },
-  { id: 4, lastName: 'Stark', firstName: 'Arya', age: 11 },
-  { id: 5, lastName: 'Targaryen', firstName: 'Daenerys', age: null },
-  { id: 6, lastName: 'Melisandre', firstName: 'Daenerys', age: 150 },
-  { id: 7, lastName: 'Clifford', firstName: 'Ferrara', age: 44 },
-  { id: 8, lastName: 'Frances', firstName: 'Rossini', age: 36 },
-  { id: 9, lastName: 'Roxie', firstName: 'Harvey', age: 65 },
-  { id: 10, lastName: 'Roxie', firstName: 'Harvey', age: 65 },
-  { id: 11, lastName: 'Roxie', firstName: 'Harvey', age: 65 },
 ];
 
 const breadcrumbs = [
@@ -60,56 +78,72 @@ const breadcrumbs = [
 ]
 
 const Appointments = () => {
+  const [appointments, setAppointments] = useState([]);
+
+  useEffect(() => {
+    getAppointments();
+  }, []);
+
+  async function getAppointments() {
+    try {
+      const {data} = await AppointmentsAPI.getAppointmentsTable();
+      setAppointments(data);
+      console.log(data);
+    } catch (error) {
+      console.error(error);
+      setAppointments([]);
+    }
+  }
   return (
     <>
     <Container>
     <Box sx={{ flexGrow: 1, mt: '2rem' }}>
       <CustomBreadcrumb breadcrumbs={breadcrumbs}/>
-      <Grid2 container spacing={2}>
-        <Grid2 size={12}>
-          <TextField
-            id="outlined-basic"
-            label="Recurso"
-            variant="outlined"
-            fullWidth
-          />
-        </Grid2>
-        <Grid2 size={{xs: 6, sm: 6, md:6, lg: 3, xl: 3}}>
-          <Autocomplete
-            disablePortal
-            // options={top100Films}
-            renderInput={(params) => <TextField {...params} label="Colaborador" />}
-            fullWidth
-          />
-        </Grid2>
-        <Grid2 size={{xs: 6, sm: 6, md:6, lg: 3, xl: 3}}>
-          <TextField
-            id="outlined-basic"
-            label="Outlined"
-            variant="outlined"
-            fullWidth
-          />
-        </Grid2>
-        <Grid2 size={{xs: 6, sm: 6, md:6, lg: 3, xl: 3}}>
-          <TextField
-            id="outlined-basic"
-            label="Outlined"
-            variant="outlined"
-            fullWidth
-          />
-        </Grid2>
-        <Grid2 size={{xs: 6, sm: 6, md:6, lg: 3, xl: 3}}>
-          <DatePicker
-            label="Fecha"
-            // value={value}
-            // onChange={(newValue) => setValue(newValue)}
-            sx={{ width: '100%' }}
-          />
-        </Grid2>
-      </Grid2>
+      <Stack direction={{ xs: 'row', sm: 'row' }} spacing={3} >
+        <TextField
+          id="outlined-basic"
+          label="Ticket"
+          variant="outlined"
+          fullWidth
+        />
+      </Stack>
+      <Stack direction={{ xs: 'col', sm: 'row' }} spacing={3} sx={{ paddingTop: 3, borderRadius: '1rem'}}>
+        <TextField
+          id="doctor"
+          label="Doctor"
+          select
+          fullWidth
+        >
+          <MenuItem value="idCollaborator1">Dr. Oscar Vásquez</MenuItem>
+          <MenuItem value="idCollaborator2">Dr. Max Zertuche</MenuItem>
+          <MenuItem value="idCollaborator3">Dr. Carlos Pecina</MenuItem>
+        </TextField>
+        <TextField
+          id="departamento"
+          label="Riesgo"
+          select
+          fullWidth
+        >
+          <MenuItem value="Alto">Alto</MenuItem>
+          <MenuItem value="Medio">Medio</MenuItem>
+          <MenuItem value="Bajo">Bajo</MenuItem>
+        </TextField>
+        <DatePicker
+          label="Fecha Inicio"
+          // value={value}
+          // onChange={(newValue) => setValue(newValue)}
+          sx={{ width: '100%' }}
+        />
+                <DatePicker
+          label="Fecha Fin"
+          // value={value}
+          // onChange={(newValue) => setValue(newValue)}
+          sx={{ width: '100%' }}
+        />
+      </Stack>
     </Box>
     <DataTable
-      rows={rows}
+      rows={appointments}
       columns={columns}
     />
     <Box sx={{ display: 'flex', justifyContent: 'space-between', marginTop: '2rem' }}>

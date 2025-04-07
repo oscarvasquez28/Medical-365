@@ -1,56 +1,53 @@
-import React from 'react'
+import { React, useState, useEffect } from 'react'
+import ResourcesAPI from '../../services/ResourcesAPI'
 import NavigationButton from '../../common/components/NavigationButton'
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
 import DataTable from '../../common/components/DataTable'
 import TextField from '@mui/material/TextField'
-import Autocomplete from '@mui/material/Autocomplete'
-import Grid2 from '@mui/material/Grid2'
+import MenuItem from '@mui/material/MenuItem'
+import Stack from '@mui/material/Stack'
 import CustomBreadcrumb from '../../common/components/CustomBreadcrumb'
 
 const columns = [
   { field: 'id', headerName: 'ID', width: 90 },
   {
-    field: 'firstName',
-    headerName: 'First name',
+    field: 'Nombre',
+    headerName: 'Nombre',
     width: 150,
-    editable: true,
   },
   {
-    field: 'lastName',
-    headerName: 'Last name',
+    field: 'Version',
+    headerName: 'Versión',
     width: 150,
-    editable: true,
   },
   {
-    field: 'age',
-    headerName: 'Age',
-    type: 'number',
-    width: 110,
-    editable: true,
+    field: 'Descripcion',
+    headerName: 'Descripción',
+    width: 200,
   },
   {
-    field: 'fullName',
-    headerName: 'Full name',
-    description: 'This column has a value getter and is not sortable.',
-    sortable: false,
+    field: 'FechaDeRegistro',
+    headerName: 'Fecha de Registro',
+    width: 180,
+  },
+  {
+    field: 'Estado',
+    headerName: 'Estado',
+    width: 150,
+  },
+  {
+    field: 'actions',
+    headerName: 'Acciones',
     width: 160,
-    valueGetter: (value, row) => `${row.firstName || ''} ${row.lastName || ''}`,
-  },
-];
-
-const rows = [
-  { id: 1, lastName: 'Snow', firstName: 'Jon', age: 14 },
-  { id: 2, lastName: 'Lannister', firstName: 'Cersei', age: 31 },
-  { id: 3, lastName: 'Lannister', firstName: 'Jaime', age: 31 },
-  { id: 4, lastName: 'Stark', firstName: 'Arya', age: 11 },
-  { id: 5, lastName: 'Targaryen', firstName: 'Daenerys', age: null },
-  { id: 6, lastName: 'Melisandre', firstName: 'Daenerys', age: 150 },
-  { id: 7, lastName: 'Clifford', firstName: 'Ferrara', age: 44 },
-  { id: 8, lastName: 'Frances', firstName: 'Rossini', age: 36 },
-  { id: 9, lastName: 'Roxie', firstName: 'Harvey', age: 65 },
-  { id: 10, lastName: 'Roxie', firstName: 'Harvey', age: 65 },
-  { id: 11, lastName: 'Roxie', firstName: 'Harvey', age: 65 },
+    renderCell: (params) => (
+        <NavigationButton
+          variant={'contained'}
+          Text='Editar'
+          color={'info'}
+          Route={`editResource/${params.row.id}`}/>
+    ),
+  }
 ];
 
 const breadcrumbs = [
@@ -59,56 +56,47 @@ const breadcrumbs = [
 ]
 
 const Resources = () => {
+  const [resource, setResource] = useState([]);
+
+    useEffect(() => {
+      getResources();
+    }, []);
+
+    async function getResources() {
+      try {
+        const {data} = await ResourcesAPI.getToolings();
+        setResource(data);
+        console.log(data);
+      } catch (error) {
+        console.error(error);
+        setResource([]);
+      }
+    }
+
   return (
     <>
     <Container>
     <Box sx={{ flexGrow: 1, mt: '2rem' }}>
       <CustomBreadcrumb breadcrumbs={breadcrumbs}/>
-      <Grid2 container spacing={2}>
-        <Grid2 size={12}>
-          <TextField
-            id="outlined-basic"
-            label="Recurso"
-            variant="outlined"
-            fullWidth
-          />
-        </Grid2>
-        <Grid2 size={{xs: 6, sm: 6, md:6, lg: 3, xl: 3}}>
-          <Autocomplete
-            disablePortal
-            // options={top100Films}
-            renderInput={(params) => <TextField {...params} label="Departamento" />}
-            fullWidth
-          />
-        </Grid2>
-        <Grid2 size={{xs: 6, sm: 6, md:6, lg: 3, xl: 3}}>
-          <TextField
-            id="outlined-basic"
-            label="Outlined"
-            variant="outlined"
-            fullWidth
-          />
-        </Grid2>
-        <Grid2 size={{xs: 6, sm: 6, md:6, lg: 3, xl: 3}}>
-          <TextField
-            id="outlined-basic"
-            label="Outlined"
-            variant="outlined"
-            fullWidth
-          />
-        </Grid2>
-        <Grid2 size={{xs: 6, sm: 6, md:6, lg: 3, xl: 3}}>
-          <TextField
-            id="outlined-basic"
-            label="Outlined"
-            variant="outlined"
-            fullWidth
-          />
-        </Grid2>
-      </Grid2>
+      <Stack direction={{ xs: 'col', sm: 'row' }} spacing={3} sx={{ paddingTop: 3, borderRadius: '1rem'}}>
+        <TextField
+          id="nombre"
+          label="Nombre"
+          fullWidth
+        />
+        <TextField
+          id="estatus"
+          label="Estatus"
+          select
+          fullWidth
+        >
+          <MenuItem value="activo">Activo</MenuItem>
+          <MenuItem value="inactivo">Inactivo</MenuItem>
+        </TextField>
+      </Stack>
     </Box>
     <DataTable
-      rows={rows}
+      rows={resource}
       columns={columns}
     />
     <Box sx={{ display: 'flex', justifyContent: 'space-between', marginTop: '2rem' }}>
@@ -121,7 +109,7 @@ const Resources = () => {
         variant = {'outlined'}
         Text='Agregar Recurso'
         color={'info'}
-        Route={'addResources'}/>
+        Route={'addResource'}/>
     </Box>
     </Container>
     </>
