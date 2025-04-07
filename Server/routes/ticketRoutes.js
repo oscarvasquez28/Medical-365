@@ -12,7 +12,6 @@ router.get('/', async (req, res) => {
             id: ticket._id,
             Nombre: ticket.nombre,
             Paciente: ticket.paciente,
-            Descripcion: ticket.descripcion,
             Sintomas: ticket.sintomas,
             Incidencia: ticket.incidencia,
             Riesgo: ticket.riesgo,
@@ -69,12 +68,11 @@ router.get('/status/list', async (_, res) => {
 // Ruta para crear un nuevo ticket
 router.post('/', async (req, res) => {
     try {
-        const { name, patient, description, symptoms, incidence, risk, comments, closeDate, estatus } = req.body;
+        const { name, patient, symptoms, incidence, risk, comments, closeDate, estatus } = req.body;
 
         const newTicket = new ticket.model({
             nombre: name,
             paciente: patient,
-            descripcion: description,
             sintomas: symptoms,
             incidencia: incidence,
             riesgo: risk || null,
