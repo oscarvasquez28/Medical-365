@@ -20,6 +20,7 @@ const ticketSchema = new mongoose.Schema({
     ],
     incidencia: {
         type: mongoose.Schema.Types.ObjectId,
+        ref: 'Incidencia', // Reference to the Incidencia model
         required: [true, 'Incidencia is required']
     },
     riesgo: {
