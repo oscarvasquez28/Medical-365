@@ -9,11 +9,44 @@ const Tooling = new Recursos();
 router.get('/', async (req, res) => {
     try {
         const toolings = await Tooling.model.find();
-        res.status(200).json(toolings);
+        const response = toolings.map(tooling => ({
+            id: tooling._id,
+            Nombre: tooling.nombre,
+            Version: tooling.version,
+            Descripcion: tooling.descripcion,
+            FechaDeRegistro: tooling.fechaCreacion,
+            UltimoUsuarioEnModificar: tooling.ultimoUsuarioEnModificar,
+            Estado: tooling.estatus
+        }));
+        res.status(200).json(response);
     } catch (err) {
         res.status(400).json({ message: 'Error al obtener los toolings', error: err });
     }
 });
+
+router.get('/list', async (req, res) => {
+    try {
+        const toolings = await Tooling.model.find();
+        const response = toolings.map(tooling => ({
+            value: tooling._id,
+            label: tooling.nombre,
+        }));
+        res.status(200).json(response);
+    } catch (err) {
+        res.status(400).json({ message: 'Error al obtener los toolings', error: err });
+    }
+});
+
+router.get('/status/list', async (req, res) => {
+    try {
+        const response = Tooling.model.schema.path('estatus').enumValues.map(value => ({
+            value: value,
+            label: value
+        }));
+        res.status(200).json(response);
+    } catch (err) {
+        res.status(400).json({ message: 'Error al obtener los toolings', error: err });
+    }});
 
 // Ruta para obtener un tooling por ID
 router.get('/:id', async (req, res) => {
@@ -50,9 +83,17 @@ router.post('/', async (req, res) => {
 // Ruta para actualizar un tooling por ID
 router.put('/:id', async (req, res) => {
     try {
+        const { name, version, description, lastColaboratorWhoModified, status } = req.body;
         const updatedTooling = await Tooling.model.findByIdAndUpdate(
             req.params.id,
-            { ...req.body, fechaActualizacion: Date.now() },
+            {
+                ...(name && { nombre: name }),
+                ...(version && { version: version }),
+                ...(description && { descripcion: description }),
+                ...(lastColaboratorWhoModified && { ultimoUsuarioEnModificar: lastColaboratorWhoModified }),
+                ...(status && { estatus: status }),
+                fechaActualizacion: Date.now()
+            },
             { new: true }
         );
         if (!updatedTooling) {

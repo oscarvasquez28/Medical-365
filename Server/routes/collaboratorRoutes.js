@@ -6,8 +6,11 @@ import jwt from 'jsonwebtoken';
 const router = express.Router();
 const Collaborator = new Collaborators();
 
+// routes/collaboratorRoutes.js
+
 router.post('/login', async (req, res) => {
   const { email, password } = req.body;
+
   try {
     // Buscar al colaborador por email
     const collaborator = await Collaborator.model.findOne({ correo: email });
@@ -24,8 +27,8 @@ router.post('/login', async (req, res) => {
     // Si las credenciales son correctas, generar un token JWT
     const token = jwt.sign(
       { id: collaborator._id, email: collaborator.email },
-      'your_jwt_secret', // Cambia por una clave secreta segura
-      { expiresIn: '1h' } // El token expirará en 1 hora
+      process.env.JWT_SECRET, // Cambia por una clave secreta segura
+      { expiresIn: '15m' } // El token expira en 15 minutos
     );
 
     res.status(200).json({
@@ -38,6 +41,7 @@ router.post('/login', async (req, res) => {
         rol: collaborator.rol,
       },
     });
+
   } catch (error) {
     res.status(500).json({ message: 'Error en el servidor', error });
   }
@@ -47,19 +51,20 @@ router.post('/login', async (req, res) => {
 router.post('/', async (req, res) => {
   try {
     console.log(req.body);
-    const { name, lastname, rol, password, email, status, gender, age, active } = req.body;
+    const { name, lastName, password, role, email, gender, status, birthDate, department, active } = req.body;
 
     // Crea un nuevo colaborador
     const newCollaborator = new Collaborator.model({
       nombre: name,
-      apellido: lastname,
-      rol,
-      contrasena: password,
+      apellido: lastName,
+      contraseña: password,
+      rol: role,
       correo: email,
-      estatus: status,
       genero: gender,
-      edad: age,
-      activo: active,
+      estatus: status,
+      fechaNacimiento: birthDate,
+      departamento: department,
+      activo: active
     });
 
     // Guarda el colaborador en la base de datos
@@ -70,47 +75,187 @@ router.post('/', async (req, res) => {
   }
 });
 
-// routes/collaboratorRoutes.js
-router.get('/', async (req, res) => {
+router.get('/status/list', async (_, res) => {
   try {
-    const collaborators = await Collaborator.model.find(); // Obtiene todos los colaboradores
-    res.status(200).json(collaborators);
+    const response = Collaborator.model.schema.path('estatus').enumValues.map(value => ({
+      value: value,
+      label: value
+    }));
+    res.status(200).json(response);
   } catch (err) {
     res.status(400).json({ message: 'Error al obtener los colaboradores', error: err });
   }
 });
 
-// routes/collaboratorRoutes.js
-router.get('/collaborator/:id', async (req, res) => {
+router.get('/roles/list', async (_, res) => {
+  try {
+    const response = Collaborator.model.schema.path('rol').enumValues.map(value => ({
+      value: value,
+      label: value
+    }));
+    res.status(200).json(response);
+  } catch (err) {
+    res.status(400).json({ message: 'Error al obtener los colaboradores', error: err });
+  }
+});
+
+router.get('/genders/list', async (_, res) => {
+  try {
+    const response = Collaborator.model.schema.path('genero').enumValues.map(value => ({
+      value: value,
+      label: value
+    }));
+    res.status(200).json(response);
+  } catch (err) {
+    res.status(400).json({ message: 'Error al obtener los colaboradores', error: err });
+  }
+});
+
+router.get('/', async (req, res) => {
+  try {
+    const collaborators = await Collaborator.model.find(); // Obtiene todos los colaboradores
+    const response = collaborators.map(collaborator => ({
+      id: collaborator._id,
+      Nombre: collaborator.nombre,
+      Apellido: collaborator.apellido,
+      Correo: collaborator.correo,
+      FechaDeNacimiento: collaborator.fechaNacimiento,
+      Genero: collaborator.genero,
+      Contraseña: collaborator.contraseña,
+      Rol: collaborator.rol,
+      Departamento: collaborator.departamento,
+      FechaDeRegistro: collaborator.fechaCreacion,
+      FechaDeBaja: collaborator.fechaEliminacion,
+      Estado: collaborator.estatus
+    }));
+    res.status(200).json(response);
+  } catch (err) {
+    res.status(400).json({ message: 'Error al obtener los colaboradores', error: err });
+  }
+});
+
+router.get('/admin', async (req, res) => {
+  try {
+    const collaborators = await Collaborator.model.find(
+      { rol: 'admin' } // Filtra por rol de administrador
+    );
+    const response = collaborators.map(collaborator => ({
+      id: collaborator._id,
+      Nombre: collaborator.nombre,
+      Apellido: collaborator.apellido,
+      Correo: collaborator.correo,
+      FechaDeRegistro: collaborator.fechaCreacion,
+      FechaDeBaja: collaborator.fechaEliminacion,
+      Estado: collaborator.estatus
+    }));
+    res.status(200).json(response);
+  } catch (err) {
+    res.status(400).json({ message: 'Error al obtener los colaboradores', error: err });
+  }
+});
+
+// Formato value-label
+router.get('/admin/list', async (req, res) => {
+  try {
+    const collaborators = await Collaborator.model.find(
+      { rol: 'admin' } // Filtra por rol de administrador
+    );
+    const response = collaborators.map(collaborator => ({
+      value: collaborator._id,
+      label: `${collaborator.nombre} ${collaborator.apellido}`
+    }));
+    res.status(200).json(response);
+  } catch (err) {
+    res.status(400).json({ message: 'Error al obtener los colaboradores', error: err });
+  }
+});
+
+router.get('/:id', async (req, res) => {
   try {
     const collaborator = await Collaborator.model.findById(req.params.id); // Busca un colaborador por ID
-    if (!collaborator) {
-      return res.status(404).json({ message: 'Colaborador no encontrado' });
+    if (collaborator) {
+      const response = {
+        id: collaborator._id,
+        Nombre: collaborator.nombre,
+        Apellido: collaborator.apellido,
+        Correo: collaborator.correo,
+        FechaDeNacimiento: collaborator.fechaNacimiento,
+        Genero: collaborator.genero,
+        Contraseña: collaborator.contraseña,
+        Rol: collaborator.rol,
+        Departamento: collaborator.departamento,
+        FechaDeRegistro: collaborator.fechaCreacion,
+        FechaDeBaja: collaborator.fechaEliminacion,
+        Estado: collaborator.estatus
+      };
+      res.status(200).json(response);
     }
-    res.status(200).json(collaborator);
   } catch (err) {
     res.status(400).json({ message: 'Error al obtener el colaborador', error: err });
   }
 });
 
-// routes/collaboratorRoutes.js
-router.put('/collaborator/:id', async (req, res) => {
+router.put('/:id', async (req, res) => {
   try {
+    console.log(req.body);
+    const { name, lastName, password, role, email, gender, status, birthDate, department, active,  } = req.body;
+    var deletionDate = ""; // Inicializa la variable de fecha de eliminación
+    if (status == 'Inactivo') {
+      deletionDate = Date.now(); // Establece la fecha de eliminación como la fecha actual
+    }
+    
     const updatedCollaborator = await Collaborator.model.findByIdAndUpdate(
       req.params.id,
-      req.body,
+      {
+        ...(name && { nombre: name }),
+        ...(lastName && { apellido: lastName }),
+        ...(password && { contraseña: password }),
+        ...(role && { rol: role }),
+        ...(email && { correo: email }),
+        ...(gender && { genero: gender }),
+        ...(status && { estatus: status }),
+        ...(birthDate && { fechaNacimiento: birthDate }),
+        ...(department && { departamento: department }),
+        ...(active !== undefined && { activo: active }),
+        ...(deletionDate && { fechaEliminacion: deletionDate }), // Solo establece la fecha de eliminación si el estado es "Inactivo"
+        fechaActualizacion: Date.now(), // Actualiza la fecha de modificación
+      },
       { new: true } // Devuelve el documento actualizado
     );
+
     if (!updatedCollaborator) {
       return res.status(404).json({ message: 'Colaborador no encontrado' });
     }
+
     res.status(200).json({ message: 'Colaborador actualizado', collaborator: updatedCollaborator });
   } catch (err) {
     res.status(400).json({ message: 'Error al actualizar el colaborador', error: err });
   }
 });
 
-// routes/collaboratorRoutes.js
+router.put('status/:id', async (req, res) => {
+  try {
+    console.log(req.body);
+    const { status } = req.body;
+
+    const updatedCollaborator = await Collaborator.model.findByIdAndUpdate(
+      req.params.id,
+      {
+        ...(status && { estatus: status }),
+      },
+      { new: true } // Devuelve el documento actualizado
+    );
+    
+    if (!updatedCollaborator) {
+      return res.status(404).json({ message: 'Colaborador no encontrado' });
+    }
+
+    res.status(200).json({ message: 'Colaborador actualizado', collaborator: updatedCollaborator });
+  } catch (err) {
+    res.status(400).json({ message: 'Error al actualizar el colaborador', error: err });
+  }
+});
+
 router.delete('/collaborator/:id', async (req, res) => {
   try {
     const deletedCollaborator = await Collaborator.model.findByIdAndDelete(req.params.id);

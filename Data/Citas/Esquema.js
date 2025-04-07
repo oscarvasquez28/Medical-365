@@ -12,21 +12,25 @@ export default class Citas {
             unique: true // Ensure caseFolio is unique
         },
         ticket: {
-            type: Number,
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Tickets', // Reference to the Tickets collection
             required: true
         },
         doctor: {
-            type: Number,
+            type: String,
             required: true
+        },
+        recurso: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Recursos', // Reference to the Recursos collection
         },
         riesgo: {
             type: String,
-            enum: ['bajo', 'medio', 'alto'],
+            enum: ['Bajo', 'Medio', 'Alto'],
             required: true,
         },
         diagnostico: {
             type: String,
-            required: true
         },
         fechaCita: {
             type: Date,
@@ -45,12 +49,12 @@ export default class Citas {
             default: new Date('1970-01-01')
         },
         ultimoUsuarioEnModificar: {
-            type: Number,
+            type: String,
             required: true
         },
         estatus: {
             type: String,
-            enum: ['pendiente', 'cerrado', 'cancelado'],
+            enum: ['Pendiente', 'Cerrado', 'Cancelado'],
             required: true
         }
     });

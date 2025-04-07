@@ -1,40 +1,239 @@
 // routes/appointmentRoutes.js
 import express from 'express';
 import Appointments from '../../Data/Citas/Esquema.js'; // Importa el modelo Citas
+import Tickets from '../../Data/Tickets/Esquema.js'; // Importa el modelo Tickets
 
 const router = express.Router();
 const Appointment = new Appointments();
+const Ticket = new Tickets();
 
 router.get('/', async (req, res) => {
   try {
     // Obtener todas las citas
-    const appointments = await Appointment.model.find();
+    const appointmentsWithTickets = await Appointment.model
+      .find()
+      .populate('ticket');
 
+    for (const appointment of appointmentsWithTickets) {
+      if (appointment.ticket) {
+        appointment.ticket = await Ticket.model.findById(appointment.ticket).populate('paciente');
+      }
+    }
+
+    const response = appointmentsWithTickets.map(appointment => {
+        return {
+          id: appointment._id,
+          Ticket: appointment.ticket?.nombre,
+          Paciente: appointment.ticket?.paciente?.nombre,
+          Doctor: appointment.doctor,
+          Riesgo: appointment.riesgo,
+          Recurso: appointment.recurso,
+          Diagnostico: appointment.diagnostico,
+          FechaCita: appointment.fechaCita,
+          UltimoUsuarioEnModificar: appointment.ultimoUsuarioEnModificar,
+          Estatus: appointment.estatus,
+        };
+    });
     // Responder con las citas encontradas
-    res.status(200).json(appointments);
+    res.status(200).json(response);
   } catch (err) {
     res.status(400).json({ message: 'Error al obtener las citas', error: err });
+  }
+});
+
+router.get('/:id', async (req, res) => {
+  try {
+    // Obtener cita por ID
+    const foundAppointment = await Appointment.model.findById(req.params.id)
+      .populate('ticket');
+      const appointmentsWithTickets = await Appointment.model
+        .find()
+        .populate('ticket');
+  
+    for (const appointment of appointmentsWithTickets) {
+      if (appointment.ticket) {
+        appointment.ticket = await Ticket.model.findById(appointment.ticket).populate('paciente');
+      }
+    }
+
+    if (!foundAppointment) {
+      return res.status(404).json({ message: 'Cita no encontrada' });
+    }
+
+    const response = {
+      id: foundAppointment._id,
+      Ticket: foundAppointment.ticket?.nombre,
+      Paciente: foundAppointment.ticket?.paciente?.nombre,
+      Doctor: foundAppointment.doctor,
+      Riesgo: foundAppointment.riesgo,
+      Recurso: foundAppointment.recurso,
+      Diagnostico: foundAppointment.diagnostico,
+      FechaCita: foundAppointment.fechaCita,
+      UltimoUsuarioEnModificar: foundAppointment.ultimoUsuarioEnModificar,
+      Estatus: foundAppointment.estatus,
+    };
+
+    // Responder con las citas encontradas
+    res.status(200).json(response);
+  } catch (err) {
+    res.status(400).json({ message: 'Error al obtener las citas', error: err });
+  }
+});
+
+router.get('/table', async (req, res) => {
+  try {
+    // Obtener todas las citas
+    const appointmentsWithTickets = await Appointment.model
+      .find()
+      .populate('ticket')
+      .populate({ path: 'recurso', select: 'nombre' });
+
+      for (const appointment of appointmentsWithTickets) {
+        if (appointment.ticket) {
+          appointment.ticket = await Ticket.model.findById(appointment.ticket).populate('paciente');
+        }
+      }
+
+    const response = appointmentsWithTickets.map(appointment => {
+        return {
+          id: appointment._id,
+          Ticket: appointment.ticket?.nombre,
+          Paciente: appointment.ticket?.paciente?.nombre,
+          Doctor: appointment.doctor,
+          Riesgo: appointment.riesgo,
+          Recurso: appointment.recurso?.nombre,
+          Diagnostico: appointment.diagnostico,
+          FechaCita: appointment.fechaCita,
+          UltimoUsuarioEnModificar: appointment.ultimoUsuarioEnModificar,
+          Estatus: appointment.estatus,
+        };
+    });
+    // Responder con las citas encontradas
+    res.status(200).json(response);
+  } catch (err) {
+    res.status(400).json({ message: 'Error al obtener las citas', error: err });
+  }
+});
+
+router.get('/calendar/:id', async (req, res) => {
+  try {
+    const { id } = req.params; // Obtener el ID del paciente desde los parámetros de la URL
+
+    // Obtener todas las citas
+    const appointments = await Appointment.model.find().populate('ticket');
+    const response = appointments.map((appointment) => {
+        if (appointment.ticket && appointment.ticket.paciente == id) { // Filtrar por ID del paciente
+          return {
+            id: appointment._id,
+            title: appointment.ticket?.nombre,
+            start: appointment.fechaCita,
+            end: appointment.fechaCita,
+            allDay: true,
+          };
+        }
+        return null;
+    }).filter(appointment => appointment !== null); // Filtrar las citas no nulas
+
+    // Filtrar las citas no nulas
+    const filteredResponse = response.filter(appointment => appointment !== null);
+
+    // Responder con las citas encontradas
+    res.status(200).json(filteredResponse);
+  } catch (err) {
+    res.status(400).json({ message: 'Error al obtener las citas', error: err });
+  }
+});
+
+// router.get('/calendar/all', async (req, res) => {
+//   try {
+//     // Obtener todas las citas
+//     const appointments = await Appointment.model.find().populate('ticket');
+//     const response = appointments.map((appointment) => {
+//       if (appointment.ticket) { // Verificar si el ticket existe
+//         return {
+//           id: appointment._id,
+//           title: appointment.ticket?.nombre,
+//           start: appointment.fechaCita,
+//           end: appointment.fechaCita,
+//           allDay: true,
+//         };
+//       }
+//       return null;
+//     }).filter(appointment => appointment !== null); // Filtrar las citas no nulas
+
+//     // Responder con las citas encontradas
+//     res.status(200).json(response);
+//   } catch (err) {
+//     res.status(400).json({ message: 'Error al obtener las citas', error: err });
+//   }
+// });
+
+router.get('/status/list', async (req, res) => {
+  try {
+    const response = Appointment.model.schema.path('estatus').enumValues.map(value => ({
+      value: value,
+      label: value
+    }));
+    res.status(200).json(response);
+  } catch (err) {
+    res.status(400).json({ message: 'Error al obtener los colaboradores', error: err });
+  }
+});
+
+router.get('/risks/list', async (req, res) => {
+  try {
+    const response = Appointment.model.schema.path('riesgo').enumValues.map(value => ({
+      value: value,
+      label: value
+    }));
+    res.status(200).json(response);
+  } catch (err) {
+    res.status(400).json({ message: 'Error al obtener los colaboradores', error: err });
   }
 });
 
 // Ruta para crear una cita
 router.post('/', async (req, res) => {
   try {
-    const { patient, doctor, risk, description, appointmentDate, lastModifiedBy, status } = req.body;
+    const { ticket, doctor, risk, appointmentDate, lastModifiedBy, status } = req.body;
 
     // Crear una nueva cita con los datos recibidos
     const newAppointment = new Appointment.model({
-      paciente: patient,
+      ticket: ticket,
       doctor: doctor,
       riesgo: risk,
-      descripcion: description,
       fechaCita: appointmentDate,
       ultimoUsuarioEnModificar: lastModifiedBy,
-      estatus: status,
+      estatus: status || 'Pendiente',
     });
 
     // Guardar la nueva cita en la base de datos
     await newAppointment.save();
+
+    // Enviar correo al paciente utilizando nodemailer
+    // if (ticket) {
+    //   const ticketDetails = await Ticket.model.findById(ticket).populate('paciente');
+    //   if (ticketDetails && ticketDetails.paciente && ticketDetails.paciente.email) {
+    //     const nodemailer = require('nodemailer');
+    //     const transporter = nodemailer.createTransport({
+    //       service: 'gmail', // Cambiar según el proveedor de correo
+    //       auth: {
+    //         user: 'your-email@gmail.com', // Reemplazar con tu correo
+    //         pass: 'your-email-password', // Reemplazar con tu contraseña
+    //       },
+    //     });
+
+    //     const mailOptions = {
+    //       from: 'your-email@gmail.com', // Reemplazar con tu correo
+    //       to: ticketDetails.paciente.email,
+    //       subject: 'Nueva Cita Programada',
+    //       text: `Hola ${ticketDetails.paciente.nombre}, tu cita ha sido programada para el ${appointmentDate}.`,
+    //     };
+
+    //     await transporter.sendMail(mailOptions);
+    //   }
+    // }
+    
 
     // Responder con un mensaje de éxito y la cita creada
     res.status(201).json({ message: 'Cita creada con éxito', appointment: newAppointment });
@@ -59,6 +258,48 @@ router.get('/appointment/:folio', async (req, res) => {
     res.status(200).json(appointment);
   } catch (err) {
     res.status(400).json({ message: 'Error al obtener la cita', error: err });
+  }
+});
+
+router.put('/:id', async (req, res) => {
+  try {
+    const { ticket, doctor, risk, tooling, diagnosis, appointmentDate, lastModifiedBy, status } = req.body;
+
+    // Actualizar la cita por ID
+    const updatedAppointment = await Appointment.model.findByIdAndUpdate(
+      req.params.id,
+      {
+        ...(ticket && { ticket: ticket }),
+        ...(doctor && { doctor: doctor }),
+        ...(risk && { riesgo: risk }),
+        ...(tooling && { recurso: tooling }),
+        ...(appointmentDate && { fechaCita: appointmentDate }),
+        ...(lastModifiedBy && { ultimoUsuarioEnModificar: lastModifiedBy }),
+        ...(status && { estatus: status }),
+        ...(status == 'Cerrado' && { fechaEliminacion: Date.now() }), // Actualizar la fecha de eliminación si el estatus es 'Cerrado'
+        ...(diagnosis && { diagnostico: diagnosis }),
+        fechaActualizacion: Date.now(), // Actualizar la fecha de modificación
+      },
+      { new: true } // Devuelve el documento actualizado
+    );
+
+    const updatedTicket = await Ticket.model.findByIdAndUpdate(
+      ticket || updatedAppointment.ticket,
+      {
+        ...(status && { estatus: status }),
+        ...(status == 'Cerrado' && { fechaCierre: Date.now() }), // Actualizar la fecha de cierre si el estatus es 'Cerrado'
+      },
+      { new: true } // Devuelve el documento actualizado
+    );
+
+    if (!updatedAppointment) {
+      return res.status(404).json({ message: 'Cita no encontrada' });
+    }
+
+    // Responder con la cita actualizada
+    res.status(200).json(updatedAppointment);
+  } catch (err) {
+    res.status(400).json({ message: 'Error al actualizar la cita', error: err });
   }
 });
 

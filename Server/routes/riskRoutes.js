@@ -15,6 +15,19 @@ router.get('/', async (req, res) => {
     }
 });
 
+router.get('/list', async (req, res) => {
+    try {
+        const riesgos = await riesgo.model.find(); // Obtiene todos los riesgos
+        const response = riesgos.map(riesgo => ({
+            value: riesgo._id,
+            label: riesgo.descripcion,
+        }));
+        res.status(200).json(response);
+    } catch (err) {
+        res.status(400).json({ message: 'Error al obtener los riesgos', error: err });
+    }
+});
+
 // Ruta para obtener un riesgo por ID
 router.get('/:id', async (req, res) => {
     try {

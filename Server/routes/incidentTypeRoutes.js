@@ -15,6 +15,19 @@ router.get('/', async (req, res) => {
     }
 });
 
+router.get('/list', async (req, res) => {
+    try {
+        const incidentTypes = await incidencia.model.find();
+        const response = incidentTypes.map(incidentType => ({
+            value: incidentType._id,
+            label: incidentType.descripcion
+        }));
+        res.status(200).json(response);
+    } catch (err) {
+        res.status(400).json({ message: 'Error al obtener los tipos de incidencias', error: err });
+    }
+});
+
 // Ruta para obtener un tipo de incidencia por ID
 router.get('/:id', async (req, res) => {
     try {

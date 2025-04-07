@@ -5,32 +5,36 @@ import DatosDummy from './DatosDummy.js'; //
 const toolingSchema = new mongoose.Schema({
     nombre: {
         type: String,
-        required: [true, 'Name is required']
+        required: [true, 'El nombre es obligatorio']
     },
     version: {
         type: String,
-        required: [true, 'Version is required']
+        required: [true, 'La versión es obligatoria']
     },
     descripcion: {
         type: String,
-        default: '' // Optional field, default is an empty string
+    },
+    estatus: {
+        type: String,
+        enum: ['Activo', 'Inactivo', 'Pendiente'],
+        default: 'Activo'
     },
     fechaCreacion: {
         type: Date,
         default: Date.now,
-        required: [true, 'Creating date is required']
+        required: [true, 'La fecha de creación es obligatoria']
     },
     fechaActualizacion: {
         type: Date,
-        default: null // No default value, optional field
+        default: null // Sin valor por defecto, campo opcional
     },
     fechaEliminacion: {
         type: Date,
-        default: null // No default value, optional field
+        default: null // Sin valor por defecto, campo opcional
     },
     lastColaboratorWhoModified: {
-        type: Number,
-        default: null // No default value, optional field
+        type: String,
+        default: null // Sin valor por defecto, campo opcional
     }
 });
 

@@ -8,29 +8,28 @@ const ticketSchema = new mongoose.Schema({
         required: [true, 'Name is required']
     },
     paciente: {
-        type: Number,
+        type: mongoose.Schema.Types.ObjectId, // Reference to Colaborator
+        ref: 'Colaboradores',
         required: [true, 'Patient ID is required']
     },
-    descripcion: {
-        type: String,
-        required: [true, 'descripcion is required']
-    },
-    sintomas: {
-        type: [String], // Array of strings
-        required: [true, 'Sintomas are required']
-    },
+    sintomas: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Sintomas' // Reference to the Sintoma model
+        }
+    ],
     incidencia: {
-        type: String,
-        required: [true, 'incidencia is required']
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Incidencia', // Reference to the Incidencia model
+        required: [true, 'Incidencia is required']
     },
     riesgo: {
         type: String,
-        enum: ['bajo', 'medio', 'alto'],
-        required: [true, 'riesgo level is required']
+        enum: ['Bajo', 'Medio', 'Alto']
     },
     fechaCreacion: {
         type: Date,
-        default: Date.now,
+        default: Date.now(),
         required: [true, 'Creation date is required']
     },
     fechaCierre: {
@@ -47,7 +46,7 @@ const ticketSchema = new mongoose.Schema({
     },
     estatus: {
         type: String,
-        enum: ['pendiente', 'cerrado', 'cancelado'],
+        enum: ['Pendiente', 'Cerrado', 'Cancelado'],
         required: true,
         default: 'pendiente'
     }
