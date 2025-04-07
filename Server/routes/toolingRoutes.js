@@ -40,7 +40,7 @@ router.get('/list', async (req, res) => {
 router.get('/status/list', async (req, res) => {
     try {
         const response = Tooling.model.schema.path('estatus').enumValues.map(value => ({
-            value: value.toLowerCase(),
+            value: value,
             label: value
         }));
         res.status(200).json(response);
