@@ -12,15 +12,15 @@ router.get('/', async (req, res) => {
         const tickets = await ticket.model.find().populate({path: 'paciente', select: 'nombre'});
         const response = tickets.map(ticket => ({
             id: ticket._id,
-            Nombre: ticket.nombre,
-            Paciente: ticket.paciente?.nombre, // Send paciente's name
-            Sintomas: ticket.sintomas,
-            Incidencia: ticket.incidencia,
-            Riesgo: ticket.riesgo,
-            Comentarios: ticket.comentarios,
-            FechaDeRegistro: ticket.fechaCreacion,
-            FechaDeCierre: ticket.fechaCierre,
-            Estatus: ticket.estatus
+            nombre: ticket.nombre,
+            paciente: ticket.paciente?.nombre, // Send paciente's name
+            sintomas: ticket.sintomas,
+            incidencia: ticket.incidencia,
+            riesgo: ticket.riesgo,
+            comentarios: ticket.comentarios,
+            fechaDeRegistro: ticket.fechaCreacion,
+            fechaDeCierre: ticket.fechaCierre,
+            estatus: ticket.estatus
         }));
         res.status(200).json(response);
     } catch (err) {
@@ -48,15 +48,15 @@ router.get('/:id', async (req, res) => {
         const ticketById = await ticket.model.findById(req.params.id).populate({path: 'paciente', select: 'nombre'});;
         const response = {
             id: ticketById._id,
-            Nombre: ticketById.nombre,
-            Paciente: ticketById.paciente?.nombre,
-            Sintomas: ticketById.sintomas,
-            Incidencia: ticketById.incidencia,
-            Riesgo: ticketById.riesgo,
-            Comentarios: ticketById.comentarios,
-            FechaDeRegistro: ticketById.fechaCreacion,
-            FechaDeCierre: ticketById.fechaCierre,
-            Estatus: ticketById.estatus
+            nombre: ticketById.nombre,
+            paciente: ticketById.paciente?.nombre,
+            sintomas: ticketById.sintomas,
+            incidencia: ticketById.incidencia,
+            riesgo: ticketById.riesgo,
+            comentarios: ticketById.comentarios,
+            fechaDeRegistro: ticketById.fechaCreacion,
+            fechaDeCierre: ticketById.fechaCierre,
+            estatus: ticketById.estatus
         };
 
         if (!ticketById) {
