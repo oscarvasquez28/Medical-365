@@ -16,8 +16,8 @@ const toolingSchema = new mongoose.Schema({
     },
     estatus: {
         type: String,
-        enum: ['activo', 'inactivo', 'pendiente'],
-        required: [true, 'El estatus es obligatorio']
+        enum: ['Activo', 'Inactivo', 'Pendiente'],
+        default: 'Activo'
     },
     fechaCreacion: {
         type: Date,
@@ -33,7 +33,7 @@ const toolingSchema = new mongoose.Schema({
         default: null // Sin valor por defecto, campo opcional
     },
     lastColaboratorWhoModified: {
-        type: Number,
+        type: String,
         default: null // Sin valor por defecto, campo opcional
     }
 });
