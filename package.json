@@ -3,7 +3,8 @@
   "scripts": {
     "installServer": "cd Server && npm install",
     "installClient": "cd Client && npm install",
-    "install": "npm run installServer && npm run installClient",
+    "installData": "cd Data && npm install",
+    "install": "npm run installServer && npm run installClient && npm run installData",
     "server": "node Server/src/server.js",
     "client": "cd Client && npm run dev",
     "webApp": "concurrently \"npm run server\" \"npm run client\"",
