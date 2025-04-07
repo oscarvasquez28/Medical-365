@@ -18,6 +18,11 @@ const columns = [
     width: 150,
   },
   {
+    field: 'Paciente',
+    headerName: 'Paciente',
+    width: 200,
+  },
+  {
     field: 'Doctor',
     headerName: 'Doctor',
     width: 150,
@@ -26,6 +31,16 @@ const columns = [
     field: 'Riesgo',
     headerName: 'Riesgo',
     width: 120,
+  },
+  {
+    field: 'Recurso',
+    headerName: 'Recurso',
+    width: 200,
+  },
+  {
+    field: 'UltimoUsuarioEnModificar',
+    headerName: 'Usuario Modificó',
+    width: 200,
   },
   {
     field: 'Diagnostico',
@@ -71,7 +86,7 @@ const Appointments = () => {
 
   async function getAppointments() {
     try {
-      const {data} = await AppointmentsAPI.getAppointments();
+      const {data} = await AppointmentsAPI.getAppointmentsTable();
       setAppointments(data);
       console.log(data);
     } catch (error) {
