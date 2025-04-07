@@ -2,6 +2,7 @@
 import express from 'express';
 import Appointments from '../../Data/Citas/Esquema.js'; // Importa el modelo Citas
 import Tickets from '../../Data/Tickets/Esquema.js'; // Importa el modelo Tickets
+import nodemailer from 'nodemailer';
 
 const router = express.Router();
 const Appointment = new Appointments();
@@ -28,6 +29,41 @@ router.get('/', async (req, res) => {
           Doctor: appointment.doctor,
           Riesgo: appointment.riesgo,
           Recurso: appointment.recurso,
+          Diagnostico: appointment.diagnostico,
+          FechaCita: appointment.fechaCita,
+          UltimoUsuarioEnModificar: appointment.ultimoUsuarioEnModificar,
+          Estatus: appointment.estatus,
+        };
+    });
+    // Responder con las citas encontradas
+    res.status(200).json(response);
+  } catch (err) {
+    res.status(400).json({ message: 'Error al obtener las citas', error: err });
+  }
+});
+
+router.get('/table', async (req, res) => {
+  try {
+    // Obtener todas las citas
+    const appointmentsWithTickets = await Appointment.model
+      .find()
+      .populate('ticket')
+      .populate({ path: 'recurso', select: 'nombre' });
+
+      for (const appointment of appointmentsWithTickets) {
+        if (appointment.ticket) {
+          appointment.ticket = await Ticket.model.findById(appointment.ticket).populate('paciente');
+        }
+      }
+
+    const response = appointmentsWithTickets.map(appointment => {
+        return {
+          id: appointment._id,
+          Ticket: appointment.ticket?.nombre,
+          Paciente: appointment.ticket?.paciente?.nombre,
+          Doctor: appointment.doctor,
+          Riesgo: appointment.riesgo,
+          Recurso: appointment.recurso?.nombre,
           Diagnostico: appointment.diagnostico,
           FechaCita: appointment.fechaCita,
           UltimoUsuarioEnModificar: appointment.ultimoUsuarioEnModificar,
@@ -73,41 +109,6 @@ router.get('/:id', async (req, res) => {
       Estatus: foundAppointment.estatus,
     };
 
-    // Responder con las citas encontradas
-    res.status(200).json(response);
-  } catch (err) {
-    res.status(400).json({ message: 'Error al obtener las citas', error: err });
-  }
-});
-
-router.get('/table', async (req, res) => {
-  try {
-    // Obtener todas las citas
-    const appointmentsWithTickets = await Appointment.model
-      .find()
-      .populate('ticket')
-      .populate({ path: 'recurso', select: 'nombre' });
-
-      for (const appointment of appointmentsWithTickets) {
-        if (appointment.ticket) {
-          appointment.ticket = await Ticket.model.findById(appointment.ticket).populate('paciente');
-        }
-      }
-
-    const response = appointmentsWithTickets.map(appointment => {
-        return {
-          id: appointment._id,
-          Ticket: appointment.ticket?.nombre,
-          Paciente: appointment.ticket?.paciente?.nombre,
-          Doctor: appointment.doctor,
-          Riesgo: appointment.riesgo,
-          Recurso: appointment.recurso?.nombre,
-          Diagnostico: appointment.diagnostico,
-          FechaCita: appointment.fechaCita,
-          UltimoUsuarioEnModificar: appointment.ultimoUsuarioEnModificar,
-          Estatus: appointment.estatus,
-        };
-    });
     // Responder con las citas encontradas
     res.status(200).json(response);
   } catch (err) {
@@ -211,28 +212,29 @@ router.post('/', async (req, res) => {
     await newAppointment.save();
 
     // Enviar correo al paciente utilizando nodemailer
-    // if (ticket) {
-    //   const ticketDetails = await Ticket.model.findById(ticket).populate('paciente');
-    //   if (ticketDetails && ticketDetails.paciente && ticketDetails.paciente.email) {
-    //     const nodemailer = require('nodemailer');
-    //     const transporter = nodemailer.createTransport({
-    //       service: 'gmail', // Cambiar según el proveedor de correo
-    //       auth: {
-    //         user: 'your-email@gmail.com', // Reemplazar con tu correo
-    //         pass: 'your-email-password', // Reemplazar con tu contraseña
-    //       },
-    //     });
+    if (ticket) {
+      const ticketDetails = await Ticket.model.findById(ticket).populate('paciente');
+      if (ticketDetails && ticketDetails.paciente && ticketDetails.paciente.correo) {
+        const transporter = nodemailer.createTransport({
+          service: 'gmail',
+          auth: {
+            user: process.env.BUSINESS_EMAIL,
+            pass: process.env.BUSINESS_APP_PASSWORD, // Use an App Password instead of the Gmail password
+          },
+        });
 
-    //     const mailOptions = {
-    //       from: 'your-email@gmail.com', // Reemplazar con tu correo
-    //       to: ticketDetails.paciente.email,
-    //       subject: 'Nueva Cita Programada',
-    //       text: `Hola ${ticketDetails.paciente.nombre}, tu cita ha sido programada para el ${appointmentDate}.`,
-    //     };
+        const correo = ticketDetails.paciente.correo;
 
-    //     await transporter.sendMail(mailOptions);
-    //   }
-    // }
+        const mailOptions = {
+          from: process.env.BUSINESS_EMAIL,
+          to: correo,
+          subject: 'Nueva Cita Programada',
+          text: `Hola ${ticketDetails.paciente.nombre}, tu cita ha sido programada para el ${appointmentDate}.`,
+        };
+
+        await transporter.sendMail(mailOptions);
+      }
+    }
     
 
     // Responder con un mensaje de éxito y la cita creada
