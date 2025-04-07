@@ -119,6 +119,11 @@ router.get('/', async (req, res) => {
       Nombre: collaborator.nombre,
       Apellido: collaborator.apellido,
       Correo: collaborator.correo,
+      FechaDeNacimiento: collaborator.fechaNacimiento,
+      Genero: collaborator.genero,
+      Contraseña: collaborator.contraseña,
+      Rol: collaborator.rol,
+      Departamento: collaborator.departamento,
       FechaDeRegistro: collaborator.fechaCreacion,
       FechaDeBaja: collaborator.fechaEliminacion,
       Estado: collaborator.estatus
@@ -174,6 +179,11 @@ router.get('/:id', async (req, res) => {
         Nombre: collaborator.nombre,
         Apellido: collaborator.apellido,
         Correo: collaborator.correo,
+        FechaDeNacimiento: collaborator.fechaNacimiento,
+        Genero: collaborator.genero,
+        Contraseña: collaborator.contraseña,
+        Rol: collaborator.rol,
+        Departamento: collaborator.departamento,
         FechaDeRegistro: collaborator.fechaCreacion,
         FechaDeBaja: collaborator.fechaEliminacion,
         Estado: collaborator.estatus
