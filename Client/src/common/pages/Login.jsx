@@ -1,9 +1,18 @@
-import React from 'react';
+import {React, useState} from 'react';
+import {useUser} from '../../Context/UserContext';
 import { Container, Button, Box, Typography, TextField, Stack } from '@mui/material';
 import { motion } from 'framer-motion';
 import StaticCard from '../components/StaticCard';
+import CollaboratorsAPI from '../../services/CollaboratorsAPI';
 
 export default function Home() {
+  const { setUser } = useUser();
+  const [collaborator, setCollaborator] = useState(
+    {
+      email: "",
+      password: "",
+    });
+
   const word1 = "Medical";
   const word2 = "365";
 
@@ -16,6 +25,31 @@ export default function Home() {
     initial: { opacity: 0, y: 20 },
     animate: { opacity: 1, y: 0 },
   };
+
+  const handleChange = ({currentTarget}) => {
+    const {name, value} = currentTarget;
+    setCollaborator({...collaborator, [name]: value});
+    console.log(collaborator);
+  }
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    try {
+      console.log(collaborator);
+      const response = await CollaboratorsAPI.postLogin(collaborator);
+      console.log("Login successful");
+      setUser({
+        role: response.data.collaborator.rol, // Rol del usuario
+        name: response.data.collaborator.name, // Nombre del usuario
+        email: response.data.collaborator.email, // Email del usuario
+        id: response.data.collaborator.id, // ID del usuario
+        logged: true, // Cambia a true porque el usuario ha iniciado sesión
+        token: response.data.token, // Token de autenticación
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  }
 
   return (
     <>
@@ -99,6 +133,9 @@ export default function Home() {
                     },
                     width: { xs: '100%', sm: '70%' },
                   }}
+                  name="email"
+                  value={collaborator.email}
+                  onChange={handleChange}
                 />
               </Box>
               <Box sx={{ display: 'flex', justifyContent: 'center', margin: '1rem' }}>
@@ -114,6 +151,10 @@ export default function Home() {
                     },
                     width: { xs: '100%', sm: '70%' },
                   }}
+                  name="password"
+                  value={collaborator.password}
+                  onChange={handleChange}
+                  type="password"
                 />
               </Box>
               <Box sx={{ display: 'flex', justifyContent: 'center', margin: '1rem' }}>
@@ -127,6 +168,7 @@ export default function Home() {
                     padding: '12px 24px',
                     fontSize: '1rem',
                   }}
+                  onClick={handleSubmit}
                 >
                   Iniciar Sesión
                 </Button>

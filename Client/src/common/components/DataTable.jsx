@@ -2,7 +2,7 @@ import React from 'react'
 import Box from '@mui/material/Box'
 import {DataGrid, GridToolbarContainer, GridToolbarExport} from '@mui/x-data-grid'
 
-const DataTable = ({rows, columns}) => {
+const DataTable = ({rows = [], columns = []}) => {
 
   function CustomToolbar() {
     return (
@@ -15,7 +15,7 @@ const DataTable = ({rows, columns}) => {
   return (
     <Box sx={{ height: 420, width: '100%', marginTop: '2rem' }}>
       <DataGrid
-        rows={rows}
+        rows={rows || []}
         columns={columns}
         initialState={{
           pagination: {
