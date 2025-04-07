@@ -1,4 +1,5 @@
-import React from 'react'
+import { React, useState, useEffect } from 'react'
+import TicketsAPI from '../../services/TicketsAPI'
 import NavigationButton from '../../common/components/NavigationButton'
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
@@ -12,43 +13,44 @@ import CustomBreadcrumb from '../../common/components/CustomBreadcrumb'
 const columns = [
   { field: 'id', headerName: 'ID', width: 90 },
   {
-    field: 'ticketName',
+    field: 'Nombre',
     headerName: 'Nombre del Ticket',
     width: 150,
   },
   {
-    field: 'colaborador',
-    headerName: 'Colaborador',
+    field: 'Paciente',
+    headerName: 'Paciente',
     width: 150,
   },
   {
-    field: 'tipoIncidencia',
+    field: 'Incidencia',
     headerName: 'Tipo de Incidencia',
-    width: 110,
+    width: 150,
   },
   {
-    field: 'prioridad',
-    headerName: 'Prioridad',
-    description: 'This column has a value getter and is not sortable.',
-    width: 90,
-  },
-  {
-    field: 'sintomas',
+    field: 'Sintomas',
     headerName: 'Síntomas',
-    description: 'This column has a value getter and is not sortable.',
+    width: 200,
+  },
+  {
+    field: 'Comentarios',
+    headerName: 'Comentarios',
+    width: 200,
+  },
+  {
+    field: 'FechaDeRegistro',
+    headerName: 'Fecha de Registro',
     width: 150,
   },
   {
-    field: 'descripcion',
-    headerName: 'Descripción',
-    description: 'This column has a value getter and is not sortable.',
+    field: 'FechaDeCierre',
+    headerName: 'Fecha de Cierre',
     width: 150,
   },
   {
-    field: 'fecha',
-    headerName: 'Fecha',
-    description: 'This column has a value getter and is not sortable.',
-    width: 100,
+    field: 'Estatus',
+    headerName: 'Estatus',
+    width: 120,
   },
   {
     field: 'actions',
@@ -56,42 +58,12 @@ const columns = [
     width: 160,
     renderCell: (params) => (
         <NavigationButton
-          variant = {'contained'}
+          variant={'contained'}
           Text='Editar'
           color={'info'}
-          Route={`editTicket/${params.id}`}/>
+          Route={`editTicket/${params.row._id}`}/>
     ),
   }
-];
-
-const rows = [
-  {
-    id: 1,
-    ticketName: 'Dolor de cabeza',
-    colaborador: 'Juan Pérez',
-    tipoIncidencia: 'Consulta',
-    prioridad: 'Alta',
-    sintomas: 'Dolor persistente',
-    descripcion: 'Dolor de cabeza constante durante 3 días',
-  },
-  {
-    id: 2,
-    ticketName: 'Fiebre alta',
-    colaborador: 'María López',
-    tipoIncidencia: 'Emergencia',
-    prioridad: 'Alta',
-    sintomas: 'Temperatura superior a 39°C',
-    descripcion: 'Fiebre alta acompañada de escalofríos',
-  },
-  {
-    id: 3,
-    ticketName: 'Chequeo general',
-    colaborador: 'Carlos Gómez',
-    tipoIncidencia: 'Preventiva',
-    prioridad: 'Baja',
-    sintomas: 'N/A',
-    descripcion: 'Chequeo médico de rutina',
-  },
 ];
 
 const breadcrumbs = [
@@ -100,6 +72,23 @@ const breadcrumbs = [
 ]
 
 const Tickets = () => {
+    const [ticket, setTicket] = useState([]);
+
+      useEffect(() => {
+        getTickets();
+      }, []);
+
+      async function getTickets() {
+        try {
+          const {data} = await TicketsAPI.getTickets();
+          setTicket(data);
+          console.log(data);
+        } catch (error) {
+          console.error(error);
+          setTicket([]);
+        }
+      }
+
   return (
     <>
     <Container>
@@ -149,7 +138,7 @@ const Tickets = () => {
       </Stack>
     </Box>
     <DataTable
-      rows={rows}
+      rows={ticket}
       columns={columns}
     />
     <Box sx={{ display: 'flex', justifyContent: 'space-between', marginTop: '2rem' }}>
