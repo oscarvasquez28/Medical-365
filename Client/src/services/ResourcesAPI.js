@@ -4,6 +4,9 @@ export default {
   getToolings(){
     return api.get('/toolings')
   },
+  getToolingsList(){
+    return api.get('/toolings/list')
+  },
   getToolingsId(id){
     return api.get(`/toolings/${id}`)
   },
