@@ -1,22 +1,18 @@
 // routes/appointmentRoutes.js
 import express from 'express';
 import Appointments from '../../Data/Citas/Esquema.js'; // Importa el modelo Citas
-import Ticket from '../../Data/Tickets/Esquema.js'; // Importa el modelo Tickets
 
 const router = express.Router();
 const Appointment = new Appointments();
-const Tickets = new Ticket();
 
 router.get('/', async (req, res) => {
   try {
     // Obtener todas las citas
-    const appointments = await Appointment.model.find();
-    const response = await Promise.all(appointments.map(async appointment => {
-      const ticket = await Tickets.model.findById(appointment.ticket);
-      if (ticket) { // Filtrar por ID del paciente
+    const appointmentsWithTickets = await Appointment.model.find().populate('ticket');
+    const response = appointmentsWithTickets.map(appointment => {
         return {
           id: appointment._id,
-          Ticket: ticket ? ticket.nombre : null,
+          Ticket: appointment.ticket?.nombre,
           Doctor: appointment.doctor,
           Riesgo: appointment.riesgo,
           Diagnostico: appointment.diagnostico,
@@ -24,9 +20,7 @@ router.get('/', async (req, res) => {
           UltimoUsuarioEnModificar: appointment.ultimoUsuarioEnModificar,
           Estatus: appointment.estatus,
         };
-      }
-      return null;
-    }));
+    });
     // Responder con las citas encontradas
     res.status(200).json(response);
   } catch (err) {

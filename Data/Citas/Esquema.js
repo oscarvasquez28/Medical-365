@@ -12,7 +12,8 @@ export default class Citas {
             unique: true // Ensure caseFolio is unique
         },
         ticket: {
-            type: String,
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Tickets', // Reference to the Tickets collection
             required: true
         },
         doctor: {

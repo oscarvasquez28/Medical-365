@@ -12,12 +12,14 @@ const ticketSchema = new mongoose.Schema({
         ref: 'Colaboradores',
         required: [true, 'Patient ID is required']
     },
-    sintomas: {
-        type: [mongoose.Schema.Types.ObjectId], // Array of objects with id and value
-        required: [true, 'Sintomas are required']
-    },
+    sintomas: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Sintomas' // Reference to the Sintoma model
+        }
+    ],
     incidencia: {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
         required: [true, 'Incidencia is required']
     },
     riesgo: {

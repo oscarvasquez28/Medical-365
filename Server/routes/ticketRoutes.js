@@ -26,6 +26,32 @@ router.get('/', async (req, res) => {
     }
 });
 
+router.get('/table', async (req, res) => {
+    try {
+        const tickets = await ticket.model
+            .find()
+            .populate({ path: 'paciente', select: 'nombre' })
+            .populate({ path: 'sintomas', select: 'descripcion' });
+
+        const response = tickets.map(ticket => ({
+            id: ticket._id,
+            nombre: ticket.nombre,
+            paciente: ticket.paciente?.nombre, // Send paciente's name
+            sintomas: ticket.sintomas?.map(s => s.descripcion).join(', '), // Join symptoms names into a single string
+            incidencia: ticket.incidencia,
+            riesgo: ticket.riesgo,
+            comentarios: ticket.comentarios,
+            fechaDeRegistro: ticket.fechaCreacion,
+            fechaDeCierre: ticket.fechaCierre,
+            estatus: ticket.estatus
+        }));
+
+        res.status(200).json(response);
+    } catch (err) {
+        res.status(400).json({ message: 'Error al obtener los tickets', error: err });
+    }
+});
+
 // Ruta para obtener todos los tickets en formato value-label
 router.get('/list', async (req, res) => {
     try {
