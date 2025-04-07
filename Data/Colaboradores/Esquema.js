@@ -58,7 +58,7 @@ const collaboratorSchema = new mongoose.Schema({
         type: Date,
         default: null // Use null instead of a default date
     },
-    fechaNaciemiento: {
+    fechaNacimiento: {
         type: Date,
         default: null // Use null instead of a default date
     },
