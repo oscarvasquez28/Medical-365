@@ -21,7 +21,7 @@ const ticketSchema = new mongoose.Schema({
     },
     riesgo: {
         type: String,
-        enum: ['bajo', 'medio', 'alto']
+        enum: ['Bajo', 'Medio', 'Alto']
     },
     fechaCreacion: {
         type: Date,
@@ -42,7 +42,7 @@ const ticketSchema = new mongoose.Schema({
     },
     estatus: {
         type: String,
-        enum: ['pendiente', 'cerrado', 'cancelado'],
+        enum: ['Pendiente', 'Cerrado', 'Cancelado'],
         required: true,
         default: 'pendiente'
     }

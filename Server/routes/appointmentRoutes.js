@@ -154,6 +154,14 @@ router.put('/:id', async (req, res) => {
     const { ticket, doctor, risk, diagnosis, appointmentDate, lastModifiedBy, status } = req.body;
 
     // Actualizar la cita por ID
+    const updatedTicket = await Tickets.model.findByIdAndUpdate(
+      ticket,
+      {
+        ...(status && { estatus: status }),
+        ...(status == 'Cerrado' && { fechaCierre: Date.now() }), // Actualizar la fecha de cierre si el estatus es 'Cerrado'
+      },
+      { new: true } // Devuelve el documento actualizado
+    );
     const updatedAppointment = await Appointment.model.findByIdAndUpdate(
       req.params.id,
       {
@@ -163,7 +171,8 @@ router.put('/:id', async (req, res) => {
         ...(appointmentDate && { fechaCita: appointmentDate }),
         ...(lastModifiedBy && { ultimoUsuarioEnModificar: lastModifiedBy }),
         ...(status && { estatus: status }),
-        ...(diagnostico && { diagnostico: diagnosis }),
+        ...(status == 'Cerrado' && { fechaEliminacion: Date.now() }), // Actualizar la fecha de eliminación si el estatus es 'Cerrado'
+        ...(diagnosis && { diagnostico: diagnosis }),
         fechaActualizacion: Date.now(), // Actualizar la fecha de modificación
       },
       { new: true } // Devuelve el documento actualizado

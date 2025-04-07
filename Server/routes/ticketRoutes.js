@@ -44,9 +44,23 @@ router.get('/list', async (req, res) => {
 router.get('/:id', async (req, res) => {
     try {
         const ticketById = await ticket.model.findById(req.params.id);
+        const response = {
+            id: ticketById._id,
+            Nombre: ticketById.nombre,
+            Paciente: ticketById.paciente,
+            Sintomas: ticketById.sintomas,
+            Incidencia: ticketById.incidencia,
+            Riesgo: ticketById.riesgo,
+            Comentarios: ticketById.comentarios,
+            FechaDeRegistro: ticketById.fechaCreacion,
+            FechaDeCierre: ticketById.fechaCierre,
+            Estatus: ticketById.estatus
+        };
+
         if (!ticketById) {
             return res.status(404).json({ message: 'Ticket no encontrado' });
         }
+        
         res.status(200).json(ticketById);
     } catch (err) {
         res.status(400).json({ message: 'Error al obtener el ticket', error: err });
