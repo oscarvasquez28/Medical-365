@@ -1,17 +1,19 @@
 // routes/ticketRoutes.js
 import express from 'express';
 import Ticket from '../../Data/Tickets/Esquema.js';
+import Colaborator from '../../Data/Colaboradores/Esquema.js';
 const router = express.Router();
 const ticket = new Ticket();
+const paciente = new Colaborator(); // Asumiendo que tienes un modelo de paciente similar
 
 // Ruta para obtener todos los tickets
 router.get('/', async (req, res) => {
     try {
-        const tickets = await ticket.model.find();
+        const tickets = await ticket.model.find().populate({path: 'paciente', select: 'nombre'});
         const response = tickets.map(ticket => ({
             id: ticket._id,
             Nombre: ticket.nombre,
-            Paciente: ticket.paciente,
+            Paciente: ticket.paciente?.nombre, // Send paciente's name
             Sintomas: ticket.sintomas,
             Incidencia: ticket.incidencia,
             Riesgo: ticket.riesgo,
@@ -43,11 +45,25 @@ router.get('/list', async (req, res) => {
 // Ruta para obtener un ticket por ID
 router.get('/:id', async (req, res) => {
     try {
-        const ticketById = await ticket.model.findById(req.params.id);
+        const ticketById = await ticket.model.findById(req.params.id).populate({path: 'paciente', select: 'nombre'});;
+        const response = {
+            id: ticketById._id,
+            Nombre: ticketById.nombre,
+            Paciente: ticketById.paciente?.nombre,
+            Sintomas: ticketById.sintomas,
+            Incidencia: ticketById.incidencia,
+            Riesgo: ticketById.riesgo,
+            Comentarios: ticketById.comentarios,
+            FechaDeRegistro: ticketById.fechaCreacion,
+            FechaDeCierre: ticketById.fechaCierre,
+            Estatus: ticketById.estatus
+        };
+
         if (!ticketById) {
             return res.status(404).json({ message: 'Ticket no encontrado' });
         }
-        res.status(200).json(ticketById);
+
+        res.status(200).json(response);
     } catch (err) {
         res.status(400).json({ message: 'Error al obtener el ticket', error: err });
     }
