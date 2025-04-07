@@ -1,4 +1,4 @@
-import React from 'react'
+import React from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import { Link } from 'react-router-dom';
@@ -7,7 +7,7 @@ const ModuleCard = ({ title, text, route }) => {
   return (
     <Link to={route} style={{ textDecoration: 'none' }} draggable="false">
       <Box sx={{
-        width: '250px',
+        width: '350px',  // Fijar el ancho de las tarjetas
         height: '130px',
         borderRadius: '15px',
         display: 'flex',
@@ -33,7 +33,7 @@ const ModuleCard = ({ title, text, route }) => {
         </Typography>
       </Box>
     </Link>
-  )
+  );
 }
 
-export default ModuleCard
+export default ModuleCard;

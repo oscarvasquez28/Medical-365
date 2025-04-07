@@ -1,7 +1,7 @@
 require('dotenv').config();
 const mongoose = require('mongoose');
 
-const uri = process.env.CONNECTION_STRING_TO_DB;
+const uri = process.env.Conexion_STRING_TO_DB;
 const path = process.env.PATH_TO_CERTIFICATE;
 
 //Connect to MongoDB Atlas with X.509 authentication and TLS 

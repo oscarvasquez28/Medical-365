@@ -1,124 +1,164 @@
-import React from 'react'
+import { React, useState, useEffect } from 'react'
+import TicketsAPI from '../../services/TicketsAPI'
 import NavigationButton from '../../common/components/NavigationButton'
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
 import DataTable from '../../common/components/DataTable'
 import TextField from '@mui/material/TextField'
-import Grid2 from '@mui/material/Grid2'
-
+import MenuItem from '@mui/material/MenuItem'
+import Stack from '@mui/material/Stack'
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import CustomBreadcrumb from '../../common/components/CustomBreadcrumb'
 
 const columns = [
   { field: 'id', headerName: 'ID', width: 90 },
   {
-    field: 'firstName',
-    headerName: 'First name',
+    field: 'nombre',
+    headerName: 'Nombre del Ticket',
     width: 150,
-    editable: true,
   },
   {
-    field: 'lastName',
-    headerName: 'Last name',
+    field: 'paciente',
+    headerName: 'Paciente',
     width: 150,
-    editable: true,
   },
   {
-    field: 'age',
-    headerName: 'Age',
-    type: 'number',
-    width: 110,
-    editable: true,
+    field: 'incidencia',
+    headerName: 'Tipo de Incidencia',
+    width: 150,
   },
   {
-    field: 'fullName',
-    headerName: 'Full name',
-    description: 'This column has a value getter and is not sortable.',
-    sortable: false,
+    field: 'sintomas',
+    headerName: 'Síntomas',
+    width: 200,
+  },
+  {
+    field: 'comentarios',
+    headerName: 'Comentarios',
+    width: 200,
+  },
+  {
+    field: 'fechaDeRegistro',
+    headerName: 'Fecha de Registro',
+    width: 150,
+  },
+  {
+    field: 'fechaDeCierre',
+    headerName: 'Fecha de Cierre',
+    width: 150,
+  },
+  {
+    field: 'riesgo',
+    headerName: 'Riesgo',
+    width: 120,
+  },
+  {
+    field: 'estatus',
+    headerName: 'Estatus',
+    width: 120,
+  },
+  {
+    field: 'actions',
+    headerName: 'Acciones',
     width: 160,
-    valueGetter: (value, row) => `${row.firstName || ''} ${row.lastName || ''}`,
-  },
+    renderCell: (params) => (
+        <NavigationButton
+          variant={'contained'}
+          Text='Editar'
+          color={'info'}
+          Route={`editTicket/${params.row.id}`}/>
+    ),
+  }
 ];
 
-const rows = [
-  { id: 1, lastName: 'Snow', firstName: 'Jon', age: 14 },
-  { id: 2, lastName: 'Lannister', firstName: 'Cersei', age: 31 },
-  { id: 3, lastName: 'Lannister', firstName: 'Jaime', age: 31 },
-  { id: 4, lastName: 'Stark', firstName: 'Arya', age: 11 },
-  { id: 5, lastName: 'Targaryen', firstName: 'Daenerys', age: null },
-  { id: 6, lastName: 'Melisandre', firstName: 'Daenerys', age: 150 },
-  { id: 7, lastName: 'Clifford', firstName: 'Ferrara', age: 44 },
-  { id: 8, lastName: 'Frances', firstName: 'Rossini', age: 36 },
-  { id: 9, lastName: 'Roxie', firstName: 'Harvey', age: 65 },
-  { id: 10, lastName: 'Roxie', firstName: 'Harvey', age: 65 },
-  { id: 11, lastName: 'Roxie', firstName: 'Harvey', age: 65 },
-];
+const breadcrumbs = [
+  { label: 'Inicio', href: '/' },
+  { label: 'Tickets'}
+]
 
 const Tickets = () => {
+    const [ticket, setTicket] = useState([]);
+
+      useEffect(() => {
+        getTickets();
+      }, []);
+
+      async function getTickets() {
+        try {
+          const {data} = await TicketsAPI.getTicketsTable();
+          setTicket(data);
+          console.log(data);
+        } catch (error) {
+          console.error(error);
+          setTicket([]);
+        }
+      }
+
   return (
     <>
     <Container>
     <Box sx={{ flexGrow: 1, mt: '2rem' }}>
-          <Grid2 container spacing={2}>
-            <Grid2 size={12}>
-              <TextField
-                id="outlined-basic"
-                label="Outlined"
-                variant="outlined"
-                fullWidth
-              />
-            </Grid2>
-            <Grid2 size={{xs: 6, sm: 6, md:6, lg: 3, xl: 3}}>
-              <TextField
-                id="outlined-basic"
-                label="Outlined"
-                variant="outlined"
-                fullWidth
-              />
-            </Grid2>
-            <Grid2 size={{xs: 6, sm: 6, md:6, lg: 3, xl: 3}}>
-              <TextField
-                id="outlined-basic"
-                label="Outlined"
-                variant="outlined"
-                fullWidth
-              />
-            </Grid2>
-            <Grid2 size={{xs: 6, sm: 6, md:6, lg: 3, xl: 3}}>
-              <TextField
-                id="outlined-basic"
-                label="Outlined"
-                variant="outlined"
-                fullWidth
-              />
-            </Grid2>
-            <Grid2 size={{xs: 6, sm: 6, md:6, lg: 3, xl: 3}}>
-              <TextField
-                id="outlined-basic"
-                label="Outlined"
-                variant="outlined"
-                fullWidth
-              />
-            </Grid2>
-          </Grid2>
-        </Box>
-      <DataTable
-        rows={rows}
-        columns={columns}
-      />
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', marginTop: '2rem' }}>
-        <NavigationButton
-          variant = {'outlined'}
-          Text='Regresar'
-          color={'info'}
-          Route={'/'}/>
-        <NavigationButton
-          variant = {'outlined'}
-          Text='Agregar Ticket'
-          color={'info'}
-          Route={'/'}/>
-      </Box>
-
+      <CustomBreadcrumb breadcrumbs={breadcrumbs}/>
+      <Stack direction={{ xs: 'row', sm: 'row' }} spacing={3} >
+        <TextField
+          id="outlined-basic"
+          label="Ticket"
+          variant="outlined"
+          fullWidth
+        />
+      </Stack>
+      <Stack direction={{ xs: 'col', sm: 'row' }} spacing={3} sx={{ paddingTop: 3, borderRadius: '1rem'}}>
+        <TextField
+          id="colaborador"
+          label="Colaborador"
+          select
+          fullWidth
+        >
+          <MenuItem value="idCollaborator1">Oscar Vásquez</MenuItem>
+          <MenuItem value="idCollaborator2">Max Zertuche</MenuItem>
+          <MenuItem value="idCollaborator3">Carlos Pecina</MenuItem>
+        </TextField>
+        <TextField
+          id="tipoIncidencia"
+          label="Tipo de Incidencia"
+          select
+          fullWidth
+        >
+          <MenuItem value="Incidencia1">Incidencia 1</MenuItem>
+          <MenuItem value="Incidencia2">Incidencia 2</MenuItem>
+          <MenuItem value="Incidencia3">Incidencia 3</MenuItem>
+        </TextField>
+        <DatePicker
+          label="Fecha Inicio"
+          // value={value}
+          // onChange={(newValue) => setValue(newValue)}
+          sx={{ width: '100%' }}
+        />
+         <DatePicker
+          label="Fecha Fin"
+          // value={value}
+          // onChange={(newValue) => setValue(newValue)}
+          sx={{ width: '100%' }}
+        />
+      </Stack>
+    </Box>
+    <DataTable
+      rows={ticket}
+      columns={columns}
+    />
+    <Box sx={{ display: 'flex', justifyContent: 'space-between', marginTop: '2rem' }}>
+      <NavigationButton
+        variant = {'outlined'}
+        Text='Regresar'
+        color={'info'}
+        Route={'/'}/>
+      <NavigationButton
+        variant = {'outlined'}
+        Text='Agregar Ticket'
+        color={'info'}
+        Route={'addTicket'}/>
+    </Box>
     </Container>
-
     </>
   )
 }
