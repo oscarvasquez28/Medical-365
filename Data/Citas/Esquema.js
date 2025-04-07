@@ -20,6 +20,10 @@ export default class Citas {
             type: String,
             required: true
         },
+        recurso: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Recursos', // Reference to the Recursos collection
+        },
         riesgo: {
             type: String,
             enum: ['Bajo', 'Medio', 'Alto'],
