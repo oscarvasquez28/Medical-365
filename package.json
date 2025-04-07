@@ -1,9 +1,13 @@
 {
   "type": "module",
   "scripts": {
+    "installServer": "cd Server && npm install",
+    "installClient": "cd Client && npm install",
+    "install": "npm run installServer && npm run installClient",
     "server": "node Server/src/server.js",
     "client": "cd Client && npm run dev",
-    "webApp": "concurrently \"npm run server\" \"npm run client\""
+    "webApp": "concurrently \"npm run server\" \"npm run client\"",
+    "installAndRun": "npm run install && npm run webApp"
   },
   "dependencies": {
     "concurrently": "^8.2.0"
