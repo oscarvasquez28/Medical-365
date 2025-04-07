@@ -63,7 +63,7 @@ const collaboratorSchema = new mongoose.Schema({
         default: null // Use null instead of a default date
     },
     departamento: {
-        type: Number,
+        type: String,
         default: null // Use null instead of a default date
     },
     activo: {
@@ -83,6 +83,23 @@ collaboratorSchema.pre('save', async function (next) {
       next();
     } catch (error) {
       next(error);
+    }
+});
+
+// Middleware para encriptar la contraseña antes de actualizar
+collaboratorSchema.pre('updateOne', async function (next) {
+    const update = this.getUpdate();
+    if (update.contraseña) {
+        try {
+            const salt = await bcrypt.genSalt(10);
+            update.contraseña = await bcrypt.hash(update.contraseña, salt);
+            console.log('Contraseña encriptada:', update.contraseña); // Imprimir la contraseña encriptada
+            next();
+        } catch (error) {
+            next(error);
+        }
+    } else {
+        next();
     }
 });
 
