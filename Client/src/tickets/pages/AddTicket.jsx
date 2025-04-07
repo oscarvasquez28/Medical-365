@@ -113,7 +113,7 @@ const AddTicket = () => {
                 name="incidence"
               >
                 {incident.map((option) => (
-                  <MenuItem key={option.value} value={option.label}>
+                  <MenuItem key={option.value} value={option.value}>
                     {option.label}
                   </MenuItem>
                 ))}
@@ -123,8 +123,8 @@ const AddTicket = () => {
                 multiple
                 options={symptoms} // Pasa el array completo de objetos
                 getOptionLabel={(option) => option.label} // Muestra el label de cada opción
-                value={ticket.symptoms.map((symptom) => ({ label: symptom }))} // Convierte los labels almacenados en objetos para que el Autocomplete funcione
-                onChange={(_, value) => setTicket({ ...ticket, symptoms: value.map((item) => item.label) })} // Guarda solo los labels
+                value={ticket.symptoms.map((symptom) => symptoms.find((s) => s.value === symptom) || { label: '', value: symptom })} // Convierte los valores almacenados en objetos para que el Autocomplete funcione
+                onChange={(_, value) => setTicket({ ...ticket, symptoms: value.map((item) => item.value) })} // Guarda solo los valores
                 renderInput={(params) => <TextField {...params} label="Síntomas" />}
               />
               <TextField
