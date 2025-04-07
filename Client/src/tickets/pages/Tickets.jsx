@@ -13,42 +13,47 @@ import CustomBreadcrumb from '../../common/components/CustomBreadcrumb'
 const columns = [
   { field: 'id', headerName: 'ID', width: 90 },
   {
-    field: 'Nombre',
+    field: 'nombre',
     headerName: 'Nombre del Ticket',
     width: 150,
   },
   {
-    field: 'Paciente',
+    field: 'paciente',
     headerName: 'Paciente',
     width: 150,
   },
   {
-    field: 'Incidencia',
+    field: 'incidencia',
     headerName: 'Tipo de Incidencia',
     width: 150,
   },
   {
-    field: 'Sintomas',
+    field: 'sintomas',
     headerName: 'Síntomas',
     width: 200,
   },
   {
-    field: 'Comentarios',
+    field: 'comentarios',
     headerName: 'Comentarios',
     width: 200,
   },
   {
-    field: 'FechaDeRegistro',
+    field: 'fechaDeRegistro',
     headerName: 'Fecha de Registro',
     width: 150,
   },
   {
-    field: 'FechaDeCierre',
+    field: 'fechaDeCierre',
     headerName: 'Fecha de Cierre',
     width: 150,
   },
   {
-    field: 'Estatus',
+    field: 'riesgo',
+    headerName: 'Riesgo',
+    width: 120,
+  },
+  {
+    field: 'estatus',
     headerName: 'Estatus',
     width: 120,
   },
@@ -61,7 +66,7 @@ const columns = [
           variant={'contained'}
           Text='Editar'
           color={'info'}
-          Route={`editTicket/${params.row._id}`}/>
+          Route={`editTicket/${params.row.id}`}/>
     ),
   }
 ];
@@ -80,7 +85,7 @@ const Tickets = () => {
 
       async function getTickets() {
         try {
-          const {data} = await TicketsAPI.getTickets();
+          const {data} = await TicketsAPI.getTicketsTable();
           setTicket(data);
           console.log(data);
         } catch (error) {
