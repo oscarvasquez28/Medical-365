@@ -57,7 +57,7 @@ router.get('/:id', async (req, res) => {
 router.get('/status/list', async (_, res) => {
     try {
       const response = ticket.model.schema.path('estatus').enumValues.map(value => ({
-        value: value.toLowerCase(),
+        value: value,
         label: value
       }));
       res.status(200).json(response);

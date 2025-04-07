@@ -14,6 +14,7 @@ router.get('/', async (req, res) => {
         res.status(400).json({ message: 'Error al obtener los tipos de incidencias', error: err });
     }
 });
+
 router.get('/list', async (req, res) => {
     try {
         const incidentTypes = await incidencia.model.find();
