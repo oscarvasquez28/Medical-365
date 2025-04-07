@@ -1,4 +1,5 @@
-import React from 'react'
+import { React, useState, useEffect } from 'react'
+import ResourcesAPI from '../../services/ResourcesAPI'
 import NavigationButton from '../../common/components/NavigationButton'
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
@@ -11,23 +12,28 @@ import CustomBreadcrumb from '../../common/components/CustomBreadcrumb'
 const columns = [
   { field: 'id', headerName: 'ID', width: 90 },
   {
-    field: 'nombre',
+    field: 'Nombre',
     headerName: 'Nombre',
     width: 150,
   },
   {
-    field: 'version',
+    field: 'Version',
     headerName: 'Versión',
     width: 150,
   },
   {
-    field: 'descripcion',
+    field: 'Descripcion',
     headerName: 'Descripción',
     width: 200,
   },
   {
-    field: 'estatus',
-    headerName: 'Estatus',
+    field: 'FechaDeRegistro',
+    headerName: 'Fecha de Registro',
+    width: 180,
+  },
+  {
+    field: 'Estado',
+    headerName: 'Estado',
     width: 150,
   },
   {
@@ -36,25 +42,12 @@ const columns = [
     width: 160,
     renderCell: (params) => (
         <NavigationButton
-          variant = {'contained'}
+          variant={'contained'}
           Text='Editar'
           color={'info'}
-          Route={`editResource/${params.id}`}/>
+          Route={`editResource/${params.row.id}`}/>
     ),
   }
-];
-
-const rows = [
-  { id: 1, nombre: 'Recurso 1', version: '1.0', descripcion: 'Descripción del recurso 1', estatus: 'Activo' },
-  { id: 2, nombre: 'Recurso 2', version: '1.1', descripcion: 'Descripción del recurso 2', estatus: 'Inactivo' },
-  { id: 3, nombre: 'Recurso 3', version: '2.0', descripcion: 'Descripción del recurso 3', estatus: 'Activo' },
-  { id: 4, nombre: 'Recurso 4', version: '2.1', descripcion: 'Descripción del recurso 4', estatus: 'Inactivo' },
-  { id: 5, nombre: 'Recurso 5', version: '3.0', descripcion: 'Descripción del recurso 5', estatus: 'Activo' },
-  { id: 6, nombre: 'Recurso 6', version: '3.1', descripcion: 'Descripción del recurso 6', estatus: 'Inactivo' },
-  { id: 7, nombre: 'Recurso 7', version: '4.0', descripcion: 'Descripción del recurso 7', estatus: 'Inactivo' },
-  { id: 8, nombre: 'Recurso 8', version: '4.1', descripcion: 'Descripción del recurso 8', estatus: 'Activo' },
-  { id: 9, nombre: 'Recurso 9', version: '5.0', descripcion: 'Descripción del recurso 9', estatus: 'Inactivo' },
-  { id: 10, nombre: 'Recurso 10', version: '5.1', descripcion: 'Descripción del recurso 10', estatus: 'Activo' },
 ];
 
 const breadcrumbs = [
@@ -63,6 +56,23 @@ const breadcrumbs = [
 ]
 
 const Resources = () => {
+  const [resource, setResource] = useState([]);
+
+    useEffect(() => {
+      getResources();
+    }, []);
+
+    async function getResources() {
+      try {
+        const {data} = await ResourcesAPI.getToolings();
+        setResource(data);
+        console.log(data);
+      } catch (error) {
+        console.error(error);
+        setResource([]);
+      }
+    }
+
   return (
     <>
     <Container>
@@ -86,7 +96,7 @@ const Resources = () => {
       </Stack>
     </Box>
     <DataTable
-      rows={rows}
+      rows={resource}
       columns={columns}
     />
     <Box sx={{ display: 'flex', justifyContent: 'space-between', marginTop: '2rem' }}>
