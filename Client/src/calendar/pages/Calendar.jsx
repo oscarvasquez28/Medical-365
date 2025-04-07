@@ -36,7 +36,7 @@ const Calendar = () => {
       console.log("Eventos formateados:", formattedEvents);
     } catch (error) {
       console.error(error);
-      setAppointments([]);
+      setEvents([]);
     }
   }
 
