@@ -11,15 +11,21 @@ router.get('/', async (req, res) => {
   try {
     // Obtener todas las citas
     const appointments = await Appointment.model.find();
-    const response = appointments.map(appointment => ({
-      id: appointment._id,
-      Ticket: appointment.ticket,
-      Doctor: appointment.doctor,
-      Riesgo: appointment.riesgo,
-      Diagnostico: appointment.diagnostico,
-      FechaCita: appointment.fechaCita,
-      UltimoUsuarioEnModificar: appointment.ultimoUsuarioEnModificar,
-      Estatus: appointment.estatus,
+    const response = await Promise.all(appointments.map(async appointment => {
+      const ticket = await Tickets.model.findById(appointment.ticket);
+      if (ticket) { // Filtrar por ID del paciente
+        return {
+          id: appointment._id,
+          Ticket: ticket ? ticket.nombre : null,
+          Doctor: appointment.doctor,
+          Riesgo: appointment.riesgo,
+          Diagnostico: appointment.diagnostico,
+          FechaCita: appointment.fechaCita,
+          UltimoUsuarioEnModificar: appointment.ultimoUsuarioEnModificar,
+          Estatus: appointment.estatus,
+        };
+      }
+      return null;
     }));
     // Responder con las citas encontradas
     res.status(200).json(response);
@@ -40,7 +46,7 @@ router.get('/calendar/:id', async (req, res) => {
         if (ticket && ticket.paciente === id) { // Filtrar por ID del paciente
           return {
             id: appointment._id,
-            title: ticket.name,
+            title: ticket.nombre,
             start: appointment.fechaCita,
             end: appointment.fechaCita,
             allDay: true,
@@ -64,13 +70,22 @@ router.get('/calendar', async (req, res) => {
   try {
     // Obtener todas las citas
     const appointments = await Appointment.model.find();
-    const response = appointments.map(appointment => ({
-      id: appointment._id,
-      title: appointment.ticket,
-      start: appointment.fechaCita,
-      end: appointment.fechaCita,
-      allDay: true,
-    }));
+    const response = await Promise.all(
+      appointments.map(async (appointment) => {
+        const ticket = await Tickets.model.findById(appointment.ticket);
+        if (ticket) { // Filtrar por ID del paciente
+          return {
+            id: appointment._id,
+            title: ticket.nombre,
+            start: appointment.fechaCita,
+            end: appointment.fechaCita,
+            allDay: true,
+          };
+        }
+        return null;
+      })
+    );
+
     // Responder con las citas encontradas
     res.status(200).json(response);
   } catch (err) {
