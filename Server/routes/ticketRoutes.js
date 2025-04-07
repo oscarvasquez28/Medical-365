@@ -92,7 +92,7 @@ router.post('/', async (req, res) => {
             riesgo: risk || null,
             comentarios: comments,
             fechaCierre: closeDate || null,
-            estatus: estatus || 'pendiente'
+            estatus: estatus || 'Pendiente'
         });
         await newTicket.save();
         res.status(201).json({ message: 'Ticket creado con éxito', ticket: newTicket });
