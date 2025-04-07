@@ -68,7 +68,7 @@ function App() {
           </Route>
 
           <Route
-            path="/calendar"
+            path="/calendar/:id"
             element={<PrivateRoute requiredRoles={["admin", "user"]} layout={MainLayout} />}
           >
             <Route index element={<Calendar />} />
