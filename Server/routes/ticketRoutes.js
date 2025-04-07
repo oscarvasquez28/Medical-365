@@ -1,10 +1,8 @@
 // routes/ticketRoutes.js
 import express from 'express';
 import Ticket from '../../Data/Tickets/Esquema.js';
-import Colaborator from '../../Data/Colaboradores/Esquema.js';
 const router = express.Router();
 const ticket = new Ticket();
-const paciente = new Colaborator(); // Asumiendo que tienes un modelo de paciente similar
 
 // Ruta para obtener todos los tickets
 router.get('/', async (req, res) => {

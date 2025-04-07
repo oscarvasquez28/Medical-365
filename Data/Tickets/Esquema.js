@@ -13,7 +13,7 @@ const ticketSchema = new mongoose.Schema({
         required: [true, 'Patient ID is required']
     },
     sintomas: {
-        type: [String], // Array of strings
+        type: [mongoose.Schema.Types.ObjectId], // Array of objects with id and value
         required: [true, 'Sintomas are required']
     },
     incidencia: {
