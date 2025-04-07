@@ -50,7 +50,7 @@ router.post('/', async (req, res) => {
       riesgo: risk,
       fechaCita: appointmentDate,
       ultimoUsuarioEnModificar: lastModifiedBy,
-      estatus: status,
+      estatus: status || 'Pendiente',
     });
 
     // Guardar la nueva cita en la base de datos
