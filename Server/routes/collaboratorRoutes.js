@@ -78,7 +78,7 @@ router.post('/', async (req, res) => {
 router.get('/status/list', async (_, res) => {
   try {
     const response = Collaborator.model.schema.path('estatus').enumValues.map(value => ({
-      value: value.toLowerCase(),
+      value: value,
       label: value
     }));
     res.status(200).json(response);
@@ -90,7 +90,7 @@ router.get('/status/list', async (_, res) => {
 router.get('/roles/list', async (_, res) => {
   try {
     const response = Collaborator.model.schema.path('rol').enumValues.map(value => ({
-      value: value.toLowerCase(),
+      value: value,
       label: value
     }));
     res.status(200).json(response);
@@ -102,7 +102,7 @@ router.get('/roles/list', async (_, res) => {
 router.get('/genders/list', async (_, res) => {
   try {
     const response = Collaborator.model.schema.path('genero').enumValues.map(value => ({
-      value: value.toLowerCase(),
+      value: value,
       label: value
     }));
     res.status(200).json(response);

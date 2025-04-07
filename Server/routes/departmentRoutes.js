@@ -36,6 +36,7 @@ router.get('/', async (req, res) => {
     res.status(400).json({ message: 'Error al obtener los departamentos', error: err });
   }
 });
+
 router.get('/list', async (req, res) => {
   try {
     const departments = await Department.model.find(); // Obtiene todos los departamentos

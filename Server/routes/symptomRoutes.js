@@ -14,6 +14,7 @@ router.get('/', async (req, res) => {
         res.status(400).json({ message: 'Error al obtener los síntomas', error: err });
     }
 });
+
 router.get('/list', async (req, res) => {
     try {
         const sintomas = await sintoma.model.find();
