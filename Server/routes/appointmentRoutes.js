@@ -5,7 +5,7 @@ import Tickets from '../../Data/Tickets/Esquema.js'; // Importa el modelo Ticket
 
 const router = express.Router();
 const Appointment = new Appointments();
-const Tickets = new Tickets();
+const Ticket = new Tickets();
 
 router.get('/', async (req, res) => {
   try {
@@ -201,7 +201,7 @@ router.put('/:id', async (req, res) => {
     const { ticket, doctor, risk, tooling, diagnosis, appointmentDate, lastModifiedBy, status } = req.body;
 
     // Actualizar la cita por ID
-    const updatedTicket = await Tickets.model.findByIdAndUpdate(
+    const updatedTicket = await Ticket.model.findByIdAndUpdate(
       ticket,
       {
         ...(status && { estatus: status }),
