@@ -1,9 +1,11 @@
 // routes/appointmentRoutes.js
 import express from 'express';
 import Appointments from '../../Data/Citas/Esquema.js'; // Importa el modelo Citas
+import Tickets from '../../Data/Tickets/Esquema.js'; // Importa el modelo Tickets
 
 const router = express.Router();
 const Appointment = new Appointments();
+const Tickets = new Tickets();
 
 router.get('/', async (req, res) => {
   try {
@@ -15,6 +17,63 @@ router.get('/', async (req, res) => {
           Ticket: appointment.ticket?.nombre,
           Doctor: appointment.doctor,
           Riesgo: appointment.riesgo,
+          Recurso: appointment.recurso,
+          Diagnostico: appointment.diagnostico,
+          FechaCita: appointment.fechaCita,
+          UltimoUsuarioEnModificar: appointment.ultimoUsuarioEnModificar,
+          Estatus: appointment.estatus,
+        };
+    });
+    // Responder con las citas encontradas
+    res.status(200).json(response);
+  } catch (err) {
+    res.status(400).json({ message: 'Error al obtener las citas', error: err });
+  }
+});
+
+router.get('/:id', async (req, res) => {
+  try {
+    // Obtener cita por ID
+    const appointment = await Appointment.model.findById(req.params.id).populate('ticket');
+
+    if (!appointment) {
+      return res.status(404).json({ message: 'Cita no encontrada' });
+    }
+
+    const response = {
+      id: appointment._id,
+      Ticket: appointment.ticket?.nombre,
+      Doctor: appointment.doctor,
+      Riesgo: appointment.riesgo,
+      Recurso: appointment.recurso,
+      Diagnostico: appointment.diagnostico,
+      FechaCita: appointment.fechaCita,
+      UltimoUsuarioEnModificar: appointment.ultimoUsuarioEnModificar,
+      Estatus: appointment.estatus,
+    };
+
+    // Responder con las citas encontradas
+    res.status(200).json(response);
+  } catch (err) {
+    res.status(400).json({ message: 'Error al obtener las citas', error: err });
+  }
+});
+
+router.get('/table', async (req, res) => {
+  try {
+    // Obtener todas las citas
+    const appointmentsWithTickets = await Appointment.model
+      .find()
+      .populate('ticket')
+      .populate({ path: 'recurso', select: 'nombre' });
+
+    const response = appointmentsWithTickets.map(appointment => {
+        return {
+          id: appointment._id,
+          Ticket: appointment.ticket?.nombre,
+          Doctor: appointment.doctor,
+          Riesgo: appointment.riesgo,
+          Recurso: appointment.recurso?.nombre,
           Diagnostico: appointment.diagnostico,
           FechaCita: appointment.fechaCita,
           UltimoUsuarioEnModificar: appointment.ultimoUsuarioEnModificar,
@@ -33,22 +92,19 @@ router.get('/calendar/:id', async (req, res) => {
     const { id } = req.params; // Obtener el ID del paciente desde los parámetros de la URL
 
     // Obtener todas las citas
-    const appointments = await Appointment.model.find();
-    const response = await Promise.all(
-      appointments.map(async (appointment) => {
-        const ticket = await Tickets.model.findById(appointment.ticket);
-        if (ticket && ticket.paciente === id) { // Filtrar por ID del paciente
+    const appointments = await Appointment.model.find().populate('ticket');
+    const response = appointments.map((appointment) => {
+        if (appointment.ticket && appointment.ticket.paciente === id) { // Filtrar por ID del paciente
           return {
             id: appointment._id,
-            title: ticket.nombre,
+            title: appointment.ticket.nombre,
             start: appointment.fechaCita,
             end: appointment.fechaCita,
             allDay: true,
           };
         }
         return null;
-      })
-    );
+    }).filter(appointment => appointment !== null); // Filtrar las citas no nulas
 
     // Filtrar las citas no nulas
     const filteredResponse = response.filter(appointment => appointment !== null);
@@ -63,22 +119,19 @@ router.get('/calendar/:id', async (req, res) => {
 router.get('/calendar', async (req, res) => {
   try {
     // Obtener todas las citas
-    const appointments = await Appointment.model.find();
-    const response = await Promise.all(
-      appointments.map(async (appointment) => {
-        const ticket = await Tickets.model.findById(appointment.ticket);
-        if (ticket) { // Filtrar por ID del paciente
-          return {
-            id: appointment._id,
-            title: ticket.nombre,
-            start: appointment.fechaCita,
-            end: appointment.fechaCita,
-            allDay: true,
-          };
-        }
-        return null;
-      })
-    );
+    const appointments = await Appointment.model.find().populate('ticket');
+    const response = appointments.map((appointment) => {
+      if (appointment.ticket) { // Verificar si el ticket existe
+        return {
+          id: appointment._id,
+          title: appointment.ticket.nombre,
+          start: appointment.fechaCita,
+          end: appointment.fechaCita,
+          allDay: true,
+        };
+      }
+      return null;
+    }).filter(appointment => appointment !== null); // Filtrar las citas no nulas
 
     // Responder con las citas encontradas
     res.status(200).json(response);
@@ -145,7 +198,7 @@ router.get('/appointment/:folio', async (req, res) => {
 
 router.put('/:id', async (req, res) => {
   try {
-    const { ticket, doctor, risk, diagnosis, appointmentDate, lastModifiedBy, status } = req.body;
+    const { ticket, doctor, risk, tooling, diagnosis, appointmentDate, lastModifiedBy, status } = req.body;
 
     // Actualizar la cita por ID
     const updatedTicket = await Tickets.model.findByIdAndUpdate(
@@ -162,6 +215,7 @@ router.put('/:id', async (req, res) => {
         ...(ticket && { ticket: ticket }),
         ...(doctor && { doctor: doctor }),
         ...(risk && { riesgo: risk }),
+        ...(tooling && { recurso: tooling }),
         ...(appointmentDate && { fechaCita: appointmentDate }),
         ...(lastModifiedBy && { ultimoUsuarioEnModificar: lastModifiedBy }),
         ...(status && { estatus: status }),
