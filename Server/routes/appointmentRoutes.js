@@ -85,14 +85,9 @@ router.get('/:id', async (req, res) => {
     // Obtener cita por ID
     const foundAppointment = await Appointment.model.findById(req.params.id)
       .populate('ticket');
-      const appointmentsWithTickets = await Appointment.model
-        .find()
-        .populate('ticket');
   
-    for (const appointment of appointmentsWithTickets) {
-      if (appointment.ticket) {
-        appointment.ticket = await Ticket.model.findById(appointment.ticket).populate('paciente');
-      }
+    if (foundAppointment.ticket) {
+      foundAppointment.ticket = await Ticket.model.findById(foundAppointment.ticket).populate('paciente');
     }
 
     if (!foundAppointment) {
