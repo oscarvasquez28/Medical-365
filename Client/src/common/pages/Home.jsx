@@ -1,4 +1,5 @@
-import React from 'react'
+import {React, useContext} from 'react'
+import {UserContext} from '../../Context/UserContext.jsx';
 import Box from '@mui/material/Box';
 import ModuleCard from '../components/ModuleCard';
 import Dashboard from '../components/Dashboard';
@@ -7,6 +8,7 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 
 const Home = () => {
+  const { user } = useContext(UserContext);
   return (
     <>
     <Box minHeight="100vh">
@@ -34,7 +36,7 @@ const Home = () => {
           <ModuleCard
             title="Calendario"
             text="Coordina y gestiona eventos y actividades importantes "
-            route="/calendar" />
+            route={`/calendar/${user.id}`} />
           <ModuleCard
             title="Recursos"
             text="Administra los recursos disponibles para tu equipo "
