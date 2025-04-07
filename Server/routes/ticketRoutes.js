@@ -90,7 +90,23 @@ router.post('/', async (req, res) => {
 // Ruta para actualizar un ticket por ID
 router.put('/:id', async (req, res) => {
     try {
-        const updatedTicket = await ticket.model.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        const { name, patient, symptoms, incidence, risk, comments, closeDate, estatus } = req.body;
+
+        const updatedTicket = await ticket.model.findByIdAndUpdate(
+            req.params.id,
+            {
+                ...(name && { nombre: name }),
+                ...(patient && { paciente: patient }),
+                ...(symptoms && { sintomas: symptoms }),
+                ...(incidence && { incidencia: incidence }),
+                ...(risk !== undefined && { riesgo: risk }),
+                ...(comments && { comentarios: comments }),
+                ...(closeDate && { fechaCierre: closeDate }),
+                ...(estatus && { estatus: estatus })
+            },
+            { new: true }
+        );
+
         if (!updatedTicket) {
             return res.status(404).json({ message: 'Ticket no encontrado' });
         }
