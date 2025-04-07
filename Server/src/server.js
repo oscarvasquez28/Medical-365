@@ -2,6 +2,7 @@ import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import Context from '../../Data/Contexto.js';
+import { authenticateJWT } from '../middleware/authMiddleware.js';
 import collaboratorRoutes from '../routes/collaboratorRoutes.js';
 import incidentTypeRoutes from '../routes/incidentTypeRoutes.js';
 import appointmentRoutes from '../routes/appointmentRoutes.js';
@@ -14,6 +15,9 @@ import riskRoutes from '../routes/riskRoutes.js';
 
 // Configurar variables de entorno
 const result = dotenv.config( {path: 'Server/.env'} );
+const auth = false; // Cambia esto a false si no quieres usar autenticación JWT
+
+const authFunction = auth ? authenticateJWT : (req, res, next) => { next(); };
 
 if (result.error) {
     throw "\nThere was an error setting up environtment variables\n" + result.error;
@@ -29,15 +33,15 @@ app.use(express.json());
 const context = new Context();
 
 // Usar las rutas de cada colección
-app.use('/api/collaborators', collaboratorRoutes);
-app.use('/api/incidentTypes', incidentTypeRoutes);
-app.use('/api/appointments', appointmentRoutes);
-app.use('/api/departments', departmentRoutes);
-app.use('/api/indicators', indicatorRoutes);
-app.use('/api/toolings', toolingRoutes);
-app.use('/api/symptoms', symptomRoutes);
-app.use('/api/tickets', ticketRoutes);
-app.use('/api/risks', riskRoutes);
+app.use('/api/collaborators', authFunction, collaboratorRoutes);
+app.use('/api/incidentTypes', authFunction, incidentTypeRoutes);
+app.use('/api/appointments', authFunction, appointmentRoutes);
+app.use('/api/departments', authFunction, departmentRoutes);
+app.use('/api/indicators', authFunction, indicatorRoutes);
+app.use('/api/toolings', authFunction, toolingRoutes);
+app.use('/api/symptoms', authFunction, symptomRoutes);
+app.use('/api/tickets', authFunction, ticketRoutes);
+app.use('/api/risks', authFunction, riskRoutes);
 
 // Iniciar el servidor
 const PORT = process.env.PORT || 5000;
