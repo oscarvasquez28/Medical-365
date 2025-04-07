@@ -44,7 +44,7 @@ function App() {
 
           <Route
             path="/tickets"
-            element={<PrivateRoute requiredRoles={["admin", "user"]} layout={MainLayout} />}
+            element={<PrivateRoute requiredRoles={["admin", "user", "Administrador"]} layout={MainLayout} />}
           >
             <Route index element={<Tickets />} />
             <Route path="addTicket" element={<AddTicket />} />
@@ -53,7 +53,7 @@ function App() {
 
           <Route
             path="/appointments"
-            element={<PrivateRoute requiredRoles={["admin", "user"]} layout={MainLayout} />}
+            element={<PrivateRoute requiredRoles={["admin", "user", "Administrador"]} layout={MainLayout} />}
           >
             <Route index element={<Appointments />} />
             <Route path="addAppointment" element={<AddAppointment />} />
@@ -62,21 +62,21 @@ function App() {
 
           <Route
             path="/reports"
-            element={<PrivateRoute requiredRoles={["admin", "user"]} layout={MainLayout} />}
+            element={<PrivateRoute requiredRoles={["admin", "user", "Administrador"]} layout={MainLayout} />}
           >
             <Route index element={<Reports />} />
           </Route>
 
           <Route
             path="/calendar/:id"
-            element={<PrivateRoute requiredRoles={["admin", "user"]} layout={MainLayout} />}
+            element={<PrivateRoute requiredRoles={["admin", "user", "Administrador"]} layout={MainLayout} />}
           >
             <Route index element={<Calendar />} />
           </Route>
 
           <Route
             path="/resources"
-            element={<PrivateRoute requiredRoles={["admin", "user"]} layout={MainLayout} />}
+            element={<PrivateRoute requiredRoles={["admin", "user", "Administrador"]} layout={MainLayout} />}
           >
             <Route index element={<Resources />} />
             <Route path="addResource" element={<AddResource />} />
@@ -85,7 +85,7 @@ function App() {
 
           <Route
             path="/collaborators"
-            element={<PrivateRoute requiredRoles={["admin", "user"]} layout={MainLayout} />}
+            element={<PrivateRoute requiredRoles={["admin", "user", "Administrador"]} layout={MainLayout} />}
           >
             <Route index element={<Collaborators />} />
             <Route path="addCollaborator" element={<AddCollaborator />} />
