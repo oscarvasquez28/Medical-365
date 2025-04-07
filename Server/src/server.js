@@ -14,8 +14,14 @@ import ticketRoutes from '../routes/ticketRoutes.js';
 import riskRoutes from '../routes/riskRoutes.js';
 
 // Configurar variables de entorno
+var result = '';
+try {
+    var result = dotenv.config( {path: 'Server/.env'} );
+}
+catch (error) {
+    console.error("Error loading .env file:", error);
+}
 
-const result = dotenv.config( {path: 'Server/.env'} );
 const auth = false; // Cambia esto a false si no quieres usar autenticación JWT
 
 const authFunction = auth ? authenticateJWT : (req, res, next) => { next(); };

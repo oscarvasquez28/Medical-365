@@ -6,7 +6,7 @@
     "installData": "cd Data && npm install",
     "install": "npm run installServer && npm run installClient && npm run installData",
     "server": "node Server/src/server.js",
-    "client": "cd Client && npm run dev",
+    "client": "cd Client && npm run dev --host",
     "webApp": "concurrently \"npm run server\" \"npm run client\"",
     "installAndRun": "npm run install && npm run webApp"
   },
