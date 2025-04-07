@@ -12,21 +12,20 @@ export default class Citas {
             unique: true // Ensure caseFolio is unique
         },
         ticket: {
-            type: Number,
+            type: String,
             required: true
         },
         doctor: {
-            type: Number,
+            type: String,
             required: true
         },
         riesgo: {
             type: String,
-            enum: ['bajo', 'medio', 'alto'],
+            enum: ['Bajo', 'Medio', 'Alto'],
             required: true,
         },
         diagnostico: {
             type: String,
-            required: true
         },
         fechaCita: {
             type: Date,
@@ -50,7 +49,7 @@ export default class Citas {
         },
         estatus: {
             type: String,
-            enum: ['pendiente', 'cerrado', 'cancelado'],
+            enum: ['Pendiente', 'Cerrado', 'Cancelado'],
             required: true
         }
     });

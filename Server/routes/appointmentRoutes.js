@@ -26,17 +26,28 @@ router.get('/', async (req, res) => {
   }
 });
 
+router.get('/risks/list', async (req, res) => {
+  try {
+    const response = Appointment.model.schema.path('riesgo').enumValues.map(value => ({
+      value: value,
+      label: value
+    }));
+    res.status(200).json(response);
+  } catch (err) {
+    res.status(400).json({ message: 'Error al obtener los colaboradores', error: err });
+  }
+});
+
 // Ruta para crear una cita
 router.post('/', async (req, res) => {
   try {
-    const { ticket, doctor, risk, diagnosis, appointmentDate, lastModifiedBy, status } = req.body;
+    const { ticket, doctor, risk, appointmentDate, lastModifiedBy, status } = req.body;
 
     // Crear una nueva cita con los datos recibidos
     const newAppointment = new Appointment.model({
       ticket: ticket,
       doctor: doctor,
       riesgo: risk,
-      diagnostico: diagnosis,
       fechaCita: appointmentDate,
       ultimoUsuarioEnModificar: lastModifiedBy,
       estatus: status,
@@ -68,6 +79,37 @@ router.get('/appointment/:folio', async (req, res) => {
     res.status(200).json(appointment);
   } catch (err) {
     res.status(400).json({ message: 'Error al obtener la cita', error: err });
+  }
+});
+
+router.put('/:id', async (req, res) => {
+  try {
+    const { ticket, doctor, risk, diagnosis, appointmentDate, lastModifiedBy, status } = req.body;
+
+    // Actualizar la cita por ID
+    const updatedAppointment = await Appointment.model.findByIdAndUpdate(
+      req.params.id,
+      {
+        ...(ticket && { ticket: ticket }),
+        ...(doctor && { doctor: doctor }),
+        ...(risk && { riesgo: risk }),
+        ...(appointmentDate && { fechaCita: appointmentDate }),
+        ...(lastModifiedBy && { ultimoUsuarioEnModificar: lastModifiedBy }),
+        ...(status && { estatus: status }),
+        ...(diagnostico && { diagnostico: diagnosis }),
+        fechaActualizacion: Date.now(), // Actualizar la fecha de modificación
+      },
+      { new: true } // Devuelve el documento actualizado
+    );
+
+    if (!updatedAppointment) {
+      return res.status(404).json({ message: 'Cita no encontrada' });
+    }
+
+    // Responder con la cita actualizada
+    res.status(200).json(updatedAppointment);
+  } catch (err) {
+    res.status(400).json({ message: 'Error al actualizar la cita', error: err });
   }
 });
 
