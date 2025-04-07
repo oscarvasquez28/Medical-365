@@ -140,6 +140,18 @@ router.get('/calendar', async (req, res) => {
   }
 });
 
+router.get('/status/list', async (req, res) => {
+  try {
+    const response = Appointment.model.schema.path('estatus').enumValues.map(value => ({
+      value: value,
+      label: value
+    }));
+    res.status(200).json(response);
+  } catch (err) {
+    res.status(400).json({ message: 'Error al obtener los colaboradores', error: err });
+  }
+});
+
 router.get('/risks/list', async (req, res) => {
   try {
     const response = Appointment.model.schema.path('riesgo').enumValues.map(value => ({
