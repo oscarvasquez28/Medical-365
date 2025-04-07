@@ -165,19 +165,27 @@ router.get('/admin/list', async (req, res) => {
   }
 });
 
-router.get('/collaborator/:id', async (req, res) => {
+router.get('/:id', async (req, res) => {
   try {
     const collaborator = await Collaborator.model.findById(req.params.id); // Busca un colaborador por ID
-    if (!collaborator) {
-      return res.status(404).json({ message: 'Colaborador no encontrado' });
+    if (collaborator) {
+      const response = {
+        id: collaborator._id,
+        Nombre: collaborator.nombre,
+        Apellido: collaborator.apellido,
+        Correo: collaborator.correo,
+        FechaDeRegistro: collaborator.fechaCreacion,
+        FechaDeBaja: collaborator.fechaEliminacion,
+        Estado: collaborator.estatus
+      };
+      res.status(200).json(response);
     }
-    res.status(200).json(collaborator);
   } catch (err) {
     res.status(400).json({ message: 'Error al obtener el colaborador', error: err });
   }
 });
 
-router.put('/collaborator/:id', async (req, res) => {
+router.put('/:id', async (req, res) => {
   try {
     console.log(req.body);
     const { name, lastName, password, role, email, gender, status, birthDate, department, active } = req.body;
