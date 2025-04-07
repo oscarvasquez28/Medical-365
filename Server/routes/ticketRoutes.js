@@ -77,7 +77,7 @@ router.post('/', async (req, res) => {
             descripcion: description,
             sintomas: symptoms,
             incidencia: incidence,
-            riesgo: risk,
+            riesgo: risk || null,
             comentarios: comments,
             fechaCierre: closeDate || null,
             estatus: estatus || 'pendiente'

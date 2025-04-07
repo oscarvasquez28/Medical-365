@@ -8,7 +8,7 @@ const ticketSchema = new mongoose.Schema({
         required: [true, 'Name is required']
     },
     paciente: {
-        type: Number,
+        type: String,
         required: [true, 'Patient ID is required']
     },
     descripcion: {
@@ -21,12 +21,11 @@ const ticketSchema = new mongoose.Schema({
     },
     incidencia: {
         type: String,
-        required: [true, 'incidencia is required']
+        required: [true, 'Incidencia is required']
     },
     riesgo: {
         type: String,
-        enum: ['bajo', 'medio', 'alto'],
-        required: [true, 'riesgo level is required']
+        enum: ['bajo', 'medio', 'alto']
     },
     fechaCreacion: {
         type: Date,
