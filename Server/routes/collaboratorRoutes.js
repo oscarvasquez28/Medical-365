@@ -198,8 +198,12 @@ router.get('/:id', async (req, res) => {
 router.put('/:id', async (req, res) => {
   try {
     console.log(req.body);
-    const { name, lastName, password, role, email, gender, status, birthDate, department, active } = req.body;
-
+    const { name, lastName, password, role, email, gender, status, birthDate, department, active,  } = req.body;
+    var deletionDate = ""; // Inicializa la variable de fecha de eliminación
+    if (status == 'Inactivo') {
+      deletionDate = Date.now(); // Establece la fecha de eliminación como la fecha actual
+    }
+    
     const updatedCollaborator = await Collaborator.model.findByIdAndUpdate(
       req.params.id,
       {
@@ -212,13 +216,40 @@ router.put('/:id', async (req, res) => {
         ...(status && { estatus: status }),
         ...(birthDate && { fechaNacimiento: birthDate }),
         ...(department && { departamento: department }),
-        ...(active !== undefined && { activo: active })
+        ...(active !== undefined && { activo: active }),
+        ...(deletionDate && { fechaEliminacion: deletionDate }), // Solo establece la fecha de eliminación si el estado es "Inactivo"
+        fechaActualizacion: Date.now(), // Actualiza la fecha de modificación
       },
       { new: true } // Devuelve el documento actualizado
     );
+
     if (!updatedCollaborator) {
       return res.status(404).json({ message: 'Colaborador no encontrado' });
     }
+
+    res.status(200).json({ message: 'Colaborador actualizado', collaborator: updatedCollaborator });
+  } catch (err) {
+    res.status(400).json({ message: 'Error al actualizar el colaborador', error: err });
+  }
+});
+
+router.put('status/:id', async (req, res) => {
+  try {
+    console.log(req.body);
+    const { status } = req.body;
+
+    const updatedCollaborator = await Collaborator.model.findByIdAndUpdate(
+      req.params.id,
+      {
+        ...(status && { estatus: status }),
+      },
+      { new: true } // Devuelve el documento actualizado
+    );
+    
+    if (!updatedCollaborator) {
+      return res.status(404).json({ message: 'Colaborador no encontrado' });
+    }
+
     res.status(200).json({ message: 'Colaborador actualizado', collaborator: updatedCollaborator });
   } catch (err) {
     res.status(400).json({ message: 'Error al actualizar el colaborador', error: err });

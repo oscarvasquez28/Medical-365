@@ -83,9 +83,17 @@ router.post('/', async (req, res) => {
 // Ruta para actualizar un tooling por ID
 router.put('/:id', async (req, res) => {
     try {
+        const { name, version, description, lastColaboratorWhoModified, status } = req.body;
         const updatedTooling = await Tooling.model.findByIdAndUpdate(
             req.params.id,
-            { ...req.body, fechaActualizacion: Date.now() },
+            {
+                ...(name && { nombre: name }),
+                ...(version && { version: version }),
+                ...(description && { descripcion: description }),
+                ...(lastColaboratorWhoModified && { ultimoUsuarioEnModificar: lastColaboratorWhoModified }),
+                ...(status && { estatus: status }),
+                fechaActualizacion: Date.now()
+            },
             { new: true }
         );
         if (!updatedTooling) {
