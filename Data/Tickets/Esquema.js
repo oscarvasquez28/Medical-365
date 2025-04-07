@@ -8,7 +8,8 @@ const ticketSchema = new mongoose.Schema({
         required: [true, 'Name is required']
     },
     paciente: {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId, // Reference to Colaborator
+        ref: 'Colaboradores',
         required: [true, 'Patient ID is required']
     },
     sintomas: {
