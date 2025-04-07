@@ -1,4 +1,5 @@
-import React from 'react'
+import {React,useState, useEffect} from 'react'
+import CollaboratorsAPI from '../../services/CollaboratorsAPI'
 import NavigationButton from '../../common/components/NavigationButton'
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
@@ -11,37 +12,32 @@ import MenuItem from '@mui/material/MenuItem'
 const columns = [
   { field: 'id', headerName: 'ID', width: 80 },
   {
-    field: 'nombre',
+    field: 'Nombre',
     headerName: 'Nombre',
     width: 120,
   },
   {
-    field: 'apellido',
+    field: 'Apellido',
     headerName: 'Apellido',
     width: 120,
   },
   {
-    field: 'correo',
+    field: 'Correo',
     headerName: 'Correo',
-    width: 120,
+    width: 200,
   },
   {
-    field: 'departamento',
-    headerName: 'Departamento',
-    width: 150,
-  },
-  {
-    field: 'fechaRegistro',
+    field: 'FechaDeRegistro',
     headerName: 'Fecha de Registro',
     width: 150,
   },
   {
-    field: 'fechaBaja',
+    field: 'FechaDeBaja',
     headerName: 'Fecha de Baja',
     width: 150,
   },
   {
-    field: 'estado',
+    field: 'Estado',
     headerName: 'Estado',
     width: 100,
   },
@@ -50,26 +46,14 @@ const columns = [
     headerName: 'Acciones',
     width: 110,
     renderCell: (params) => (
-        <NavigationButton
-          variant = {'contained'}
-          Text='Editar'
-          color={'info'}
-          Route={`editCollaborator/${params.id}`}/>
+      <NavigationButton
+        variant={'contained'}
+        Text='Editar'
+        color={'info'}
+        Route={`editCollaborator/${params.id}`}
+      />
     ),
-  }
-];
-
-const rows = [
-  { id: 1, nombre: 'Jon', apellido: 'Snow', correo: 'jon.snow@techcorp.com', departamento: 'Desarrollo de Software', fechaRegistro: '2023-01-01', fechaBaja: '', estado: 'Activo' },
-  { id: 2, nombre: 'Cersei', apellido: 'Lannister', correo: 'cersei.lannister@techcorp.com', departamento: 'Recursos Humanos', fechaRegistro: '2023-02-01', fechaBaja: '', estado: 'Activo' },
-  { id: 3, nombre: 'Jaime', apellido: 'Lannister', correo: 'jaime.lannister@techcorp.com', departamento: 'Seguridad Informática', fechaRegistro: '2023-03-01', fechaBaja: '', estado: 'Activo' },
-  { id: 4, nombre: 'Arya', apellido: 'Stark', correo: 'arya.stark@techcorp.com', departamento: 'Control de Calidad', fechaRegistro: '2023-04-01', fechaBaja: '', estado: 'Activo' },
-  { id: 5, nombre: 'Daenerys', apellido: 'Targaryen', correo: 'daenerys.targaryen@techcorp.com', departamento: 'Innovación y Desarrollo', fechaRegistro: '2023-05-01', fechaBaja: '', estado: 'Activo' },
-  { id: 6, nombre: 'Tyrion', apellido: 'Lannister', correo: 'tyrion.lannister@techcorp.com', departamento: 'Administración', fechaRegistro: '2023-06-01', fechaBaja: '', estado: 'Activo' },
-  { id: 7, nombre: 'Brienne', apellido: 'Tarth', correo: 'brienne.tarth@techcorp.com', departamento: 'Soporte Técnico', fechaRegistro: '2023-07-01', fechaBaja: '', estado: 'Activo' },
-  { id: 8, nombre: 'Sansa', apellido: 'Stark', correo: 'sansa.stark@techcorp.com', departamento: 'Marketing', fechaRegistro: '2023-08-01', fechaBaja: '', estado: 'Activo' },
-  { id: 9, nombre: 'Theon', apellido: 'Greyjoy', correo: 'theon.greyjoy@techcorp.com', departamento: 'Infraestructura', fechaRegistro: '2023-09-01', fechaBaja: '', estado: 'Activo' },
-  { id: 10, nombre: 'Samwell', apellido: 'Tarly', correo: 'samwell.tarly@techcorp.com', departamento: 'Investigación y Desarrollo', fechaRegistro: '2023-10-01', fechaBaja: '', estado: 'Activo' },
+  },
 ];
 
 const breadcrumbs = [
@@ -78,6 +62,26 @@ const breadcrumbs = [
 ]
 
 const Collaborators = () => {
+  const [collaborator, setCollaborator] = useState([]);
+  const [gender, setGender] = useState([]);
+  const [department, setDepartment] = useState([]);
+  const [rol, setRol] = useState([]);
+
+  useEffect(() => {
+    getCollaborators();
+  }, []);
+
+  async function getCollaborators() {
+    try {
+      const {data} = await CollaboratorsAPI.getCollaborators();
+      setCollaborator(data);
+      console.log(data);
+    } catch (error) {
+      console.error(error);
+      setCollaborator([]);
+    }
+  }
+
   return (
     <>
     <Container>
@@ -114,7 +118,7 @@ const Collaborators = () => {
       </Stack>
     </Box>
     <DataTable
-      rows={rows}
+      rows={collaborator}
       columns={columns}
     />
     <Box sx={{ display: 'flex', justifyContent: 'space-between', marginTop: '2rem' }}>
