@@ -25,7 +25,7 @@ const ticketSchema = new mongoose.Schema({
     },
     fechaCreacion: {
         type: Date,
-        default: Date.now,
+        default: Date.now(),
         required: [true, 'Creation date is required']
     },
     fechaCierre: {
