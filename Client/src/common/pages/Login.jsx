@@ -154,6 +154,7 @@ export default function Home() {
                   name="password"
                   value={collaborator.password}
                   onChange={handleChange}
+                  type="password"
                 />
               </Box>
               <Box sx={{ display: 'flex', justifyContent: 'center', margin: '1rem' }}>
