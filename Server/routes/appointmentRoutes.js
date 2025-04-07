@@ -3,10 +3,12 @@ import express from 'express';
 import Appointments from '../../Data/Citas/Esquema.js'; // Importa el modelo Citas
 import Tickets from '../../Data/Tickets/Esquema.js'; // Importa el modelo Tickets
 import nodemailer from 'nodemailer';
+import Colaborator from '../../Data/Colaboradores/Esquema.js';
 
 const router = express.Router();
 const Appointment = new Appointments();
 const Ticket = new Tickets();
+const Collaborators = new Colaborator();
 
 router.get('/', async (req, res) => {
   try {
@@ -48,7 +50,8 @@ router.get('/table', async (req, res) => {
     const appointmentsWithTickets = await Appointment.model
       .find()
       .populate('ticket')
-      .populate({ path: 'recurso', select: 'nombre' });
+      .populate({ path: 'recurso', select: 'nombre' })
+      .populate({ path: 'ultimoUsuarioEnModificar', select: 'nombre' });
 
       for (const appointment of appointmentsWithTickets) {
         if (appointment.ticket) {
@@ -66,7 +69,7 @@ router.get('/table', async (req, res) => {
           Recurso: appointment.recurso?.nombre,
           Diagnostico: appointment.diagnostico,
           FechaCita: appointment.fechaCita,
-          UltimoUsuarioEnModificar: appointment.ultimoUsuarioEnModificar,
+          UltimoUsuarioEnModificar: appointment.ultimoUsuarioEnModificar.nombre,
           Estatus: appointment.estatus,
         };
     });
