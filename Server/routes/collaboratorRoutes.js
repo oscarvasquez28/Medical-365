@@ -179,9 +179,23 @@ router.get('/collaborator/:id', async (req, res) => {
 
 router.put('/collaborator/:id', async (req, res) => {
   try {
+    console.log(req.body);
+    const { name, lastName, password, role, email, gender, status, birthDate, department, active } = req.body;
+
     const updatedCollaborator = await Collaborator.model.findByIdAndUpdate(
       req.params.id,
-      req.body,
+      {
+        ...(name && { nombre: name }),
+        ...(lastName && { apellido: lastName }),
+        ...(password && { contraseña: password }),
+        ...(role && { rol: role }),
+        ...(email && { correo: email }),
+        ...(gender && { genero: gender }),
+        ...(status && { estatus: status }),
+        ...(birthDate && { fechaNacimiento: birthDate }),
+        ...(department && { departamento: department }),
+        ...(active !== undefined && { activo: active })
+      },
       { new: true } // Devuelve el documento actualizado
     );
     if (!updatedCollaborator) {
