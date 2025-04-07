@@ -19,7 +19,7 @@ const collaboratorSchema = new mongoose.Schema({
     },
     rol: {
         type: String,
-        enum: ['admin', 'user'],
+        enum: ['Administrador', 'Gerente', 'Colaborador'],
         required: [true, 'Rol is required']
     },
     correo: {
