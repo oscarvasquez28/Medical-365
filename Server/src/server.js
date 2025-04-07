@@ -13,7 +13,7 @@ import ticketRoutes from '../routes/ticketRoutes.js';
 import riskRoutes from '../routes/riskRoutes.js';
 
 // Configurar variables de entorno
-const result = dotenv.config( {path: 'Server/.env'} );
+const result = dotenv.config( {path: '../.env'} );
 
 if (result.error) {
     throw "\nThere was an error setting up environtment variables\n" + result.error;

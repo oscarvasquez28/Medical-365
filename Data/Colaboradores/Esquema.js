@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-import bcrypt from 'bcryptjs';
 import DatosDummy from './DatosDummy.js'; //
 
 // Define the schema
