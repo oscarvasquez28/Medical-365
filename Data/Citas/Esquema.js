@@ -44,7 +44,7 @@ export default class Citas {
             default: new Date('1970-01-01')
         },
         ultimoUsuarioEnModificar: {
-            type: Number,
+            type: String,
             required: true
         },
         estatus: {
