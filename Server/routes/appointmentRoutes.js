@@ -1,9 +1,11 @@
 // routes/appointmentRoutes.js
 import express from 'express';
 import Appointments from '../../Data/Citas/Esquema.js'; // Importa el modelo Citas
+import Tickets from '../../Data/Tickets/Esquema.js'; // Importa el modelo Tickets
 
 const router = express.Router();
 const Appointment = new Appointments();
+const Tickets = new Tickets();
 
 router.get('/', async (req, res) => {
   try {
@@ -16,6 +18,62 @@ router.get('/', async (req, res) => {
           Doctor: appointment.doctor,
           Riesgo: appointment.riesgo,
           Recurso: appointment.recurso,
+          Diagnostico: appointment.diagnostico,
+          FechaCita: appointment.fechaCita,
+          UltimoUsuarioEnModificar: appointment.ultimoUsuarioEnModificar,
+          Estatus: appointment.estatus,
+        };
+    });
+    // Responder con las citas encontradas
+    res.status(200).json(response);
+  } catch (err) {
+    res.status(400).json({ message: 'Error al obtener las citas', error: err });
+  }
+});
+
+router.get('/:id', async (req, res) => {
+  try {
+    // Obtener cita por ID
+    const appointment = await Appointment.model.findById(req.params.id).populate('ticket');
+
+    if (!appointment) {
+      return res.status(404).json({ message: 'Cita no encontrada' });
+    }
+
+    const response = {
+      id: appointment._id,
+      Ticket: appointment.ticket?.nombre,
+      Doctor: appointment.doctor,
+      Riesgo: appointment.riesgo,
+      Recurso: appointment.recurso,
+      Diagnostico: appointment.diagnostico,
+      FechaCita: appointment.fechaCita,
+      UltimoUsuarioEnModificar: appointment.ultimoUsuarioEnModificar,
+      Estatus: appointment.estatus,
+    };
+
+    // Responder con las citas encontradas
+    res.status(200).json(response);
+  } catch (err) {
+    res.status(400).json({ message: 'Error al obtener las citas', error: err });
+  }
+});
+
+router.get('/table', async (req, res) => {
+  try {
+    // Obtener todas las citas
+    const appointmentsWithTickets = await Appointment.model
+      .find()
+      .populate('ticket')
+      .populate({ path: 'recurso', select: 'nombre' });
+
+    const response = appointmentsWithTickets.map(appointment => {
+        return {
+          id: appointment._id,
+          Ticket: appointment.ticket?.nombre,
+          Doctor: appointment.doctor,
+          Riesgo: appointment.riesgo,
+          Recurso: appointment.recurso?.nombre,
           Diagnostico: appointment.diagnostico,
           FechaCita: appointment.fechaCita,
           UltimoUsuarioEnModificar: appointment.ultimoUsuarioEnModificar,
