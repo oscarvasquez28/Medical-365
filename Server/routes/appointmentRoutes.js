@@ -182,6 +182,9 @@ router.post('/', async (req, res) => {
     // Guardar la nueva cita en la base de datos
     await newAppointment.save();
 
+    // Enviar correo al paciente utilizando nodemailer
+
+
     // Responder con un mensaje de éxito y la cita creada
     res.status(201).json({ message: 'Cita creada con éxito', appointment: newAppointment });
   } catch (err) {
@@ -213,14 +216,6 @@ router.put('/:id', async (req, res) => {
     const { ticket, doctor, risk, tooling, diagnosis, appointmentDate, lastModifiedBy, status } = req.body;
 
     // Actualizar la cita por ID
-    const updatedTicket = await Ticket.model.findByIdAndUpdate(
-      ticket,
-      {
-        ...(status && { estatus: status }),
-        ...(status == 'Cerrado' && { fechaCierre: Date.now() }), // Actualizar la fecha de cierre si el estatus es 'Cerrado'
-      },
-      { new: true } // Devuelve el documento actualizado
-    );
     const updatedAppointment = await Appointment.model.findByIdAndUpdate(
       req.params.id,
       {
@@ -234,6 +229,15 @@ router.put('/:id', async (req, res) => {
         ...(status == 'Cerrado' && { fechaEliminacion: Date.now() }), // Actualizar la fecha de eliminación si el estatus es 'Cerrado'
         ...(diagnosis && { diagnostico: diagnosis }),
         fechaActualizacion: Date.now(), // Actualizar la fecha de modificación
+      },
+      { new: true } // Devuelve el documento actualizado
+    );
+
+    const updatedTicket = await Ticket.model.findByIdAndUpdate(
+      ticket || updatedAppointment.ticket,
+      {
+        ...(status && { estatus: status }),
+        ...(status == 'Cerrado' && { fechaCierre: Date.now() }), // Actualizar la fecha de cierre si el estatus es 'Cerrado'
       },
       { new: true } // Devuelve el documento actualizado
     );
