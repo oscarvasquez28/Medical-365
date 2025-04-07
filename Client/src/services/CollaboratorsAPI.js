@@ -25,4 +25,7 @@ export default {
   getStatus(){
     return api.get('/collaborators/status/list')
   },
+  getDoctorList(){
+    return api.get('collaborators/admin/list')
+  },
 }
