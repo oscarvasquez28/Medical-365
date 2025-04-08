@@ -1,5 +1,6 @@
-import {React, useState, useEffect, useContext} from 'react'
-import {UserContext} from '../../Context/UserContext.jsx';
+import {React, useState, useEffect} from 'react'
+import {useParams} from 'react-router-dom'
+import TicketsAPI from '../../services/TicketsAPI'
 import Container from '@mui/material/Container'
 import Box from '@mui/material/Box'
 import CustomBreadcrumb from '../../common/components/CustomBreadcrumb'
@@ -9,32 +10,30 @@ import MenuItem from '@mui/material/MenuItem'
 import Typography from '@mui/material/Typography'
 import Button from '@mui/material/Button'
 import NavigationButton from '../../common/components/NavigationButton'
-import Autocomplete from '@mui/material/Autocomplete'
+import AppointmentsAPI from '../../services/AppointmentsAPI'
 import SymptomsAPI from '../../services/SymptomsAPI'
 import IncidentAPI from '../../services/IncidentAPI'
-import TicketsAPI from '../../services/TicketsAPI'
+import Autocomplete from '@mui/material/Autocomplete'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-hot-toast'
-//importar contexto
 
-const AddTicket = () => {
+
+const EditTicket = () => {
+  const { id } = useParams()
   const navigate = useNavigate()
-  const { user } = useContext(UserContext);
+  const [incidentTypes, setIncidentTypes] = useState([])
+  const [risk, setRisk] = useState([])
   const [symptoms, setSymptoms] = useState([])
-  const [incident, setIncident] = useState([])
+  const [patient, setPatient] = useState('')
   const [ticket, setTicket] = useState({
     name: '',
+    patient: '',
+    description: '',
     incidence: '',
+    risk: '',
     symptoms: [],
     comments: '',
-    patient: user.id,
   })
-
-  const breadcrumbs = [
-    { label: 'Inicio', href: '/' },
-    { label: 'Tickets', href: '/tickets' },
-    { label: 'Agregar Ticket'}
-  ]
 
   const handleInputChange = (e) => {
     const { name, value } = e.target
@@ -42,11 +41,66 @@ const AddTicket = () => {
     console.log(ticket)
   }
 
-    useEffect(() => {
-      getSymptomsList();
-      getIncidentTypes();
-    }, []);
+  useEffect(() => {
+    getTicket(id);
+    getIncidentTypes();
+    getRisksList();
+    getSymptomsList();
+  }, []);
 
+  async function putTicket(id) {
+    try {
+      console.log(ticket);
+      const response = await TicketsAPI.putTickets(id, ticket);
+      console.log("Ticket Actualizado con éxito", response.data);
+      toast.success("Ticket Actualizado con éxito")
+      navigate('/tickets');
+    } catch (error) {
+      console.error(error);
+      toast.error("Error al Actualizar Ticket")
+    }
+  }
+
+  async function getTicket(id) {
+    try {
+      const {data} = await TicketsAPI.getTicketById(id);
+      setTicket({
+        name: data.nombre || '',
+        patient: '',
+        incidence: data.incidencia || '',
+        risk: data.riesgo || '',
+        symptoms: data.sintomas || [],
+        comments: data.comentarios || '',
+      });
+      setPatient(data.paciente || '');
+      console.log(data);
+    } catch (error) {
+      console.error(error);
+      setTicket([]);
+    }
+  }
+
+  async function getIncidentTypes() {
+    try {
+      const {data} = await IncidentAPI.getIncidentTypes();
+      setIncidentTypes(data);
+      console.log(data);
+    } catch (error) {
+      console.error(error);
+      setIncidentTypes([]);
+    }
+  }
+
+  async function getRisksList() {
+    try {
+      const {data} = await AppointmentsAPI.getRisksList();
+      setRisk(data);
+      console.log(data);
+    } catch (error) {
+      console.error(error);
+      setRisk([]);
+    }
+  }
 
   async function getSymptomsList() {
     try {
@@ -58,33 +112,17 @@ const AddTicket = () => {
       setSymptoms([]);
     }
   }
-  async function getIncidentTypes() {
-    try {
-      const {data} = await IncidentAPI.getIncidentTypes();
-      setIncident(data);
-      console.log(data);
-    } catch (error) {
-      console.error(error);
-      setIncident([]);
-    }
-  }
 
-  async function postTicket() {
-    try {
-      console.log(ticket);
-      const response = await TicketsAPI.postTickets(ticket);
-      console.log("Ticket agregado con éxito", response.data);
-      toast.success("Ticket agregado con éxito")
-      navigate('/tickets');
-    } catch (error) {
-      console.error(error);
-      toast.error("Error al agregar Ticket")
-    }
-  }
   const handleSubmit = async (e) => {
     e.preventDefault()
-    postTicket()
+    putTicket(id)
   };
+
+  const breadcrumbs = [
+    { label: 'Inicio', href: '/' },
+    { label: 'Tickets', href: '/tickets' },
+    { label: 'Editar Ticket'}
+  ]
 
   return (
     <>
@@ -92,7 +130,7 @@ const AddTicket = () => {
         <Box sx={{ flexGrow: 1, mt: '2rem' }}>
           <CustomBreadcrumb breadcrumbs={breadcrumbs} />
           <Typography variant="h4" component="h2" gutterBottom>
-            Agregar Ticket
+            Editar Ticket
           </Typography>
           <Box sx={{ borderRadius: '1rem', backgroundColor: 'white', padding: '2rem'}}>
             <Stack direction={{ xs: 'column'}} spacing={3} >
@@ -102,17 +140,44 @@ const AddTicket = () => {
                 variant="outlined"
                 fullWidth
                 onChange={handleInputChange}
+                value={ticket.name || ''}
                 name="name"
+              />
+              <TextField
+                id="outlined-basic"
+                label="Colaborador"
+                variant="outlined"
+                fullWidth
+                disabled
+                onChange={handleInputChange}
+                value={patient || ''}
+                name="colaborador"
               />
               <TextField
                 id="incidence"
                 label="Tipo de Incidencia"
                 select
                 fullWidth
+                value={ticket.incidence || ''}
                 onChange={handleInputChange}
                 name="incidence"
               >
-                {incident.map((option) => (
+                {incidentTypes.map((option) => (
+                  <MenuItem key={option.value} value={option.value}>
+                    {option.label}
+                  </MenuItem>
+                ))}
+              </TextField>
+              <TextField
+                id="risk"
+                label="Riesgo"
+                select
+                fullWidth
+                value={ticket.risk || ''}
+                onChange={handleInputChange}
+                name="risk"
+              >
+                {risk.map((option) => (
                   <MenuItem key={option.value} value={option.value}>
                     {option.label}
                   </MenuItem>
@@ -128,16 +193,17 @@ const AddTicket = () => {
                 renderInput={(params) => <TextField {...params} label="Síntomas" />}
               />
               <TextField
-                id="comentarios"
+                id="comments"
                 label="Comentarios"
                 fullWidth
                 onChange={handleInputChange}
-                name="comments"
+                value={ticket.comments || ''}
+                name='comments'
               />
             </Stack>
             <Stack direction="row" justifyContent="space-between" sx={{ marginTop: '2rem' }}>
               <NavigationButton variant="outlined" color="info" Route={'/tickets'} Text={'Regresar'}/>
-              <Button variant="contained" color="primary" onClick={handleSubmit}>Agregar</Button>
+              <Button variant="contained" color="primary" onClick={handleSubmit}>Guardar</Button>
             </Stack>
           </Box>
         </Box>
@@ -146,4 +212,4 @@ const AddTicket = () => {
   )
 }
 
-export default AddTicket
+export default EditTicket

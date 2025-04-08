@@ -17,6 +17,7 @@ export function UserProvider({ children }) {
       email: "",
       id: 0,
       logged: false,
+      token: "",
     };
   });
 

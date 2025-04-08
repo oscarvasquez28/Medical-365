@@ -1,4 +1,5 @@
 import {React, useState, useEffect} from 'react'
+import { useParams } from 'react-router-dom'
 import { useNavigate } from 'react-router-dom'
 import CollaboratorsAPI from '../../services/CollaboratorsAPI'
 import DepartmentsAPI from '../../services/DepartmentsAPI'
@@ -12,20 +13,14 @@ import Typography from '@mui/material/Typography'
 import Button from '@mui/material/Button'
 import NavigationButton from '../../common/components/NavigationButton'
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import dayjs from 'dayjs';
 import { toast } from 'react-hot-toast';
 
-const AddCollaborator = () => {
+const EditCollaborator = () => {
   const [gender, setGender] = useState([]);
   const [department, setDepartment] = useState([]);
   const [role, setRole] = useState([]);
-  const navigate = useNavigate()
-
-  const breadcrumbs = [
-    { label: 'Inicio', href: '/' },
-    { label: 'Colaboradores', href: '/collaborators' },
-    { label: 'Agregar Colaborador'}
-  ]
-
+  const [status, setStatus] = useState([]);
   const [collaborator, setCollaborator] = useState({
     name: '',
     lastName: '',
@@ -35,9 +30,16 @@ const AddCollaborator = () => {
     password: '',
     department: '',
     role: '',
-    status: 'Activo',
+    status: '',
     active: '1'
-  })
+  });
+  const { id } = useParams()
+  const navigate = useNavigate()
+  const breadcrumbs = [
+    { label: 'Inicio', href: '/' },
+    { label: 'Colaboradores', href: '/collaborators' },
+    { label: 'Editar Colaborador'}
+  ]
 
   const handleInputChange = (e) => {
     const { name, value } = e.target
@@ -46,10 +48,34 @@ const AddCollaborator = () => {
   }
 
     useEffect(() => {
+      getCollaborator(id);
       getGender();
       getDepartments();
       getRoles();
+      getStatus();
     }, []);
+
+    async function getCollaborator(id) {
+      try {
+        const {data} = await CollaboratorsAPI.getCollaboratorsId(id);
+        setCollaborator({
+          name: data.Nombre || '',
+          lastName: data.Apellido || '',
+          birthDate: data.FechaDeNacimiento ? dayjs(data.FechaDeNacimiento) : null, // Convierte a dayjs
+          gender: data.Genero || '',
+          email: data.Correo || '',
+          password: data.Contraseña || '',
+          department: data.Departamento || '',
+          role: data.Rol || '',
+          status: data.Estado,
+          active: '1'
+        });
+        console.log(data);
+      } catch (error) {
+        console.error(error);
+        setCollaborator([]);
+      }
+    }
 
   async function getGender() {
     try {
@@ -84,22 +110,32 @@ const AddCollaborator = () => {
     }
   }
 
-  async function postCollaborator() {
+  async function getStatus() {
     try {
-      console.log(collaborator);
-      const response = await CollaboratorsAPI.postCollaborator(collaborator);
-      console.log("Colaborador agregado con éxito", response.data);
-      toast.success("Colaborador agregado con éxito")
-      navigate('/collaborators');
+      const {data} = await CollaboratorsAPI.getStatus();
+      setStatus(data);
+      console.log(data);
     } catch (error) {
       console.error(error);
-      toast.error("Error al agregar colaborador")
+      setStatus([]);
+    }
+  }
+
+  async function putCollaborator() {
+    try {
+      console.log(collaborator);
+      const response = await CollaboratorsAPI.putCollaborator(id, collaborator);
+      console.log("Colaborador editado con éxito", response.data);
+      toast.success("Colaborador editado con éxito")
+      navigate('/collaborators')
+    } catch (error) {
+      console.error(error);
     }
   }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    postCollaborator()
+    putCollaborator()
   };
 
   return (
@@ -108,7 +144,7 @@ const AddCollaborator = () => {
         <Box sx={{ flexGrow: 1, mt: '2rem' }}>
           <CustomBreadcrumb breadcrumbs={breadcrumbs} />
           <Typography variant="h4" component="h2" gutterBottom>
-            Agregar Colaborador
+            Editar Colaborador
           </Typography>
           <Box sx={{ borderRadius: '1rem', backgroundColor: 'white', padding: '2rem'}}>
             <Stack direction={{ xs: 'column', md: 'row'}} spacing={3} sx={{ marginBottom: 3 }}>
@@ -117,6 +153,7 @@ const AddCollaborator = () => {
                 label="Nombre"
                 variant="outlined"
                 fullWidth
+                value={collaborator.name}
                 onChange={handleInputChange}
                 name="name"
               />
@@ -125,6 +162,7 @@ const AddCollaborator = () => {
                 label="Apellido"
                 variant="outlined"
                 fullWidth
+                value={collaborator.lastName}
                 onChange={handleInputChange}
                 name="lastName"
               />
@@ -132,7 +170,8 @@ const AddCollaborator = () => {
             <Stack direction={{ xs: 'column'}} spacing={3} >
               <DatePicker
                 label="Fecha de Nacimiento"
-                onChange={(newValue) => setCollaborator({ ...collaborator, birthDate: newValue })}
+                value={collaborator.birthDate || null}
+                onChange={(newValue) => setCollaborator({ ...collaborator, FechaDeNacimiento: newValue })}
                 sx={{ width: '100%' }}
               />
               <TextField
@@ -140,6 +179,7 @@ const AddCollaborator = () => {
                 label="Género"
                 select
                 fullWidth
+                value={collaborator.gender || ''}
                 onChange={handleInputChange}
                 name="gender"
               >
@@ -154,6 +194,7 @@ const AddCollaborator = () => {
                 label="Correo"
                 variant="outlined"
                 fullWidth
+                value={collaborator.email}
                 onChange={handleInputChange}
                 name="email"
               />
@@ -163,6 +204,7 @@ const AddCollaborator = () => {
                 variant="outlined"
                 fullWidth
                 // type="password"
+                value={collaborator.password}
                 onChange={handleInputChange}
                 name="password"
               />
@@ -171,6 +213,7 @@ const AddCollaborator = () => {
                 label="Departamento"
                 select
                 fullWidth
+                value={collaborator.department || ''}
                 onChange={handleInputChange}
                 name="department"
               >
@@ -182,9 +225,10 @@ const AddCollaborator = () => {
               </TextField>
               <TextField
                 id="role"
-                label="Role"
+                label="Rol"
                 select
                 fullWidth
+                value={collaborator.role || ''}
                 onChange={handleInputChange}
                 name="role"
               >
@@ -194,10 +238,25 @@ const AddCollaborator = () => {
                   </MenuItem>
                 ))}
               </TextField>
+              <TextField
+                id="status"
+                label="Estado"
+                select
+                fullWidth
+                value={collaborator.status || ''}
+                onChange={handleInputChange}
+                name="status"
+              >
+                {status.map((option) => (
+                  <MenuItem key={option.value} value={option.value}>
+                    {option.label}
+                  </MenuItem>
+                ))}
+              </TextField>
             </Stack>
             <Stack direction="row" justifyContent="space-between" sx={{ marginTop: '2rem' }}>
               <NavigationButton variant="outlined" color="info" Route={'/collaborators'} Text={'Regresar'}/>
-              <Button variant="contained" color="primary" onClick={handleSubmit}>Agregar</Button>
+              <Button variant="contained" color="primary" onClick={handleSubmit}>Actualizar</Button>
             </Stack>
           </Box>
         </Box>
@@ -206,4 +265,4 @@ const AddCollaborator = () => {
   )
 }
 
-export default AddCollaborator
+export default EditCollaborator

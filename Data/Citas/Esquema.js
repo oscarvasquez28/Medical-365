@@ -49,7 +49,8 @@ export default class Citas {
             default: new Date('1970-01-01')
         },
         ultimoUsuarioEnModificar: {
-            type: String,
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Colaboradores', // Reference to the Colaboradores collection
             required: true
         },
         estatus: {

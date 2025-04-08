@@ -6,6 +6,12 @@ const api = axios.create({
 
 api.interceptors.request.use((config) => {
 
+  const user = JSON.parse(localStorage.getItem('user')); // Obtén el usuario del localStorage
+  if (user && user.token) {
+    config.headers['Authorization'] = `Bearer ${user.token}`; // Agrega el token al encabezado
+    config.headers['ngrok-skip-browser-warning'] = 'any'; // Agrega el encabezado para evitar la advertencia de ngrok
+  }
+
   const contentType = config.headers['Content-Type']
   if (contentType === 'multipart/form-data') {
     config.headers['Content-Type'] = 'multipart/form-data'
