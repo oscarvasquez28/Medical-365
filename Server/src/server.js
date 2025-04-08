@@ -16,13 +16,10 @@ import riskRoutes from '../routes/riskRoutes.js';
 // Configurar variables de entorno
 
 const result = dotenv.config( {path: 'Server/.env'} );
+
 const auth = false; // Cambia esto a false si no quieres usar autenticación JWT
 
 const authFunction = auth ? authenticateJWT : (req, res, next) => { next(); };
-
-if (result.error) {
-    throw "\nThere was an error setting up environtment variables\n" + result.error;
-}
 
 const app = express();
 

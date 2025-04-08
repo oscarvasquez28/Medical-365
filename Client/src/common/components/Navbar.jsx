@@ -68,7 +68,7 @@ export default function Navbar() {
             >
               <Avatar
                 alt="User Photo"
-                src="https://media.licdn.com/dms/image/v2/D4E03AQHBqGyYyYjg2w/profile-displayphoto-shrink_800_800/B4EZQHLUnBGwAc-/0/1735287196571?e=1744243200&v=beta&t=M2OuNK8wr57EmxDymXpggU_5QvckX1DeI98obJinxa4"
+                src="https://via.placeholder.com/300x300.png"
               />
             </IconButton>
             <Menu
