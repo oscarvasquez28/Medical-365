@@ -44,7 +44,7 @@ function App() {
 
           <Route
             path="/tickets"
-            element={<PrivateRoute requiredRoles={["admin", "user", "Administrador"]} layout={MainLayout} />}
+            element={<PrivateRoute requiredRoles={["admin", "user", "Colaborador", "Administrador"]} layout={MainLayout} />}
           >
             <Route index element={<Tickets />} />
             <Route path="addTicket" element={<AddTicket />} />
@@ -69,7 +69,7 @@ function App() {
 
           <Route
             path="/calendar/:id"
-            element={<PrivateRoute requiredRoles={["admin", "user", "Administrador"]} layout={MainLayout} />}
+            element={<PrivateRoute requiredRoles={["admin", "user", "Colaborador", "Administrador"]} layout={MainLayout} />}
           >
             <Route index element={<Calendar />} />
           </Route>
