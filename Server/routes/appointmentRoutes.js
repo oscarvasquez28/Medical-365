@@ -69,7 +69,7 @@ router.get('/table', async (req, res) => {
           Recurso: appointment.recurso?.nombre,
           Diagnostico: appointment.diagnostico,
           FechaCita: appointment.fechaCita,
-          UltimoUsuarioEnModificar: appointment.ultimoUsuarioEnModificar.nombre,
+          UltimoUsuarioEnModificar: appointment.ultimoUsuarioEnModificar?.nombre,
           Estatus: appointment.estatus,
         };
     });
