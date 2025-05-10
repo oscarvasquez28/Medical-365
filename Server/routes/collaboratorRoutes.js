@@ -134,6 +134,32 @@ router.get('/', async (req, res) => {
   }
 });
 
+router.get('/table', async (req, res) => {
+  try {
+    const collaborators = await Collaborator.model
+      .find()
+      .populate('departamento'); // Obtiene todos los colaboradores
+
+    const response = collaborators.map(collaborator => ({
+      id: collaborator._id,
+      Nombre: collaborator.nombre,
+      Apellido: collaborator.apellido,
+      Correo: collaborator.correo,
+      FechaDeNacimiento: collaborator.fechaNacimiento,
+      Genero: collaborator.genero,
+      Contraseña: collaborator.contraseña,
+      Rol: collaborator.rol,
+      Departamento: collaborator.departamento?.descripcion || 'Sin departamento',
+      FechaDeRegistro: collaborator.fechaCreacion,
+      FechaDeBaja: collaborator.fechaEliminacion,
+      Estado: collaborator.estatus
+    }));
+    res.status(200).json(response);
+  } catch (err) {
+    res.status(400).json({ message: 'Error al obtener los colaboradores', error: err });
+  }
+});
+
 router.get('/admin', async (req, res) => {
   try {
     const collaborators = await Collaborator.model.find(
@@ -160,6 +186,20 @@ router.get('/admin/list', async (req, res) => {
     const collaborators = await Collaborator.model.find(
       { rol: 'Administrador' } // Filtra por rol de administrador
     );
+    const response = collaborators.map(collaborator => ({
+      value: collaborator._id,
+      label: `${collaborator.nombre} ${collaborator.apellido}`
+    }));
+    res.status(200).json(response);
+  } catch (err) {
+    res.status(400).json({ message: 'Error al obtener los colaboradores', error: err });
+  }
+});
+
+// Formato value-label
+router.get('/list', async (req, res) => {
+  try {
+    const collaborators = await Collaborator.model.find();
     const response = collaborators.map(collaborator => ({
       value: collaborator._id,
       label: `${collaborator.nombre} ${collaborator.apellido}`
