@@ -203,7 +203,7 @@ const EditCollaborator = () => {
                 label="Contraseña"
                 variant="outlined"
                 fullWidth
-                // type="password"
+                type="password"
                 value={collaborator.password}
                 onChange={handleInputChange}
                 name="password"
