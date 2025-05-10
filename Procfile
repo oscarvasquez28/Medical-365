@@ -1,0 +1,1 @@
+web: npm run webApp && serve -s Client/dist -l 5000

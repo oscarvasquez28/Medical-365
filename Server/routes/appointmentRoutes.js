@@ -64,13 +64,13 @@ router.get('/table', async (req, res) => {
           id: appointment._id,
           Ticket: appointment.ticket?.nombre,
           Paciente: appointment.ticket?.paciente?.nombre,
-          Doctor: appointment.doctor,
-          Riesgo: appointment.riesgo,
+          Doctor: appointment?.doctor,
+          Riesgo: appointment?.riesgo,
           Recurso: appointment.recurso?.nombre,
-          Diagnostico: appointment.diagnostico,
-          FechaCita: appointment.fechaCita,
-          UltimoUsuarioEnModificar: appointment.ultimoUsuarioEnModificar.nombre,
-          Estatus: appointment.estatus,
+          Diagnostico: appointment?.diagnostico,
+          FechaCita: appointment?.fechaCita,
+          UltimoUsuarioEnModificar: appointment.ultimoUsuarioEnModificar?.nombre,
+          Estatus: appointment?.estatus,
         };
     });
     // Responder con las citas encontradas

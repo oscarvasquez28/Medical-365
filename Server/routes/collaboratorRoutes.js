@@ -137,7 +137,7 @@ router.get('/', async (req, res) => {
 router.get('/admin', async (req, res) => {
   try {
     const collaborators = await Collaborator.model.find(
-      { rol: 'admin' } // Filtra por rol de administrador
+      { rol: 'Administrador' } // Filtra por rol de administrador
     );
     const response = collaborators.map(collaborator => ({
       id: collaborator._id,
@@ -158,7 +158,7 @@ router.get('/admin', async (req, res) => {
 router.get('/admin/list', async (req, res) => {
   try {
     const collaborators = await Collaborator.model.find(
-      { rol: 'admin' } // Filtra por rol de administrador
+      { rol: 'Administrador' } // Filtra por rol de administrador
     );
     const response = collaborators.map(collaborator => ({
       value: collaborator._id,
