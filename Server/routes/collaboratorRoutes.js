@@ -196,6 +196,20 @@ router.get('/admin/list', async (req, res) => {
   }
 });
 
+// Formato value-label
+router.get('/list', async (req, res) => {
+  try {
+    const collaborators = await Collaborator.model.find();
+    const response = collaborators.map(collaborator => ({
+      value: collaborator._id,
+      label: `${collaborator.nombre} ${collaborator.apellido}`
+    }));
+    res.status(200).json(response);
+  } catch (err) {
+    res.status(400).json({ message: 'Error al obtener los colaboradores', error: err });
+  }
+});
+
 router.get('/:id', async (req, res) => {
   try {
     const collaborator = await Collaborator.model.findById(req.params.id); // Busca un colaborador por ID
