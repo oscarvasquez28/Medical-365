@@ -227,7 +227,7 @@ router.post('/', async (req, res) => {
           from: process.env.BUSINESS_EMAIL,
           to: correo,
           subject: 'Nueva Cita Programada',
-          text: `Hola ${ticketDetails.paciente.nombre}, tu cita ha sido programada para el ${appointmentDate}.`,
+          text: `Hola ${ticketDetails.paciente.nombre} ${ticketDetails.paciente.apellido}, tu cita ha sido programada para el ${appointmentDate}.`,
         };
 
         await transporter.sendMail(mailOptions);
