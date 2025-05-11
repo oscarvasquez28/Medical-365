@@ -16,7 +16,7 @@ router.get('/', async (req, res) => {
             const ticketDetails = await Ticket.model.find().populate({path: 'paciente', populate: { path: 'departamento' }, select: 'nombre departamento'});
             tickets = ticketDetails.filter(ticket => ticket.paciente?.departamento?._id.toString() === req.user.departamento);
         } 
-        else if (req.user.rol === 'Colaborador') tickets = await ticket.model.find({ paciente: req.user._id }).populate({path: 'paciente', select: 'nombre'});
+        else if (req.user.rol === 'Colaborador') tickets = await ticket.model.find({ paciente: req.user.id }).populate({path: 'paciente', select: 'nombre'});
 
         const response = tickets.map(ticket => ({
             id: ticket._id,
@@ -58,7 +58,7 @@ router.get('/table', async (req, res) => {
             tickets = ticketDetails.filter(ticket => ticket.paciente?.departamento?._id.toString() === req.user.departamento);
         }
         else if (req.user.rol === 'Colaborador') 
-            tickets = await ticket.model.find({ paciente: req.user._id })
+            tickets = await ticket.model.find({ paciente: req.user.id })
             .populate({path: 'paciente', populate: { path: 'departamento' }, select: 'nombre apellido departamento'})
             .populate({ path: 'sintomas', select: 'descripcion' })
             .populate({ path: 'incidencia', select: 'descripcion' });
