@@ -8,7 +8,6 @@ import Colaborator from '../../Data/Colaboradores/Esquema.js';
 const router = express.Router();
 const Appointment = new Appointments();
 const Ticket = new Tickets();
-const Collaborators = new Colaborator();
 
 router.get('/', async (req, res) => {
   try {
@@ -18,9 +17,33 @@ router.get('/', async (req, res) => {
       .populate('ticket');
 
     for (const appointment of appointmentsWithTickets) {
-      if (appointment.ticket) {
+
+      if (global.auth === false) 
+        appointment.ticket = await Ticket.model.findById(appointment.ticket).populate('paciente');
+
+      else if (req.user.rol === 'Colaborador') {
+        const ticketDetails = await Ticket.model.findById(appointment.ticket).populate('paciente');
+        if (ticketDetails?.paciente?._id.toString() !== req.user.id) {
+          continue; // Skip appointments that do not match the user's paciente ID
+        }
+        appointment.ticket = ticketDetails;
+      }
+      
+      else if (req.user.rol === 'Gerente') {
+        const ticketDetails = await Ticket.model.findById(appointment.ticket).populate({
+          path: 'paciente',
+          populate: { path: 'departamento' }
+        });
+        if (ticketDetails?.paciente?.departamento?._id.toString() !== req.user.departamento) {
+          continue; // Skip appointments that do not match the user's departamento ID
+        }
+        appointment.ticket = ticketDetails;
+      }
+      
+      else if (appointment.ticket) {
         appointment.ticket = await Ticket.model.findById(appointment.ticket).populate('paciente');
       }
+
     }
 
     const response = appointmentsWithTickets.map(appointment => {
@@ -54,7 +77,27 @@ router.get('/table', async (req, res) => {
       .populate({ path: 'ultimoUsuarioEnModificar', select: 'nombre' });
 
       for (const appointment of appointmentsWithTickets) {
-        if (appointment.ticket) {
+        
+        if (global.auth === false) 
+          appointment.ticket = await Ticket.model.findById(appointment.ticket).populate('paciente');
+        else if (req.user.rol === 'Colaborador') {
+          const ticketDetails = await Ticket.model.findById(appointment.ticket).populate('paciente');
+          if (ticketDetails?.paciente?._id.toString() !== req.user.id) {
+            continue; // Skip appointments that do not match the user's paciente ID
+          }
+          appointment.ticket = ticketDetails;
+        }
+        else if (req.user.rol === 'Gerente') {
+          const ticketDetails = await Ticket.model.findById(appointment.ticket).populate({
+            path: 'paciente',
+            populate: { path: 'departamento' }
+          });
+          if (ticketDetails?.paciente?.departamento?._id.toString() !== req.user.departamento) {
+            continue; // Skip appointments that do not match the user's departamento ID
+          }
+          appointment.ticket = ticketDetails;
+        }
+        else if (appointment.ticket) {
           appointment.ticket = await Ticket.model.findById(appointment.ticket).populate('paciente');
         }
       }
