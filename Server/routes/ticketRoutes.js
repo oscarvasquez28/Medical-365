@@ -30,14 +30,14 @@ router.get('/table', async (req, res) => {
     try {
         const tickets = await ticket.model
             .find()
-            .populate({ path: 'paciente', select: 'nombre' })
+            .populate({ path: 'paciente', select: 'nombre apellido' })
             .populate({ path: 'sintomas', select: 'descripcion' })
             .populate({ path: 'incidencia', select: 'descripcion' });
 
         const response = tickets.map(ticket => ({
             id: ticket._id,
             nombre: ticket.nombre,
-            paciente: ticket.paciente?.nombre, // Send paciente's name
+            paciente: ticket.paciente ? `${ticket.paciente.nombre} ${ticket.paciente.apellido}` : null, // Send paciente's full name
             sintomas: ticket.sintomas?.map(s => s.descripcion).join(', '), // Join symptoms names into a single string
             incidencia: ticket.incidencia?.descripcion,
             riesgo: ticket.riesgo,

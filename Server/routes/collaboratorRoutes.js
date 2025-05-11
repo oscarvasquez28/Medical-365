@@ -26,7 +26,7 @@ router.post('/login', async (req, res) => {
 
     // Si las credenciales son correctas, generar un token JWT
     const token = jwt.sign(
-      { id: collaborator._id, email: collaborator.email },
+      { id: collaborator._id, email: collaborator.correo, rol: collaborator.rol },
       process.env.JWT_SECRET, // Cambia por una clave secreta segura
       { expiresIn: '15m' } // El token expira en 15 minutos
     );
