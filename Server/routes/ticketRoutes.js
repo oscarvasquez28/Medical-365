@@ -7,7 +7,17 @@ const ticket = new Ticket();
 // Ruta para obtener todos los tickets
 router.get('/', async (req, res) => {
     try {
-        const tickets = await ticket.model.find().populate({path: 'paciente', select: 'nombre'});
+
+        let tickets;
+
+        if (global.auth === false) tickets = await ticket.model.find().populate({path: 'paciente', select: 'nombre'});
+        else if (req.user.rol === 'Administrador') tickets = await ticket.model.find().populate({path: 'paciente', select: 'nombre'});
+        else if (req.user.rol === 'Gerente') {            
+            const ticketDetails = await Ticket.model.find().populate({path: 'paciente', select: 'nombre departamento'});
+            tickets = ticketDetails.filter(ticket => ticket.paciente?.departamento?._id.toString() === req.user.departamento);
+        } 
+        else if (req.user.rol === 'Colaborador') tickets = await ticket.model.find({ paciente: req.user._id }).populate({path: 'paciente', select: 'nombre'});
+
         const response = tickets.map(ticket => ({
             id: ticket._id,
             nombre: ticket.nombre,
@@ -28,11 +38,31 @@ router.get('/', async (req, res) => {
 
 router.get('/table', async (req, res) => {
     try {
-        const tickets = await ticket.model
-            .find()
+        let tickets;
+
+        // Filter tickets based on user role
+        if (global.auth === false) 
+            tickets = await ticket.model.find()
             .populate({ path: 'paciente', select: 'nombre apellido' })
             .populate({ path: 'sintomas', select: 'descripcion' })
             .populate({ path: 'incidencia', select: 'descripcion' });
+        else if (req.user.rol === 'Administrador') 
+            tickets = await ticket.model.find()
+            .populate({ path: 'paciente', select: 'nombre apellido' })
+            .populate({ path: 'sintomas', select: 'descripcion' })
+            .populate({ path: 'incidencia', select: 'descripcion' });
+        else if (req.user.rol === 'Gerente') {
+            const ticketDetails = await Ticket.model.find().populate({path: 'paciente', select: 'nombre apellido departamento'});
+            tickets = ticketDetails.filter(ticket => ticket.paciente?.departamento?._id.toString() === req.user.departamento);
+            tickets.populate({ path: 'sintomas', select: 'descripcion' })
+                    .populate({ path: 'incidencia', select: 'descripcion' });
+        }
+        else if (req.user.rol === 'Colaborador') 
+            tickets = await ticket.model.find({ paciente: req.user._id })
+            .populate({path: 'paciente', select: 'nombre apellido'})
+            .populate({ path: 'sintomas', select: 'descripcion' })
+            .populate({ path: 'incidencia', select: 'descripcion' });
+
 
         const response = tickets.map(ticket => ({
             id: ticket._id,
