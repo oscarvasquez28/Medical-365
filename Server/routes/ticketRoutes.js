@@ -87,6 +87,13 @@ router.get('/table', async (req, res) => {
 router.get('/list', async (req, res) => {
     try {
         const tickets = await ticket.model.find();
+
+        if (global.auth === false) tickets = await ticket.model.find();
+        else if (req.user.rol === 'Administrador') tickets = await ticket.model.find();
+        else if (req.user.rol === 'Gerente') {
+            tickets = tickets.filter(ticket => ticket.paciente?.departamento.toString() === req.user.departamento);
+        } 
+        
         const response = tickets.map(ticket => ({
             value: ticket._id,
             label: ticket.nombre,
