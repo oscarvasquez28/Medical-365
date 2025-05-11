@@ -145,11 +145,9 @@ router.get('/table', authenticateJWT, async (req, res) => {
   try {
 
     let collaborators;
-    if (global.auth === false) collaborators = await Collaborator.model.find(); // Obtiene todos los colaboradores
-    else if (req.user?.rol === 'Administrador') collaborators = await Collaborator.model.find(); // Obtiene todos los colaboradores
-    else if (req.user?.rol === 'Gerente') collaborators = await Collaborator.model.find({ departamento: req.user.departamento }); // Obtiene colaboradores del mismo departamento
-
-    collaborators = collaborators.populate('departamento');
+    if (global.auth === false) collaborators = await Collaborator.model.find().populate('departamento'); // Obtiene todos los colaboradores
+    else if (req.user?.rol === 'Administrador') collaborators = await Collaborator.model.find().populate('departamento'); // Obtiene todos los colaboradores
+    else if (req.user?.rol === 'Gerente') collaborators = await Collaborator.model.find({ departamento: req.user.departamento }).populate('departamento'); // Obtiene colaboradores del mismo departamento
 
     const response = collaborators.map(collaborator => ({
       id: collaborator._id,

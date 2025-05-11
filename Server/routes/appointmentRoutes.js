@@ -4,6 +4,7 @@ import Appointments from '../../Data/Citas/Esquema.js'; // Importa el modelo Cit
 import Tickets from '../../Data/Tickets/Esquema.js'; // Importa el modelo Tickets
 import nodemailer from 'nodemailer';
 import Colaborator from '../../Data/Colaboradores/Esquema.js';
+import Departamento from '../../Data/Departmentos/Esquema.js';
 
 const router = express.Router();
 const Appointment = new Appointments();
@@ -18,7 +19,7 @@ router.get('/', async (req, res) => {
 
     for (const appointment of appointmentsWithTickets) {
 
-      if (global.auth === false) 
+      if (global.auth === false)
         appointment.ticket = await Ticket.model.findById(appointment.ticket).populate('paciente');
 
       else if (req.user.rol === 'Colaborador') {
@@ -28,7 +29,7 @@ router.get('/', async (req, res) => {
         }
         appointment.ticket = ticketDetails;
       }
-      
+
       else if (req.user.rol === 'Gerente') {
         const ticketDetails = await Ticket.model.findById(appointment.ticket).populate({
           path: 'paciente',
@@ -39,7 +40,7 @@ router.get('/', async (req, res) => {
         }
         appointment.ticket = ticketDetails;
       }
-      
+
       else if (appointment.ticket) {
         appointment.ticket = await Ticket.model.findById(appointment.ticket).populate('paciente');
       }
@@ -47,18 +48,18 @@ router.get('/', async (req, res) => {
     }
 
     const response = appointmentsWithTickets.map(appointment => {
-        return {
-          id: appointment._id,
-          Ticket: appointment.ticket?.nombre,
-          Paciente: appointment.ticket?.paciente?.nombre,
-          Doctor: appointment.doctor,
-          Riesgo: appointment.riesgo,
-          Recurso: appointment.recurso,
-          Diagnostico: appointment.diagnostico,
-          FechaCita: appointment.fechaCita,
-          UltimoUsuarioEnModificar: appointment.ultimoUsuarioEnModificar,
-          Estatus: appointment.estatus,
-        };
+      return {
+        id: appointment._id,
+        Ticket: appointment.ticket?.nombre,
+        Paciente: appointment.ticket?.paciente?.nombre,
+        Doctor: appointment.doctor,
+        Riesgo: appointment.riesgo,
+        Recurso: appointment.recurso,
+        Diagnostico: appointment.diagnostico,
+        FechaCita: appointment.fechaCita,
+        UltimoUsuarioEnModificar: appointment.ultimoUsuarioEnModificar,
+        Estatus: appointment.estatus,
+      };
     });
     // Responder con las citas encontradas
     res.status(200).json(response);
@@ -76,45 +77,56 @@ router.get('/table', async (req, res) => {
       .populate({ path: 'recurso', select: 'nombre' })
       .populate({ path: 'ultimoUsuarioEnModificar', select: 'nombre' });
 
-      for (const appointment of appointmentsWithTickets) {
-        
-        if (global.auth === false) 
-          appointment.ticket = await Ticket.model.findById(appointment.ticket).populate('paciente');
-        else if (req.user.rol === 'Colaborador') {
-          const ticketDetails = await Ticket.model.findById(appointment.ticket).populate('paciente');
-          if (ticketDetails?.paciente?._id.toString() !== req.user.id) {
-            continue; // Skip appointments that do not match the user's paciente ID
-          }
-          appointment.ticket = ticketDetails;
-        }
-        else if (req.user.rol === 'Gerente') {
-          const ticketDetails = await Ticket.model.findById(appointment.ticket).populate({
-            path: 'paciente',
-            populate: { path: 'departamento' }
-          });
-          if (ticketDetails?.paciente?.departamento?._id.toString() !== req.user.departamento) {
-            continue; // Skip appointments that do not match the user's departamento ID
-          }
-          appointment.ticket = ticketDetails;
-        }
-        else if (appointment.ticket) {
-          appointment.ticket = await Ticket.model.findById(appointment.ticket).populate('paciente');
-        }
+    for (const appointment of appointmentsWithTickets) {
+
+      if (global.auth === false) {
+        appointment.ticket = await Ticket.model.findById(appointment.ticket).populate({
+          path: 'paciente',
+          populate: { path: 'departamento' }
+        });
       }
+      else if (req.user.rol === 'Colaborador') {
+        const ticketDetails = await Ticket.model.findById(appointment.ticket).populate({
+          path: 'paciente',
+          populate: { path: 'departamento' }
+        });
+        if (ticketDetails?.paciente?._id.toString() !== req.user.id) {
+          continue; // Skip appointments that do not match the user's paciente ID
+        }
+        appointment.ticket = ticketDetails;
+      }
+      else if (req.user.rol === 'Gerente') {
+        const ticketDetails = await Ticket.model.findById(appointment.ticket).populate({
+          path: 'paciente',
+          populate: { path: 'departamento' }
+        });
+        if (ticketDetails?.paciente?.departamento?._id.toString() !== req.user.departamento) {
+          continue; // Skip appointments that do not match the user's departamento ID
+        }
+        appointment.ticket = ticketDetails;
+      }
+      else if (appointment.ticket) {
+        appointment.ticket = await Ticket.model.findById(appointment.ticket).populate({
+          path: 'paciente',
+          populate: { path: 'departamento' }
+        });
+      }
+    }
 
     const response = appointmentsWithTickets.map(appointment => {
-        return {
-          id: appointment._id,
-          Ticket: appointment.ticket?.nombre,
-          Paciente: appointment.ticket?.paciente?.nombre,
-          Doctor: appointment?.doctor,
-          Riesgo: appointment?.riesgo,
-          Recurso: appointment.recurso?.nombre,
-          Diagnostico: appointment?.diagnostico,
-          FechaCita: appointment?.fechaCita,
-          UltimoUsuarioEnModificar: appointment.ultimoUsuarioEnModificar?.nombre,
-          Estatus: appointment?.estatus,
-        };
+      return {
+        id: appointment._id,
+        Ticket: appointment.ticket?.nombre,
+        Paciente: appointment.ticket?.paciente?.nombre,
+        Departamento: appointment.ticket?.paciente?.departamento?.descripcion,
+        Doctor: appointment?.doctor,
+        Riesgo: appointment?.riesgo,
+        Recurso: appointment.recurso?.nombre,
+        Diagnostico: appointment?.diagnostico,
+        FechaCita: appointment?.fechaCita,
+        UltimoUsuarioEnModificar: appointment.ultimoUsuarioEnModificar?.nombre,
+        Estatus: appointment?.estatus,
+      };
     });
     // Responder con las citas encontradas
     res.status(200).json(response);
@@ -128,7 +140,7 @@ router.get('/:id', async (req, res) => {
     // Obtener cita por ID
     const foundAppointment = await Appointment.model.findById(req.params.id)
       .populate('ticket');
-  
+
     if (foundAppointment.ticket) {
       foundAppointment.ticket = await Ticket.model.findById(foundAppointment.ticket).populate('paciente');
     }
@@ -164,16 +176,16 @@ router.get('/calendar/:id', async (req, res) => {
     // Obtener todas las citas
     const appointments = await Appointment.model.find().populate('ticket');
     const response = appointments.map((appointment) => {
-        if (appointment.ticket && appointment.ticket.paciente == id) { // Filtrar por ID del paciente
-          return {
-            id: appointment._id,
-            title: appointment.ticket?.nombre,
-            start: appointment.fechaCita,
-            end: appointment.fechaCita,
-            allDay: true,
-          };
-        }
-        return null;
+      if (appointment.ticket && appointment.ticket.paciente == id) { // Filtrar por ID del paciente
+        return {
+          id: appointment._id,
+          title: appointment.ticket?.nombre,
+          start: appointment.fechaCita,
+          end: appointment.fechaCita,
+          allDay: true,
+        };
+      }
+      return null;
     }).filter(appointment => appointment !== null); // Filtrar las citas no nulas
 
     // Filtrar las citas no nulas
@@ -276,7 +288,7 @@ router.post('/', async (req, res) => {
         await transporter.sendMail(mailOptions);
       }
     }
-    
+
 
     // Responder con un mensaje de éxito y la cita creada
     res.status(201).json({ message: 'Cita creada con éxito', appointment: newAppointment });
