@@ -52,10 +52,10 @@ router.get('/table', async (req, res) => {
             .populate({ path: 'sintomas', select: 'descripcion' })
             .populate({ path: 'incidencia', select: 'descripcion' });
         else if (req.user.rol === 'Gerente') {
-            const ticketDetails = await Ticket.model.find().populate({path: 'paciente', populate: { path: 'departamento' }, select: 'nombre apellido departamento'});
+            const ticketDetails = await ticket.model.find().populate({path: 'paciente', populate: { path: 'departamento' }, select: 'nombre apellido departamento'})
+                .populate({ path: 'sintomas', select: 'descripcion' })
+                .populate({ path: 'incidencia', select: 'descripcion' });
             tickets = ticketDetails.filter(ticket => ticket.paciente?.departamento?._id.toString() === req.user.departamento);
-            tickets.populate({ path: 'sintomas', select: 'descripcion' })
-                    .populate({ path: 'incidencia', select: 'descripcion' });
         }
         else if (req.user.rol === 'Colaborador') 
             tickets = await ticket.model.find({ paciente: req.user._id })
