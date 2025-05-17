@@ -78,7 +78,7 @@ const EditAppointment = () => {
         ticket: null,
         doctor: data.Doctor || '',
         risk: data.Riesgo || '',
-        appointmentDate: data.FechaCita ? dayjs(data.FechaDeNacimiento) : null,
+        appointmentDate: data.FechaCita ? dayjs(data.FechaCita) : null,
         lastModifiedBy: user.id || '',
         status: data.Estatus || '',
         diagnosis: data.Diagnostico || '',

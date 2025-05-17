@@ -63,7 +63,8 @@ const collaboratorSchema = new mongoose.Schema({
         default: null // Use null instead of a default date
     },
     departamento: {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Departamento', // Reference to the Department collection
         default: null // Use null instead of a default date
     },
     activo: {

@@ -1,23 +1,19 @@
 const DatosDummy = [
     {
         id: 1,
-        descripcion: 'Reacción alérgica severa',
-        riesgo: 3
+        descripcion: 'Reacción alérgica severa'
     },
     {
         id: 2,
-        descripcion: 'Error en la medicación',
-        riesgo: 2
+        descripcion: 'Error en la medicación'
     },
     {
         id: 3,
-        descripcion: 'Infección postoperatoria',
-        riesgo: 3
+        descripcion: 'Infección postoperatoria'
     },
     {
         id: 4,
-        descripcion: 'Caída del paciente',
-        riesgo: 2
+        descripcion: 'Caída del paciente'
     }
 ];
 
