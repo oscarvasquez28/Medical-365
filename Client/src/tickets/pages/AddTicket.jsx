@@ -22,6 +22,7 @@ const AddTicket = () => {
   const { user } = useContext(UserContext);
   const [symptoms, setSymptoms] = useState([])
   const [incident, setIncident] = useState([])
+  const [errors, setErrors] = useState({});
   const [ticket, setTicket] = useState({
     name: '',
     incidence: '',
@@ -81,9 +82,22 @@ const AddTicket = () => {
       toast.error("Error al agregar Ticket")
     }
   }
+    const validate = () => {
+    const newErrors = {};
+    if (!ticket.name.trim()) newErrors.name = "El nombre es obligatorio";
+    if (!ticket.incidence) newErrors.incidence = "El tipo de incidencia es obligatorio";
+    if (!ticket.symptoms || ticket.symptoms.length === 0) newErrors.symptoms = "Selecciona al menos un síntoma";
+    if (!ticket.comments.trim()) newErrors.comments = "Los comentarios son obligatorios";
+    return newErrors;
+  };
+
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    postTicket()
+    e.preventDefault();
+    const validationErrors = validate();
+    setErrors(validationErrors);
+    if (Object.keys(validationErrors).length === 0) {
+      postTicket();
+    }
   };
 
   return (
@@ -103,6 +117,8 @@ const AddTicket = () => {
                 fullWidth
                 onChange={handleInputChange}
                 name="name"
+                error={!!errors.name}
+                helperText={errors.name}
               />
               <TextField
                 id="incidence"
@@ -111,6 +127,8 @@ const AddTicket = () => {
                 fullWidth
                 onChange={handleInputChange}
                 name="incidence"
+                error={!!errors.incidence}
+                helperText={errors.incidence}
               >
                 {incident.map((option) => (
                   <MenuItem key={option.value} value={option.value}>
@@ -121,11 +139,18 @@ const AddTicket = () => {
               <Autocomplete
                 fullWidth
                 multiple
-                options={symptoms} // Pasa el array completo de objetos
-                getOptionLabel={(option) => option.label} // Muestra el label de cada opción
-                value={ticket.symptoms.map((symptom) => symptoms.find((s) => s.value === symptom) || { label: '', value: symptom })} // Convierte los valores almacenados en objetos para que el Autocomplete funcione
-                onChange={(_, value) => setTicket({ ...ticket, symptoms: value.map((item) => item.value) })} // Guarda solo los valores
-                renderInput={(params) => <TextField {...params} label="Síntomas" />}
+                options={symptoms}
+                getOptionLabel={(option) => option.label}
+                value={ticket.symptoms.map((symptom) => symptoms.find((s) => s.value === symptom) || { label: '', value: symptom })}
+                onChange={(_, value) => setTicket({ ...ticket, symptoms: value.map((item) => item.value) })}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Síntomas"
+                    error={!!errors.symptoms}
+                    helperText={errors.symptoms}
+                  />
+                )}
               />
               <TextField
                 id="comentarios"
@@ -133,6 +158,8 @@ const AddTicket = () => {
                 fullWidth
                 onChange={handleInputChange}
                 name="comments"
+                error={!!errors.comments}
+                helperText={errors.comments}
               />
             </Stack>
             <Stack direction="row" justifyContent="space-between" sx={{ marginTop: '2rem' }}>
