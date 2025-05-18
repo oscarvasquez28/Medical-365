@@ -1,16 +1,29 @@
 // routes/indicatorRoutes.js
 import express from 'express';
 import Indicador from '../../Data/Indicadores/Esquema.js'; // Importa el modelo Indicador
-
+import Ticket from '../../Data/Tickets/Esquema.js'; // Importa el modelo Ticket
 // routes/indicatorRoutes.js
 const router = express.Router();
 const indicador = new Indicador();
+const ticket = new Ticket();
 
 // Ruta para obtener todos los indicadores
-router.get('/', async (req, res) => {
+router.get('/tickets', async (req, res) => {
     try {
-        const indicadores = await indicador.model.find(); // Obtiene todos los indicadores
+
+        const tickets = await ticket.model.find();
+        
+        const indicadores = {
+            'total': tickets.length,
+            'cerrados': tickets.filter(ticket => ticket.estatus === 'Cerrado').length,
+            'pendientes': tickets.filter(ticket => ticket.estatus === 'Pendiente').length,
+            'cancelados': tickets.filter(ticket => ticket.estatus === 'Cancelado').length,
+            'urgentes': tickets.filter(ticket => ticket.riesgo === 'Alto').length,
+        }
+
+        // Obtiene todos los indicadores
         res.status(200).json(indicadores);
+
     } catch (err) {
         res.status(400).json({ message: 'Error al obtener los indicadores', error: err });
     }

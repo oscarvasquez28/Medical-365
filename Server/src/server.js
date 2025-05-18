@@ -17,7 +17,7 @@ import riskRoutes from '../routes/riskRoutes.js';
 
 const result = dotenv.config( {path: 'Server/.env'} );
 
-global.auth = false; // Cambia esto a false si no quieres usar autenticación JWT
+global.auth = true; // Cambia esto a false si no quieres usar autenticación JWT
 
 const authFunction = global.auth ? authenticateJWT : (req, res, next) => { next(); };
 

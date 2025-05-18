@@ -29,15 +29,17 @@ export default class Conexion {
         console.log(this.#uri);
         console.log(this.#pathToCertificate);
 
-
-        if (!this.#uri || !this.#pathToCertificate) {
+            if (!this.#uri || !this.#pathToCertificate) {
             throw new Error('Missing environment variables for database Conexion.');
         }
     }
 
-    async #ConnectByPassword() {
+    async #ConnectByPassword(   ) {
         console.log('Connecting to MongoDB Atlas with password authentication');
         console.log('URI:', this.#uri);
+
+        console.log('user:', process.env.DB_USER);
+        console.log('pass:', process.env.DB_PASSWORD);
 
         try {
             this.Conexion = await this.mongooseContexto.connect(this.#uri, {
