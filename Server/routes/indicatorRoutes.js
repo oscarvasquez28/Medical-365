@@ -3,12 +3,14 @@ import express from 'express';
 import Indicador from '../../Data/Indicadores/Esquema.js'; // Importa el modelo Indicador
 import Ticket from '../../Data/Tickets/Esquema.js'; // Importa el modelo Ticket
 import Citas from '../../Data/Citas/Esquema.js'; // Importa el modelo Appointment 
+import Colaborador from '../../Data/Colaboradores/Esquema.js';
 
 // routes/indicatorRoutes.js
 const router = express.Router();
 const indicador = new Indicador();
 const ticket = new Ticket();
 const cita = new Citas();
+const colaborador = new Colaborador();
 
 
 // Ruta para obtener todos los indicadores
@@ -101,6 +103,37 @@ router.get('/appointments/month', async (req, res) => {
     }
 });
 
+router.get('/collaborators', async (req, res) => {
+
+    try {
+        const colaboradores = await colaborador.model.find();
+
+        const indicadores = {
+            'totalColaboradores': colaboradores.length,
+            'inactivo': {
+                'id': 0,
+                'value': colaboradores.filter(colaborador => colaborador.estatus === 'Inactivo').length,
+                'label': 'Inactivos'
+            },
+            'activo': {
+                'id': 1,
+                'value': colaboradores.filter(colaborador => colaborador.estatus === 'Activo').length,
+                'label': 'Activos'
+            },
+            'suspendido': {
+                'id': 2,
+                'value': colaboradores.filter(colaborador => colaborador.estatus === 'Suspendido').length,
+                'label': 'Suspendidos'
+            },
+        };
+
+        // Obtiene todos los indicadores
+        res.status(200).json(indicadores);
+
+    } catch (err) {
+        res.status(400).json({ message: 'Error al obtener los indicadores de citas', error: err});
+    }
+});
 
 // Ruta para obtener un indicador por ID
 router.get('/:id', async (req, res) => {
