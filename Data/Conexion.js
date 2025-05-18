@@ -5,7 +5,7 @@ export default class Conexion {
     #pathToCertificate;
 
     static instance = null; // Static property to store the singleton instance
-    mongooseContexto = null; 
+    mongooseContexto = null;
     Conexion = null;
 
     constructor(mongoose) {
@@ -78,7 +78,7 @@ export default class Conexion {
     }
 
     async #Disconnect() {
-        if (this.Conexion) {  
+        if (this.Conexion) {
             await this.mongooseContexto.disconnect();
             console.log('Disconnected from MongoDB Atlas');
             this.Conexion = null;
