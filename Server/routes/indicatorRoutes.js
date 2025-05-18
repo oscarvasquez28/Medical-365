@@ -83,12 +83,12 @@ router.get('/tickets/:id', async (req, res) => {
         
         const indicadores = {
                 'totalTickets': tickets.length,
-                'cerrados': {
+                'pendiente': {
                     'id': 0,
                     'value': tickets.filter(ticket => ticket.estatus === 'Pendiente').length,
                     'label': 'Pendiente'
                 },
-                'pendientes': {
+                'cerrado': {
                     'id': 1,
                     'value': tickets.filter(ticket => ticket.estatus === 'Cerrado').length,
                     'label': 'Cerrado'
