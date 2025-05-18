@@ -4,6 +4,15 @@ export default {
   getCollaborators(){
     return api.get('/collaborators')
   },
+  getCollaboratorsTable(){
+    return api.get('/collaborators/table')
+  },
+  getCollaboratorsList(){
+    return api.get('/collaborators/list')
+  },
+  getAdminCollaboratorsList(){
+    return api.get('/collaborators/admin/list')
+  },
   getCollaboratorsId(id){
     return api.get(`/collaborators/${id}`)
   },
