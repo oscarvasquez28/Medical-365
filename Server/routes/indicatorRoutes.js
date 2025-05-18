@@ -12,7 +12,6 @@ const ticket = new Ticket();
 const cita = new Citas();
 const colaborador = new Colaborador();
 
-
 // Ruta para obtener todos los indicadores
 router.get('/tickets', async (req, res) => {
     try {
@@ -72,6 +71,41 @@ router.get('/tickets/month', async (req, res) => {
 
     } catch (err) {
         res.status(400).json({ message: 'Error al obtener los indicadores', error: err });
+    }
+});
+
+router.get('/tickets/:id', async (req, res) => {
+    try {
+
+        const id = req.params.id;
+
+        const tickets = await ticket.model.find({ paciente: id });
+        
+        const indicadores = {
+                'totalTickets': tickets.length,
+                'cerrados': {
+                    'id': 0,
+                    'value': tickets.filter(ticket => ticket.estatus === 'Pendiente').length,
+                    'label': 'Pendiente'
+                },
+                'pendientes': {
+                    'id': 1,
+                    'value': tickets.filter(ticket => ticket.estatus === 'Cerrado').length,
+                    'label': 'Cerrado'
+                },
+                'cancelados': {
+                    'id': 2,
+                    'value': tickets.filter(ticket => ticket.estatus === 'Cancelado').length,
+                    'label': 'Cancelado'
+                },
+
+            };      
+
+        // Obtiene todos los indicadores
+        res.status(200).json(indicadores);
+
+    } catch (err) {
+        res.status(400).json({ message: 'Error al obtener el ticket', error: err });
     }
 });
 
