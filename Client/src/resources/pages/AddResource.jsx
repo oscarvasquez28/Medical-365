@@ -16,6 +16,7 @@ import { toast } from 'react-hot-toast';
 const AddResource = () => {
   const navigate = useNavigate()
   const { user } = useContext(UserContext);
+  const [errors, setErrors] = useState({});
   const [resource, setResource] = useState({
     name: '',
     version: '',
@@ -48,9 +49,21 @@ const AddResource = () => {
     }
   }
 
+   const validate = () => {
+    const newErrors = {};
+    if (!resource.name.trim()) newErrors.name = "El nombre es obligatorio";
+    if (!resource.version.trim()) newErrors.version = "La versión es obligatoria";
+    if (!resource.description.trim()) newErrors.description = "La descripción es obligatoria";
+    return newErrors;
+  };
+
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    postResource()
+    e.preventDefault();
+    const validationErrors = validate();
+    setErrors(validationErrors);
+    if (Object.keys(validationErrors).length === 0) {
+      postResource();
+    }
   };
 
   return (
@@ -70,6 +83,8 @@ const AddResource = () => {
                 fullWidth
                 onChange={handleInputChange}
                 name="name"
+                error={!!errors.name}
+                helperText={errors.name}
               />
               <TextField
                 id="version"
@@ -77,6 +92,8 @@ const AddResource = () => {
                 fullWidth
                 onChange={handleInputChange}
                 name="version"
+                error={!!errors.version}
+                helperText={errors.version}
               />
               <TextField
                 id="descripcion"
@@ -84,6 +101,8 @@ const AddResource = () => {
                 fullWidth
                 onChange={handleInputChange}
                 name="description"
+                error={!!errors.description}
+                helperText={errors.description}
               />
             </Stack>
             <Stack direction="row" justifyContent="space-between" sx={{ marginTop: '2rem' }}>

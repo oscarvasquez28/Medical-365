@@ -5,7 +5,7 @@ export default class Conexion {
     #pathToCertificate;
 
     static instance = null; // Static property to store the singleton instance
-    mongooseContexto = null; 
+    mongooseContexto = null;
     Conexion = null;
 
     constructor(mongoose) {
@@ -29,15 +29,17 @@ export default class Conexion {
         console.log(this.#uri);
         console.log(this.#pathToCertificate);
 
-
-        if (!this.#uri || !this.#pathToCertificate) {
+            if (!this.#uri || !this.#pathToCertificate) {
             throw new Error('Missing environment variables for database Conexion.');
         }
     }
 
-    async #ConnectByPassword() {
+    async #ConnectByPassword(   ) {
         console.log('Connecting to MongoDB Atlas with password authentication');
         console.log('URI:', this.#uri);
+
+        console.log('user:', process.env.DB_USER);
+        console.log('pass:', process.env.DB_PASSWORD);
 
         try {
             this.Conexion = await this.mongooseContexto.connect(this.#uri, {
@@ -76,7 +78,7 @@ export default class Conexion {
     }
 
     async #Disconnect() {
-        if (this.Conexion) {  
+        if (this.Conexion) {
             await this.mongooseContexto.disconnect();
             console.log('Disconnected from MongoDB Atlas');
             this.Conexion = null;

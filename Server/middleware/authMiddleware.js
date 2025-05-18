@@ -1,6 +1,9 @@
 import jwt from 'jsonwebtoken';
 
 export const authenticateJWT = (req, res, next) => {
+    
+    if (global.auth === false) return next(); // Skip authentication if global.auth is false
+    
     const token = req.headers.authorization?.split(' ')[1]; // Extract token from "Authorization: Bearer <token>"
 
     if (!token) {

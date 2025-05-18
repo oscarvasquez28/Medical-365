@@ -1,12 +1,9 @@
 import mongoose from "mongoose";
 import DatosDummy from './DatosDummy.js'; //
 
-export default class Citas {
-    collection = 'Citas';
-    data = {};
-
-    schema = new mongoose.Schema({
-        folio: {
+// Define the schema
+const citaSchema = new mongoose.Schema({
+    folio: {
             type: String, // Changed to String to accommodate the generated value
             required: false, // Not required since it will be generated
             unique: true // Ensure caseFolio is unique
@@ -58,25 +55,19 @@ export default class Citas {
             enum: ['Pendiente', 'Cerrado', 'Cancelado'],
             required: true
         }
-    });
+});
+    
+
+export default class Citas {
+
+    collection = 'Citas';
+    schema = citaSchema;
+    model = mongoose.model(this.collection, this.schema);
+    data = DatosDummy;
 
     constructor() {
-        this.#Init();
+        
     }
 
-    #Init() {
-        // Define pre-save middleware to generate caseFolio
-        this.schema.pre('save', function (next) {
-            if (!this.folio) {
-                // Generate caseFolio using fechaCreacion, patient, and doctor
-                this.folio = `${this.fechaCreacion.getTime()}${this.paciente}${this.doctor}`;
-            }
-            next();
-        });
-
-        // Initialize the model
-        this.model = mongoose.model(this.collection, this.schema);
-        this.data = DatosDummy;
-    }
 }
 
