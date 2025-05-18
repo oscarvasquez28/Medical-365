@@ -26,6 +26,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import IconButton from "@mui/material/IconButton";
 import AnimatedGauge from '../../common/components/AnimatedGauge';
 import Skeleton from '@mui/material/Skeleton';
+import CustomBreadcrumb from '../../common/components/CustomBreadcrumb';
 
 const drawerWidth = 300; //240
 
@@ -115,9 +116,14 @@ const Reports = () => {
   //     populateChecksEstatus()
   //   ]).then(() => setLoading(false));
   // }, []);
+  const breadcrumbs = [
+    { label: 'Inicio', href: '/' },
+    { label: 'Reportes' },
+  ];
 
   return (
     <Container maxWidth={false} sx={{ padding: '24px' }}>
+      <CustomBreadcrumb breadcrumbs={breadcrumbs} />
       {loading ? (
         <Stack spacing={3}>
           <Skeleton variant="rounded" width={'100%'} height={200} />
@@ -323,7 +329,7 @@ const Reports = () => {
         >
           <AnimatedGauge /*value={checksReceivable.total} valueMax={checksReceivable.totalRegistros}*/ />
           <Typography variant="h7" sx={{ marginTop: 1, minHeight: 40 }}>
-            Tiempo de Resolución
+            Incidencias de Alto Riesgo
           </Typography>
         </Box>
       </Stack>

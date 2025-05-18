@@ -2,6 +2,7 @@
 import express from 'express';
 import Collaborators from '../../Data/Colaboradores/Esquema.js'; // Importa el modelo Collaborator
 import jwt from 'jsonwebtoken';
+import { authenticateJWT } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 const Collaborator = new Collaborators();
@@ -26,7 +27,7 @@ router.post('/login', async (req, res) => {
 
     // Si las credenciales son correctas, generar un token JWT
     const token = jwt.sign(
-      { id: collaborator._id, email: collaborator.email },
+      { id: collaborator._id, correo: collaborator.correo, rol: collaborator.rol, departamento: collaborator.departamento },
       process.env.JWT_SECRET, // Cambia por una clave secreta segura
       { expiresIn: '15m' } // El token expira en 15 minutos
     );
@@ -48,7 +49,7 @@ router.post('/login', async (req, res) => {
 });
 
 // Ruta para crear un nuevo colaborador
-router.post('/', async (req, res) => {
+router.post('/', authenticateJWT, async (req, res) => {
   try {
     console.log(req.body);
     const { name, lastName, password, role, email, gender, status, birthDate, department, active } = req.body;
@@ -75,7 +76,7 @@ router.post('/', async (req, res) => {
   }
 });
 
-router.get('/status/list', async (_, res) => {
+router.get('/status/list', authenticateJWT, async (_, res) => {
   try {
     const response = Collaborator.model.schema.path('estatus').enumValues.map(value => ({
       value: value,
@@ -87,7 +88,7 @@ router.get('/status/list', async (_, res) => {
   }
 });
 
-router.get('/roles/list', async (_, res) => {
+router.get('/roles/list', authenticateJWT, async (_, res) => {
   try {
     const response = Collaborator.model.schema.path('rol').enumValues.map(value => ({
       value: value,
@@ -99,7 +100,7 @@ router.get('/roles/list', async (_, res) => {
   }
 });
 
-router.get('/genders/list', async (_, res) => {
+router.get('/genders/list', authenticateJWT, async (_, res) => {
   try {
     const response = Collaborator.model.schema.path('genero').enumValues.map(value => ({
       value: value,
@@ -111,9 +112,15 @@ router.get('/genders/list', async (_, res) => {
   }
 });
 
-router.get('/', async (req, res) => {
+router.get('/', authenticateJWT, async (req, res) => {
   try {
-    const collaborators = await Collaborator.model.find(); // Obtiene todos los colaboradores
+    
+    let collaborators;
+
+    if (global.auth === false) collaborators = await Collaborator.model.find(); // Obtiene todos los colaboradores
+    else if (req.user?.rol === 'Administrador') collaborators = await Collaborator.model.find(); // Obtiene todos los colaboradores
+    else if (req.user?.rol === 'Gerente') collaborators = await Collaborator.model.find({ departamento: req.user.departamento }); // Obtiene colaboradores del mismo departamento
+
     const response = collaborators.map(collaborator => ({
       id: collaborator._id,
       Nombre: collaborator.nombre,
@@ -134,10 +141,38 @@ router.get('/', async (req, res) => {
   }
 });
 
-router.get('/admin', async (req, res) => {
+router.get('/table', authenticateJWT, async (req, res) => {
+  try {
+
+    let collaborators;
+    if (global.auth === false) collaborators = await Collaborator.model.find().populate('departamento'); // Obtiene todos los colaboradores
+    else if (req.user?.rol === 'Administrador') collaborators = await Collaborator.model.find().populate('departamento'); // Obtiene todos los colaboradores
+    else if (req.user?.rol === 'Gerente') collaborators = await Collaborator.model.find({ departamento: req.user.departamento }).populate('departamento'); // Obtiene colaboradores del mismo departamento
+
+    const response = collaborators.map(collaborator => ({
+      id: collaborator._id,
+      Nombre: collaborator.nombre,
+      Apellido: collaborator.apellido,
+      Correo: collaborator.correo,
+      FechaDeNacimiento: collaborator.fechaNacimiento,
+      Genero: collaborator.genero,
+      Contraseña: collaborator.contraseña,
+      Rol: collaborator.rol,
+      Departamento: collaborator.departamento?.descripcion || 'Sin departamento',
+      FechaDeRegistro: collaborator.fechaCreacion,
+      FechaDeBaja: collaborator.fechaEliminacion,
+      Estado: collaborator.estatus
+    }));
+    res.status(200).json(response);
+  } catch (err) {
+    res.status(400).json({ message: 'Error al obtener los colaboradores', error: err });
+  }
+});
+
+router.get('/admin', authenticateJWT, async (req, res) => {
   try {
     const collaborators = await Collaborator.model.find(
-      { rol: 'admin' } // Filtra por rol de administrador
+      { rol: 'Administrador' } // Filtra por rol de administrador
     );
     const response = collaborators.map(collaborator => ({
       id: collaborator._id,
@@ -155,10 +190,10 @@ router.get('/admin', async (req, res) => {
 });
 
 // Formato value-label
-router.get('/admin/list', async (req, res) => {
+router.get('/admin/list', authenticateJWT, async (req, res) => {
   try {
     const collaborators = await Collaborator.model.find(
-      { rol: 'admin' } // Filtra por rol de administrador
+      { rol: 'Administrador' } // Filtra por rol de administrador
     );
     const response = collaborators.map(collaborator => ({
       value: collaborator._id,
@@ -170,7 +205,21 @@ router.get('/admin/list', async (req, res) => {
   }
 });
 
-router.get('/:id', async (req, res) => {
+// Formato value-label
+router.get('/list', authenticateJWT, async (req, res) => {
+  try {
+    const collaborators = await Collaborator.model.find();
+    const response = collaborators.map(collaborator => ({
+      value: collaborator._id,
+      label: `${collaborator.nombre} ${collaborator.apellido}`
+    }));
+    res.status(200).json(response);
+  } catch (err) {
+    res.status(400).json({ message: 'Error al obtener los colaboradores', error: err });
+  }
+});
+
+router.get('/:id', authenticateJWT, async (req, res) => {
   try {
     const collaborator = await Collaborator.model.findById(req.params.id); // Busca un colaborador por ID
     if (collaborator) {
@@ -195,7 +244,7 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-router.put('/:id', async (req, res) => {
+router.put('/:id', authenticateJWT, async (req, res) => {
   try {
     console.log(req.body);
     const { name, lastName, password, role, email, gender, status, birthDate, department, active,  } = req.body;
@@ -233,7 +282,7 @@ router.put('/:id', async (req, res) => {
   }
 });
 
-router.put('status/:id', async (req, res) => {
+router.put('status/:id', authenticateJWT, async (req, res) => {
   try {
     console.log(req.body);
     const { status } = req.body;
@@ -256,7 +305,7 @@ router.put('status/:id', async (req, res) => {
   }
 });
 
-router.delete('/collaborator/:id', async (req, res) => {
+router.delete('/collaborator/:id', authenticateJWT, async (req, res) => {
   try {
     const deletedCollaborator = await Collaborator.model.findByIdAndDelete(req.params.id);
     if (!deletedCollaborator) {

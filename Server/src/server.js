@@ -16,13 +16,10 @@ import riskRoutes from '../routes/riskRoutes.js';
 // Configurar variables de entorno
 
 const result = dotenv.config( {path: 'Server/.env'} );
-const auth = false; // Cambia esto a false si no quieres usar autenticación JWT
 
-const authFunction = auth ? authenticateJWT : (req, res, next) => { next(); };
+global.auth = false; // Cambia esto a false si no quieres usar autenticación JWT
 
-if (result.error) {
-    throw "\nThere was an error setting up environtment variables\n" + result.error;
-}
+const authFunction = global.auth ? authenticateJWT : (req, res, next) => { next(); };
 
 const app = express();
 
@@ -34,7 +31,7 @@ app.use(express.json());
 const context = new Context();
 
 // Usar las rutas de cada colección
-app.use('/api/collaborators', authFunction, collaboratorRoutes);
+app.use('/api/collaborators', collaboratorRoutes);
 app.use('/api/incidentTypes', authFunction, incidentTypeRoutes);
 app.use('/api/appointments', authFunction, appointmentRoutes);
 app.use('/api/departments', authFunction, departmentRoutes);

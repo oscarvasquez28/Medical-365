@@ -1,5 +1,6 @@
 import {React, useState, useEffect, useContext} from 'react'
 import {UserContext} from '../../Context/UserContext.jsx';
+import dayjs from 'dayjs';
 import Container from '@mui/material/Container'
 import Box from '@mui/material/Box'
 import CustomBreadcrumb from '../../common/components/CustomBreadcrumb'
@@ -22,6 +23,8 @@ const AddAppointment = () => {
   const [ticket, setTicket] = useState([])
   const [doctor, setDoctor] = useState([])
   const [risk, setRisk] = useState([])
+  const [errors, setErrors] = useState({});
+  const today = dayjs().startOf('day');
   const [appointment, setAppointment] = useState({
     ticket: '',
     doctor: '',
@@ -94,9 +97,26 @@ const AddAppointment = () => {
     }
   }
 
+  const validate = () => {
+    const newErrors = {};
+    if (!appointment.ticket) newErrors.ticket = "El ticket es obligatorio";
+    if (!appointment.doctor) newErrors.doctor = "El doctor es obligatorio";
+    if (!appointment.risk) newErrors.risk = "El riesgo es obligatorio";
+    if (!appointment.appointmentDate) {
+      newErrors.appointmentDate = "La fecha de cita es obligatoria";
+    } else if (dayjs(appointment.appointmentDate).isBefore(today)) {
+      newErrors.appointmentDate = "La fecha debe ser hoy o posterior";
+    }
+    return newErrors;
+  };
+
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    postAppointment()
+    e.preventDefault();
+    const validationErrors = validate();
+    setErrors(validationErrors);
+    if (Object.keys(validationErrors).length === 0) {
+      postAppointment();
+    }
   };
 
 
@@ -117,6 +137,8 @@ const AddAppointment = () => {
                 fullWidth
                 onChange={handleInputChange}
                 name="ticket"
+                error={!!errors.ticket}
+                helperText={errors.ticket}
               >
                 {ticket.map((option) => (
                   <MenuItem key={option.value} value={option.value}>
@@ -131,6 +153,8 @@ const AddAppointment = () => {
                 fullWidth
                 onChange={handleInputChange}
                 name="doctor"
+                error={!!errors.doctor}
+                helperText={errors.doctor}
               >
                 {doctor.map((option) => (
                   <MenuItem key={option.value} value={option.label}>
@@ -145,6 +169,8 @@ const AddAppointment = () => {
                 fullWidth
                 onChange={handleInputChange}
                 name="risk"
+                error={!!errors.risk}
+                helperText={errors.risk}
               >
                 {risk.map((option) => (
                   <MenuItem key={option.value} value={option.label}>
@@ -152,12 +178,19 @@ const AddAppointment = () => {
                   </MenuItem>
                 ))}
               </TextField>
-              <DatePicker
-                label="Fecha de Cita"
-                value={appointment.appointmentDate} // Asegúrate de que el valor sea un objeto Date o null
-                onChange={(newValue) => setAppointment({ ...appointment, appointmentDate: newValue })} // Actualiza el estado con la nueva fecha
-                sx={{ width: '100%' }}
-              />
+            <DatePicker
+              label="Fecha de Cita"
+              value={appointment.appointmentDate}
+              onChange={(newValue) => setAppointment({ ...appointment, appointmentDate: newValue })}
+              minDate={today}
+              sx={{ width: '100%' }}
+              slotProps={{
+                textField: {
+                  error: !!errors.appointmentDate,
+                  helperText: errors.appointmentDate,
+                }
+              }}
+            />
             </Stack>
             <Stack direction="row" justifyContent="space-between" sx={{ marginTop: '2rem' }}>
               <NavigationButton variant="outlined" color="info" Route={'/appointments'} Text={'Regresar'}/>
