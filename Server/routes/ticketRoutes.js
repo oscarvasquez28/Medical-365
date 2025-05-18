@@ -87,7 +87,7 @@ router.get('/table', async (req, res) => {
 // Ruta para obtener todos los tickets en formato value-label
 router.get('/list', async (req, res) => {
     try {
-        const tickets = await ticket.model.find();
+        let tickets;
 
         if (global.auth === false) tickets = await ticket.model.find();
         else if (req.user.rol === 'Administrador') tickets = await ticket.model.find();
