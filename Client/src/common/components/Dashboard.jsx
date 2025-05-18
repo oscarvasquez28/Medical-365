@@ -1,11 +1,34 @@
-import React from 'react';
+import {React, useState, useEffect} from 'react'
+import { useContext } from 'react';
+import { UserContext } from '../../Context/UserContext.jsx';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import Stack from '@mui/material/Stack';
-import { Gauge } from '@mui/x-charts/Gauge';
 import Typography from '@mui/material/Typography';
+import AnimatedGauge from '../../common/components/AnimatedGauge';
+import IndicatorsAPI from '../../services/IndicatorsAPI';
+import { toast } from 'react-hot-toast';
 
 const Dashboard = () => {
+  const [tickets, setTickets] = useState([]);
+  const { user } = useContext(UserContext);
+  const id = user.id;
+
+  useEffect(() => {
+    getTicketsID(id);
+  }, []);
+
+  async function getTicketsID(id) {
+    try {
+      const { data } = await IndicatorsAPI.getTicketsID(id);
+      setTickets(data);
+      console.log(data);
+    } catch (error) {
+      console.error(error);
+      setTickets([]);
+    }
+  }
+
   return (
     <Container maxWidth={false} sx={{ marginTop: '2rem' }}>
       <Stack
@@ -30,9 +53,9 @@ const Dashboard = () => {
             justifyContent: 'center',
           }}
         >
-          <Gauge width={150} height={125} value={60} startAngle={-90} endAngle={90} />
+          <AnimatedGauge value={tickets.pendiente?.value ?? 0} valueMax={tickets.totalTickets ?? 0}/>
           <Typography variant="h6" sx={{ marginTop: 2 }}>
-            Título 1
+            Mis Tickets Pendientes
           </Typography>
         </Box>
         <Box
@@ -48,9 +71,9 @@ const Dashboard = () => {
             justifyContent: 'center',
           }}
         >
-          <Gauge width={150} height={125} value={60} startAngle={-90} endAngle={90} />
+          <AnimatedGauge value={tickets.cerrado?.value ?? 0} valueMax={tickets.totalTickets ?? 0}/>
           <Typography variant="h6" sx={{ marginTop: 2 }}>
-            Título 2
+            Mis Tickets Cerrados
           </Typography>
         </Box>
         <Box
@@ -66,9 +89,9 @@ const Dashboard = () => {
             justifyContent: 'center',
           }}
         >
-          <Gauge width={150} height={125} value={60} startAngle={-90} endAngle={90} />
+          <AnimatedGauge value={tickets.cancelados?.value ?? 0} valueMax={tickets.totalTickets ?? 0}/>
           <Typography variant="h6" sx={{ marginTop: 2 }}>
-            Título 3
+            Mis Tickets Cancelados
           </Typography>
         </Box>
       </Stack>
