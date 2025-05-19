@@ -19,6 +19,7 @@ const EditResource = () => {
   const { user } = useContext(UserContext);
   const { id } = useParams()
   const [status, setEstatus] = useState([]);
+  const [errors, setErrors] = useState({});
   const [resource, setResource] = useState({
     name: '',
     version: '',
@@ -85,9 +86,22 @@ const EditResource = () => {
     }
   }
 
+  const validate = () => {
+    const newErrors = {};
+    if (!resource.name.trim()) newErrors.name = "El nombre es obligatorio";
+    if (!resource.version.trim()) newErrors.version = "La versión es obligatoria";
+    if (!resource.description.trim()) newErrors.description = "La descripción es obligatoria";
+    if (!resource.status) newErrors.status = "El estado es obligatorio";
+    return newErrors;
+  };
+
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    putResource(id)
+    e.preventDefault();
+    const validationErrors = validate();
+    setErrors(validationErrors);
+    if (Object.keys(validationErrors).length === 0) {
+      putResource(id);
+    }
   };
 
   return (
@@ -108,6 +122,8 @@ const EditResource = () => {
                 value={resource.name || ''}
                 onChange={handleInputChange}
                 name="name"
+                error={!!errors.name}
+                helperText={errors.name}
               />
               <TextField
                 id="version"
@@ -116,6 +132,8 @@ const EditResource = () => {
                 value={resource.version || ''}
                 onChange={handleInputChange}
                 name="version"
+                error={!!errors.version}
+                helperText={errors.version}
               />
               <TextField
                 id="descripcion"
@@ -124,6 +142,8 @@ const EditResource = () => {
                 value={resource.description || ''}
                 onChange={handleInputChange}
                 name="description"
+                error={!!errors.description}
+                helperText={errors.description}
               />
               <TextField
                 id="status"
@@ -133,6 +153,8 @@ const EditResource = () => {
                 value={resource.status || ''}
                 onChange={handleInputChange}
                 name="status"
+                error={!!errors.status}
+                helperText={errors.status}
               >
                 {status.map((option) => (
                   <MenuItem key={option.value} value={option.value}>

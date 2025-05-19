@@ -25,6 +25,7 @@ const EditTicket = () => {
   const [risk, setRisk] = useState([])
   const [symptoms, setSymptoms] = useState([])
   const [patient, setPatient] = useState('')
+  const [errors, setErrors] = useState({});
   const [ticket, setTicket] = useState({
     name: '',
     patient: '',
@@ -113,9 +114,23 @@ const EditTicket = () => {
     }
   }
 
+    const validate = () => {
+    const newErrors = {};
+    if (!ticket.name.trim()) newErrors.name = "El nombre es obligatorio";
+    if (!ticket.incidence) newErrors.incidence = "El tipo de incidencia es obligatorio";
+    //if (!ticket.risk) newErrors.risk = "El riesgo es obligatorio";
+    if (!ticket.symptoms || ticket.symptoms.length === 0) newErrors.symptoms = "Selecciona al menos un síntoma";
+    if (!ticket.comments.trim()) newErrors.comments = "Los comentarios son obligatorios";
+    return newErrors;
+  };
+
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    putTicket(id)
+    e.preventDefault();
+    const validationErrors = validate();
+    setErrors(validationErrors);
+    if (Object.keys(validationErrors).length === 0) {
+      putTicket(id);
+    }
   };
 
   const breadcrumbs = [
@@ -142,6 +157,8 @@ const EditTicket = () => {
                 onChange={handleInputChange}
                 value={ticket.name || ''}
                 name="name"
+                error={!!errors.name}
+                helperText={errors.name}
               />
               <TextField
                 id="outlined-basic"
@@ -161,6 +178,8 @@ const EditTicket = () => {
                 value={ticket.incidence || ''}
                 onChange={handleInputChange}
                 name="incidence"
+                error={!!errors.incidence}
+                helperText={errors.incidence}
               >
                 {incidentTypes.map((option) => (
                   <MenuItem key={option.value} value={option.value}>
@@ -176,6 +195,8 @@ const EditTicket = () => {
                 value={ticket.risk || ''}
                 onChange={handleInputChange}
                 name="risk"
+                error={!!errors.risk}
+                helperText={errors.risk}
               >
                 {risk.map((option) => (
                   <MenuItem key={option.value} value={option.value}>
@@ -186,11 +207,18 @@ const EditTicket = () => {
               <Autocomplete
                 fullWidth
                 multiple
-                options={symptoms} // Pasa el array completo de objetos
-                getOptionLabel={(option) => option.label} // Muestra el label de cada opción
-                value={ticket.symptoms.map((symptom) => symptoms.find((s) => s.value === symptom) || { label: '', value: symptom })} // Convierte los valores almacenados en objetos para que el Autocomplete funcione
-                onChange={(_, value) => setTicket({ ...ticket, symptoms: value.map((item) => item.value) })} // Guarda solo los valores
-                renderInput={(params) => <TextField {...params} label="Síntomas" />}
+                options={symptoms}
+                getOptionLabel={(option) => option.label}
+                value={ticket.symptoms.map((symptom) => symptoms.find((s) => s.value === symptom) || { label: '', value: symptom })}
+                onChange={(_, value) => setTicket({ ...ticket, symptoms: value.map((item) => item.value) })}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Síntomas"
+                    error={!!errors.symptoms}
+                    helperText={errors.symptoms}
+                  />
+                )}
               />
               <TextField
                 id="comments"
@@ -199,6 +227,8 @@ const EditTicket = () => {
                 onChange={handleInputChange}
                 value={ticket.comments || ''}
                 name='comments'
+                error={!!errors.comments}
+                helperText={errors.comments}
               />
             </Stack>
             <Stack direction="row" justifyContent="space-between" sx={{ marginTop: '2rem' }}>

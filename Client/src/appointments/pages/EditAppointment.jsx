@@ -20,25 +20,28 @@ import ResourcesAPI from '../../services/ResourcesAPI.js'
 import dayjs from 'dayjs';
 
 const EditAppointment = () => {
-    const navigate = useNavigate()
-    const { user } = useContext(UserContext);
-    const { id } = useParams()
-    const [ticket, setTicket] = useState('')
-    const [patient, setPatient] = useState('')
-    const [doctor, setDoctor] = useState([])
-    const [risk, setRisk] = useState([])
-    const [resource, setResource] = useState([])
-    const [status, setStatus] = useState([])
-    const [appointment, setAppointment] = useState({
-      ticket: '',
-      doctor: '',
-      risk: '',
-      appointmentDate: null,
-      lastModifiedBy: user.id,
-      status: '',
-      diagnosis: '',
-      resource: ''
-    })
+  const navigate = useNavigate()
+  const { user } = useContext(UserContext);
+  const { id } = useParams()
+  const [ticket, setTicket] = useState('')
+  const [patient, setPatient] = useState('')
+  const [doctor, setDoctor] = useState([])
+  const [risk, setRisk] = useState([])
+  const [resource, setResource] = useState([])
+  const [status, setStatus] = useState([])
+  const [errors, setErrors] = useState({});
+
+  const today = dayjs().startOf('day');
+  const [appointment, setAppointment] = useState({
+    ticket: '',
+    doctor: '',
+    risk: '',
+    appointmentDate: null,
+    lastModifiedBy: user.id,
+    status: '',
+    diagnosis: '',
+    resource: ''
+  })
   const breadcrumbs = [
     { label: 'Inicio', href: '/' },
     { label: 'Citas', href: '/appointments' },
@@ -137,9 +140,28 @@ const EditAppointment = () => {
     }
   }
 
+  const validate = () => {
+    const newErrors = {};
+    if (!appointment.doctor) newErrors.doctor = "El doctor es obligatorio";
+    if (!appointment.risk) newErrors.risk = "El riesgo es obligatorio";
+    if (!appointment.appointmentDate) {
+      newErrors.appointmentDate = "La fecha de cita es obligatoria";
+    } else if (dayjs(appointment.appointmentDate).isBefore(today)) {
+      newErrors.appointmentDate = "La fecha debe ser hoy o posterior";
+    }
+    if (!appointment.status) newErrors.status = "El estatus es obligatorio";
+    if (!appointment.diagnosis.trim()) newErrors.diagnosis = "El diagnóstico es obligatorio";
+    if (!appointment.tooling) newErrors.tooling = "El recurso es obligatorio";
+    return newErrors;
+  };
+
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    putAppointments(id)
+    e.preventDefault();
+    const validationErrors = validate();
+    setErrors(validationErrors);
+    if (Object.keys(validationErrors).length === 0) {
+      putAppointments(id);
+    }
   };
 
   return (
@@ -178,6 +200,8 @@ const EditAppointment = () => {
                 onChange={handleInputChange}
                 value={appointment.doctor || ''}
                 name="doctor"
+                error={!!errors.doctor}
+                helperText={errors.doctor}
               >
                 {doctor.map((option) => (
                   <MenuItem key={option.value} value={option.label}>
@@ -193,6 +217,8 @@ const EditAppointment = () => {
                 onChange={handleInputChange}
                 value={appointment.risk || ''}
                 name="risk"
+                error={!!errors.risk}
+                helperText={errors.risk}
               >
                 {risk.map((option) => (
                   <MenuItem key={option.value} value={option.label}>
@@ -202,9 +228,16 @@ const EditAppointment = () => {
               </TextField>
               <DatePicker
                 label="Fecha de Cita"
-                value={appointment.appointmentDate} // Asegúrate de que el valor sea un objeto Date o null
-                onChange={(newValue) => setAppointment({ ...appointment, appointmentDate: newValue })} // Actualiza el estado con la nueva fecha
+                value={appointment.appointmentDate}
+                minDate={today}
+                onChange={(newValue) => setAppointment({ ...appointment, appointmentDate: newValue })}
                 sx={{ width: '100%' }}
+                slotProps={{
+                  textField: {
+                    error: !!errors.appointmentDate,
+                    helperText: errors.appointmentDate,
+                  }
+                }}
               />
               <TextField
                 id="status"
@@ -214,6 +247,8 @@ const EditAppointment = () => {
                 onChange={handleInputChange}
                 value={appointment.status || ''}
                 name="status"
+                error={!!errors.status}
+                helperText={errors.status}
               >
                 {status.map((option) => (
                   <MenuItem key={option.value} value={option.value}>
@@ -228,6 +263,8 @@ const EditAppointment = () => {
                 onChange={handleInputChange}
                 name="diagnosis"
                 value={appointment.diagnosis || ''}
+                error={!!errors.diagnosis}
+                helperText={errors.diagnosis}
               />
               <TextField
                 id="tooling"
@@ -237,6 +274,8 @@ const EditAppointment = () => {
                 onChange={handleInputChange}
                 value={appointment.tooling || ''}
                 name="tooling"
+                error={!!errors.tooling}
+                helperText={errors.tooling}
               >
                 {resource.map((option) => (
                   <MenuItem key={option.value} value={option.value}>
