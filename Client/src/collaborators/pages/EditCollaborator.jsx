@@ -21,6 +21,7 @@ const EditCollaborator = () => {
   const [department, setDepartment] = useState([]);
   const [role, setRole] = useState([]);
   const [status, setStatus] = useState([]);
+  const [errors, setErrors] = useState({});
   const [collaborator, setCollaborator] = useState({
     name: '',
     lastName: '',
@@ -133,10 +134,35 @@ const EditCollaborator = () => {
     }
   }
 
-  const handleSubmit = async (e) => {
-    e.preventDefault()
-    putCollaborator()
-  };
+  const validate = () => {
+  const newErrors = {};
+  if (!collaborator.name.trim()) newErrors.name = "El nombre es obligatorio";
+  if (!collaborator.lastName.trim()) newErrors.lastName = "El apellido es obligatorio";
+  if (!collaborator.birthDate) newErrors.birthDate = "La fecha de nacimiento es obligatoria";
+  if (!collaborator.gender) newErrors.gender = "El género es obligatorio";
+  if (!collaborator.email.trim()) newErrors.email = "El correo es obligatorio";
+  if (!collaborator.password.trim()) {
+    newErrors.password = "La contraseña es obligatoria";
+  } else {
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[\W_]).{8,}$/;
+    if (!passwordRegex.test(collaborator.password)) {
+      newErrors.password = "La contraseña debe tener mínimo 8 caracteres, una mayúscula, una minúscula y un símbolo";
+    }
+  }
+  if (!collaborator.department) newErrors.department = "El departamento es obligatorio";
+  if (!collaborator.role) newErrors.role = "El rol es obligatorio";
+  if (!collaborator.status) newErrors.status = "El estado es obligatorio";
+  return newErrors;
+};
+
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  const validationErrors = validate();
+  setErrors(validationErrors);
+  if (Object.keys(validationErrors).length === 0) {
+    putCollaborator();
+  }
+};
 
   return (
     <>
@@ -149,30 +175,38 @@ const EditCollaborator = () => {
           <Box sx={{ borderRadius: '1rem', backgroundColor: 'white', padding: '2rem'}}>
             <Stack direction={{ xs: 'column', md: 'row'}} spacing={3} sx={{ marginBottom: 3 }}>
               <TextField
-                id="outlined-basic"
                 label="Nombre"
                 variant="outlined"
                 fullWidth
                 value={collaborator.name}
                 onChange={handleInputChange}
                 name="name"
+                error={!!errors.name}
+                helperText={errors.name}
               />
               <TextField
-                id="outlined-basic"
                 label="Apellido"
                 variant="outlined"
                 fullWidth
                 value={collaborator.lastName}
                 onChange={handleInputChange}
                 name="lastName"
+                error={!!errors.lastName}
+                helperText={errors.lastName}
               />
             </Stack>
             <Stack direction={{ xs: 'column'}} spacing={3} >
               <DatePicker
                 label="Fecha de Nacimiento"
                 value={collaborator.birthDate || null}
-                onChange={(newValue) => setCollaborator({ ...collaborator, FechaDeNacimiento: newValue })}
+                onChange={(newValue) => setCollaborator({ ...collaborator, birthDate: newValue })}
                 sx={{ width: '100%' }}
+                slotProps={{
+                  textField: {
+                    error: !!errors.birthDate,
+                    helperText: errors.birthDate,
+                  }
+                }}
               />
               <TextField
                 id="gender"
@@ -182,6 +216,8 @@ const EditCollaborator = () => {
                 value={collaborator.gender || ''}
                 onChange={handleInputChange}
                 name="gender"
+                error={!!errors.gender}
+                helperText={errors.gender}
               >
                 {gender.map((option) => (
                   <MenuItem key={option.value} value={option.value}>
@@ -190,16 +226,16 @@ const EditCollaborator = () => {
                 ))}
               </TextField>
               <TextField
-                id="outlined-basic"
                 label="Correo"
                 variant="outlined"
                 fullWidth
                 value={collaborator.email}
                 onChange={handleInputChange}
                 name="email"
+                error={!!errors.email}
+                helperText={errors.email}
               />
               <TextField
-                id="outlined-basic"
                 label="Contraseña"
                 variant="outlined"
                 fullWidth
@@ -207,6 +243,8 @@ const EditCollaborator = () => {
                 value={collaborator.password}
                 onChange={handleInputChange}
                 name="password"
+                error={!!errors.password}
+                helperText={errors.password}
               />
               <TextField
                 id="department"
@@ -216,6 +254,8 @@ const EditCollaborator = () => {
                 value={collaborator.department || ''}
                 onChange={handleInputChange}
                 name="department"
+                error={!!errors.department}
+                helperText={errors.department}
               >
                 {department.map((option) => (
                   <MenuItem key={option.value} value={option.value}>
@@ -231,6 +271,8 @@ const EditCollaborator = () => {
                 value={collaborator.role || ''}
                 onChange={handleInputChange}
                 name="role"
+                error={!!errors.role}
+                helperText={errors.role}
               >
                 {role.map((option) => (
                   <MenuItem key={option.value} value={option.value}>
@@ -246,6 +288,8 @@ const EditCollaborator = () => {
                 value={collaborator.status || ''}
                 onChange={handleInputChange}
                 name="status"
+                error={!!errors.status}
+                helperText={errors.status}
               >
                 {status.map((option) => (
                   <MenuItem key={option.value} value={option.value}>
