@@ -6,7 +6,6 @@ const citaSchema = new mongoose.Schema({
     folio: {
             type: String, // Changed to String to accommodate the generated value
             required: false, // Not required since it will be generated
-            unique: true // Ensure caseFolio is unique
         },
         ticket: {
             type: mongoose.Schema.Types.ObjectId,
