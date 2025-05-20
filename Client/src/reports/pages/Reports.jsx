@@ -222,7 +222,7 @@ const Reports = () => {
           }}
         >
           <Typography variant="h6" sx={{ marginTop: 1 }}>
-            Tickets
+            Tickets por Mes
           </Typography>
           <BarChart
             xAxis={[{ scaleType: 'band', data: ticketsMonth.map(item => item.mes) }]}
@@ -246,7 +246,7 @@ const Reports = () => {
           }}
         >
           <Typography variant="h6" sx={{ marginTop: 1 }}>
-            Tickets por estatus
+            Tickets por Estatus
           </Typography>
           <PieChart
             series={[
@@ -255,7 +255,6 @@ const Reports = () => {
                   { id: tickets.cerrados?.id ?? 0, value: tickets.cerrados?.value ?? 0, label: tickets.cerrados?.label ?? 'Cerrados' },
                   { id: tickets.pendientes?.id ?? 1, value: tickets.pendientes?.value ?? 0, label: tickets.pendientes?.label ?? 'Pendientes' },
                   { id: tickets.cancelados?.id ?? 2, value: tickets.cancelados?.value ?? 0, label: tickets.cancelados?.label ?? 'Cancelados' },
-                  { id: tickets.urgentes?.id ?? 3, value: tickets.urgentes?.value ?? 0, label: tickets.urgentes?.label ?? 'Urgentes' },
                 ],
               },
             ]}
@@ -287,7 +286,7 @@ const Reports = () => {
           }}
         >
           <Typography variant="h6" sx={{ marginTop: 1 }}>
-            Colaboradores
+            Colaboradores por Estatus
           </Typography>
           <PieChart
             series={[
@@ -317,7 +316,7 @@ const Reports = () => {
           }}
         >
           <Typography variant="h6" sx={{ marginTop: 1 }}>
-            Citas
+            Citas por Mes
           </Typography>
           <BarChart
             xAxis={[{ scaleType: 'band', data: appointmentsMonth.map(item => item.mes) }]}

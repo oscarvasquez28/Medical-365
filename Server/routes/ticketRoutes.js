@@ -87,12 +87,14 @@ router.get('/table', async (req, res) => {
 // Ruta para obtener todos los tickets en formato value-label
 router.get('/list', async (req, res) => {
     try {
-        let tickets;
+        let tickets = await ticket.model.find();
 
-        if (global.auth === false) tickets = await ticket.model.find();
-        else if (req.user.rol === 'Administrador') tickets = await ticket.model.find();
+        if (req.user.rol === 'Administrador') tickets = await ticket.model.find();
         else if (req.user.rol === 'Gerente') {
-            tickets = tickets.filter(ticket => ticket.paciente?.departamento.toString() === req.user.departamento);
+            const ticketDetails = await ticket.model.find().populate({path: 'paciente', populate: { path: 'departamento' }, select: 'nombre apellido departamento'})
+                .populate({ path: 'sintomas', select: 'descripcion' })
+                .populate({ path: 'incidencia', select: 'descripcion' });
+            tickets = ticketDetails.filter(ticket => ticket.paciente?.departamento?._id.toString() === req.user.departamento);
         } 
 
         const response = tickets.map(ticket => ({

@@ -6,6 +6,6 @@ export default defineConfig({
   plugins: [react()],
   server: {
     host: '0.0.0.0',
-    allowedHosts: ['medical-365-production.up.railway.app', '3bb6-200-68-164-10.ngrok-free.app'],
+    allowedHosts: ['medical-365-production.up.railway.app', 'd962-148-234-249-85.ngrok-free.app'],
   },
 })
