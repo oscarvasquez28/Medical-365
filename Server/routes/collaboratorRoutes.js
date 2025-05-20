@@ -207,8 +207,17 @@ router.get('/admin/list', authenticateJWT, async (req, res) => {
 
 // Formato value-label
 router.get('/list', authenticateJWT, async (req, res) => {
+  let collaborators;
   try {
-    const collaborators = await Collaborator.model.find();
+    if (req.user?.rol === 'Administrador') {
+      collaborators = await Collaborator.model.find();
+    } else if (req.user?.rol === 'Gerente') {
+      collaborators = await Collaborator.model.find({ departamento: req.user.departamento });
+    } else if (req.user?.rol === 'Colaborador') {
+      collaborators = await Collaborator.model.find({ _id: req.user.id });
+    } else {
+      collaborators = await Collaborator.model.find();
+    }
     const response = collaborators.map(collaborator => ({
       value: collaborator._id,
       label: `${collaborator.nombre} ${collaborator.apellido}`

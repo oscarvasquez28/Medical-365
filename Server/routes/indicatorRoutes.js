@@ -15,7 +15,15 @@ const colaborador = new Colaborador();
 // Ruta para obtener todos los indicadores
 router.get('/tickets', async (req, res) => {
     try {
-        const tickets = await ticket.model.find();
+        let tickets;
+        if (req.user && req.user.rol === 'Administrador') {
+            tickets = await ticket.model.find();
+        } else if (req.user && req.user.rol === 'Gerente') {
+            tickets = await ticket.model.find().populate('paciente');
+            tickets = tickets.filter(ticket => ticket.paciente && String(ticket.paciente.departamento) === req.user.departamento);
+        } else {
+            tickets = await ticket.model.find();
+        }
 
         const indicadores = {
             'totalTickets': tickets.length,
@@ -51,7 +59,15 @@ router.get('/tickets', async (req, res) => {
 
 router.get('/tickets/month', async (req, res) => {
     try {
-        const tickets = await ticket.model.find();
+        let tickets;
+        if (req.user && req.user.rol === 'Administrador') {
+            tickets = await ticket.model.find();
+        } else if (req.user && req.user.rol === 'Gerente') {
+            tickets = await ticket.model.find().populate('paciente');
+            tickets = tickets.filter(ticket => ticket.paciente && String(ticket.paciente.departamento) === req.user.departamento);
+        } else {
+            tickets = await ticket.model.find();
+        }
         const meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
 
         const ticketsPorMes = meses.map((_, mes) => {
@@ -114,7 +130,27 @@ router.get('/appointments/month', async (req, res) => {
 
     try {
 
-        const citas = await cita.model.find();
+        let citasRaw;
+        if (req.user && req.user.rol === 'Administrador') {
+            citasRaw = await cita.model.find();
+        } else if (req.user && req.user.rol === 'Gerente') {
+            citasRaw = await cita.model.find()
+                .populate({
+                    path: 'ticket',
+                    populate: {
+                        path: 'paciente'
+                    }
+                });
+            citasRaw = citasRaw.filter(cita =>
+                cita.ticket &&
+                cita.ticket.paciente &&
+                String(cita.ticket.paciente.departamento) === req.user.departamento
+            );
+        } else {
+            citasRaw = await cita.model.find();
+        }
+        const citas = citasRaw.filter(cita => cita.ticket !== null);
+        
         const meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
 
         const citaPorMes = meses.map((_, mes) => {
@@ -140,7 +176,20 @@ router.get('/appointments/month', async (req, res) => {
 router.get('/collaborators', async (req, res) => {
 
     try {
-        const colaboradores = await colaborador.model.find();
+
+        let collaborators;
+
+        if (req.user?.rol === 'Administrador') {
+        collaborators = await colaborador.model.find();
+        } else if (req.user?.rol === 'Gerente') {
+        collaborators = await colaborador.model.find({ departamento: req.user.departamento });
+        } else if (req.user?.rol === 'Colaborador') {
+        collaborators = await colaborador.model.find({ _id: req.user.id });
+        } else {
+        collaborators = await colaborador.model.find();
+        }
+
+        const colaboradores = collaborators.filter(colaborador => colaborador !== null);
 
         const indicadores = {
             'totalColaboradores': colaboradores.length,

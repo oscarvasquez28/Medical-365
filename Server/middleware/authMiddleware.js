@@ -1,4 +1,6 @@
 import jwt from 'jsonwebtoken';
+import fs from 'fs';
+import path from 'path';
 
 export const authenticateJWT = (req, res, next) => {
     
@@ -13,6 +15,16 @@ export const authenticateJWT = (req, res, next) => {
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET); // Verify token using the secret
         req.user = decoded; // Attach decoded user info to the request object
+
+        // Log user and route access
+        const logMessage = `[${new Date().toISOString()}] User: ${decoded.username || decoded.id || 'unknown'} accessed ${req.method} ${req.originalUrl}\n`;
+        const logPath = path.join(process.cwd(), 'log.txt');
+        fs.appendFile(logPath, logMessage, (err) => {
+            if (err) {
+                console.error('Failed to write to log.txt:', err);
+            }
+        });
+
         next(); // Proceed to the next middleware or route handler
     } catch (err) {
         return res.status(403).json({ message: 'Invalid or expired token' });
