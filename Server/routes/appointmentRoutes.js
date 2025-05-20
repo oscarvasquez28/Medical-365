@@ -267,6 +267,11 @@ router.post('/', async (req, res) => {
     // Enviar correo al paciente utilizando nodemailer
     if (ticket) {
       const ticketDetails = await Ticket.model.findById(ticket).populate('paciente');
+
+      const updatedTicket = await Ticket.model.findByIdAndUpdate(ticket, {
+        riesgo: risk || ticketDetails.riesgo,
+      }, { new: true });
+
       if (ticketDetails && ticketDetails.paciente && ticketDetails.paciente.correo) {
         const transporter = nodemailer.createTransport({
           service: 'gmail',
@@ -341,6 +346,7 @@ router.put('/:id', async (req, res) => {
     const updatedTicket = await Ticket.model.findByIdAndUpdate(
       ticket || updatedAppointment.ticket,
       {
+        ...(risk && { riesgo: risk }),
         ...(status && { estatus: status }),
         ...(status == 'Cerrado' && { fechaCierre: Date.now() }), // Actualizar la fecha de cierre si el estatus es 'Cerrado'
       },
